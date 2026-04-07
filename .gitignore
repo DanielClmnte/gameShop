@@ -234,7 +234,8 @@ Temporary Items
 
 
 # Maven build
-target/
+target/*
+
 
 # Wrapper (mantén el jar, ignora lo demás opcionalmente)
 !.mvn/wrapper/maven-wrapper.jar
