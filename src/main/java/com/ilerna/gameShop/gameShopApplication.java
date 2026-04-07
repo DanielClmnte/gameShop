@@ -16,6 +16,8 @@ public class gameShopApplication {
       Probar el manejo de errores: http://localhost:8080/pruebaError
      */
 
+
+
     public static void main(String[] args) {
         SpringApplication.run(gameShopApplication.class, args);
     }
