@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Stock</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">🎮 GameShop</a>
+            <nav>
+                <a href="/">Catálogo</a>
+                <a href="/admin">Dashboard</a>
+                <a href="/admin/productos">Productos</a>
+                <a href="/admin/stock">Stock</a>
+                <a href="/logout">Cerrar Sesión</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container admin-container">
+        <h1>📦 Gestión de Stock</h1>
+
+        <!-- FILTROS -->
+        <div class="filtros-stock">
+            <a th:href="@{/admin/stock?filtro=todos}" class="filtro-btn" th:classappend="${filtro == 'todos' ? 'activo' : ''}">
+                📋 Todos
+            </a>
+            <a th:href="@{/admin/stock?filtro=bajo-stock}" class="filtro-btn" th:classappend="${filtro == 'bajo-stock' ? 'activo' : ''}">
+                ⚠️ Stock Bajo
+            </a>
+            <a th:href="@{/admin/stock?filtro=agotados}" class="filtro-btn" th:classappend="${filtro == 'agotados' ? 'activo' : ''}">
+                ❌ Agotados
+            </a>
+        </div>
+
+        <!-- TABLA DE STOCK -->
+        <div class="tabla-productos">
+            <div class="tabla-header">
+                <div class="col-titulo">Producto</div>
+                <div class="col-stock-actual">Stock Actual</div>
+                <div class="col-acciones-stock">Acciones Rápidas</div>
+                <div class="col-actualizar">Actualizar</div>
+            </div>
+
+            <div class="tabla-body">
+                <div class="tabla-row-stock" th:each="producto : ${videojuegos}">
+                    <div class="col-titulo">
+                        <strong th:text="${producto.titulo}">Producto</strong>
+                        <span class="stock-badge" th:classappend="${producto.disponible ? 'disponible' : 'agotado'}"
+                              th:text="${producto.disponible ? 'En Stock' : 'Agotado'}">Estado</span>
+                    </div>
+
+                    <div class="col-stock-actual">
+                        <span class="numero-stock" th:text="${producto.stock}">0</span>
+                        <span class="unidades">unidades</span>
+                    </div>
+
+                    <div class="col-acciones-stock">
+                        <form th:action="@{/admin/stock/disminuir}" method="post" style="display: inline;">
+                            <input type="hidden" name="videojuegoId" th:value="${producto.id}">
+                            <input type="hidden" name="filtro" th:value="${filtro}">
+                            <button type="submit" class="btn-stock btn-restar" title="Restar 1 unidad">➖</button>
+                        </form>
+
+                        <form th:action="@{/admin/stock/aumentar}" method="post" style="display: inline;">
+                            <input type="hidden" name="videojuegoId" th:value="${producto.id}">
+                            <input type="hidden" name="filtro" th:value="${filtro}">
+                            <button type="submit" class="btn-stock btn-sumar" title="Agregar 1 unidad">➕</button>
+                        </form>
+                    </div>
+
+                    <div class="col-actualizar">
+                        <form th:action="@{/admin/stock/actualizar}" method="post" class="form-stock">
+                            <input type="hidden" name="videojuegoId" th:value="${producto.id}">
+                            <input type="hidden" name="filtro" th:value="${filtro}">
+                            <input type="number" name="nuevoStock" th:value="${producto.stock}" min="0" class="input-stock">
+                            <button type="submit" class="btn-guardar-stock">✓</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIN PRODUCTOS -->
+        <div th:if="${videojuegos.size() == 0}" class="sin-productos">
+            <p>No hay productos que coincidan con el filtro seleccionado.</p>
+        </div>
+    </div>
+
+    <style>
+        .filtros-stock {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filtro-btn {
+            padding: 10px 20px;
+            background-color: #333;
+            color: #00d4ff;
+            border: 2px solid #00d4ff;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .filtro-btn:hover,
+        .filtro-btn.activo {
+            background-color: #00d4ff;
+            color: #0a0a0a;
+        }
+
+        .tabla-row-stock {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.5fr 1.5fr;
+            gap: 15px;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            align-items: center;
+        }
+
+        .tabla-row-stock:hover {
+            background-color: #0f3460;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .stock-badge.disponible {
+            background-color: #00ff00;
+            color: #0a0a0a;
+        }
+
+        .stock-badge.agotado {
+            background-color: #ff3333;
+            color: #fff;
+        }
+
+        .numero-stock {
+            display: block;
+            font-size: 24px;
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .unidades {
+            display: block;
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+
+        .col-acciones-stock {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-stock {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-restar {
+            background-color: #ff6666;
+            color: #fff;
+        }
+
+        .btn-restar:hover {
+            background-color: #ff3333;
+        }
+
+        .btn-sumar {
+            background-color: #66ff66;
+            color: #0a0a0a;
+        }
+
+        .btn-sumar:hover {
+            background-color: #00ff00;
+        }
+
+        .form-stock {
+            display: flex;
+            gap: 5px;
+        }
+
+        .input-stock {
+            width: 80px;
+            padding: 8px;
+            background-color: #0f3460;
+            border: 1px solid #00d4ff;
+            color: #e0e0e0;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .btn-guardar-stock {
+            padding: 8px 12px;
+            background-color: #00d4ff;
+            color: #0a0a0a;
+            border: none;
+            border-radius: 3px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-guardar-stock:hover {
+            background-color: #00a8cc;
+        }
+
+        @media (max-width: 768px) {
+            .tabla-header {
+                display: none;
+            }
+
+            .tabla-row-stock {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+                background-color: #0f3460;
+                margin-bottom: 15px;
+                border-radius: 5px;
+                border-bottom: none;
+            }
+
+            .col-acciones-stock {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .form-stock {
+                width: 100%;
+            }
+
+            .input-stock {
+                flex: 1;
+            }
+        }
+    </style>
+
+    <footer>
+        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
+    </footer>
+</body>
+</html>
+
