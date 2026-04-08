@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Producto</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">🎮 GameShop</a>
+            <nav>
+                <a href="/">Catálogo</a>
+                <a href="/admin">Dashboard</a>
+                <a href="/admin/productos">Productos</a>
+                <a href="/logout">Cerrar Sesión</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container admin-container">
+        <div class="form-container">
+            <h1 th:if="${videojuego == null}">➕ Crear Nuevo Producto</h1>
+            <h1 th:unless="${videojuego == null}">✏️ Editar Producto</h1>
+
+            <form th:if="${videojuego == null}" method="post" action="/admin/productos/guardar" class="form-producto">
+
+                <div class="form-group">
+                    <label for="titulo">Título del Producto *</label>
+                    <input type="text" id="titulo" name="titulo" required placeholder="Ej: Elden Ring">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="plataformaId">Plataforma *</label>
+                        <select id="plataformaId" name="plataformaId" required>
+                            <option value="">Selecciona una plataforma</option>
+                            <option th:each="plataforma : ${plataformas}"
+                                    th:value="${plataforma.id}"
+                                    th:text="${plataforma.nombre}">PS5</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="precio">Precio (€) *</label>
+                        <input type="number" id="precio" name="precio" step="0.01" required placeholder="49.99">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock">Stock *</label>
+                        <input type="number" id="stock" name="stock" required placeholder="10">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción *</label>
+                    <textarea id="descripcion" name="descripcion" rows="6" required placeholder="Describe el producto..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="desarrollador">Desarrollador *</label>
+                        <input type="text" id="desarrollador" name="desarrollador" required placeholder="FromSoftware">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imagen">Imagen</label>
+                        <input type="text" id="imagen" name="imagen" placeholder="nombre-imagen.jpg">
+                    </div>
+                </div>
+
+                <div class="form-botones">
+                    <button type="submit" class="btn-guardar">💾 Guardar Producto</button>
+                    <a href="/admin/productos" class="btn-cancelar">✕ Cancelar</a>
+                </div>
+            </form>
+
+            <!-- FORMULARIO DE EDICIÓN -->
+            <form th:unless="${videojuego == null}" th:method="post" th:action="@{/admin/productos/actualizar/{id}(id=${videojuego.id})}" class="form-producto">
+
+                <div class="form-group">
+                    <label for="titulo">Título del Producto *</label>
+                    <input type="text" id="titulo" name="titulo" required th:value="${videojuego.titulo}">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="plataformaId">Plataforma *</label>
+                        <select id="plataformaId" name="plataformaId" required>
+                            <option th:each="plataforma : ${plataformas}"
+                                    th:value="${plataforma.id}"
+                                    th:text="${plataforma.nombre}"
+                                    th:selected="${plataforma.id == videojuego.plataformaId}">PS5</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="precio">Precio (€) *</label>
+                        <input type="number" id="precio" name="precio" step="0.01" required th:value="${videojuego.precio}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock">Stock *</label>
+                        <input type="number" id="stock" name="stock" required th:value="${videojuego.stock}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción *</label>
+                    <textarea id="descripcion" name="descripcion" rows="6" required th:text="${videojuego.descripcion}"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="desarrollador">Desarrollador *</label>
+                        <input type="text" id="desarrollador" name="desarrollador" required th:value="${videojuego.desarrollador}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imagen">Imagen</label>
+                        <input type="text" id="imagen" name="imagen" th:value="${videojuego.imagen}">
+                    </div>
+                </div>
+
+                <div class="form-botones">
+                    <button type="submit" class="btn-guardar">💾 Guardar Cambios</button>
+                    <a href="/admin/productos" class="btn-cancelar">✕ Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
+    </footer>
+</body>
+</html>
+
