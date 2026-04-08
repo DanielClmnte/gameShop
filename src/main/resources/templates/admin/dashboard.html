@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">🎮 GameShop</a>
+            <nav>
+                <a href="/">Catálogo</a>
+                <a href="/admin">Dashboard</a>
+                <a href="/admin/productos">Productos</a>
+                <a href="/logout">Cerrar Sesión</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container admin-container">
+        <h1>📊 Panel de Administración</h1>
+
+        <!-- TARJETAS DE ESTADÍSTICAS -->
+        <div class="estadisticas">
+            <div class="tarjeta-stat">
+                <h3>Total de Productos</h3>
+                <p class="numero" th:text="${totalProductos}">0</p>
+                <p class="subtitulo">Productos en catálogo</p>
+            </div>
+
+            <div class="tarjeta-stat disponibles">
+                <h3>Disponibles</h3>
+                <p class="numero" th:text="${productosDisponibles}">0</p>
+                <p class="subtitulo">En stock</p>
+            </div>
+
+            <div class="tarjeta-stat agotados">
+                <h3>Agotados</h3>
+                <p class="numero" th:text="${productosAgotados}">0</p>
+                <p class="subtitulo">Sin stock</p>
+            </div>
+
+            <div class="tarjeta-stat usuarios">
+                <h3>Acciones Rápidas</h3>
+                <div class="acciones-rapidas">
+                    <a href="/admin/productos/nuevo" class="btn-accion">➕ Nuevo Producto</a>
+                    <a href="/admin/productos" class="btn-accion">📋 Ver Todo</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE INFORMACIÓN -->
+        <div class="info-admin">
+            <h2>Bienvenido al Panel de Control</h2>
+            <p>Desde aquí puedes gestionar todos los productos de tu tienda de videojuegos. Tienes acceso a:</p>
+            <ul>
+                <li>✅ Crear nuevos productos</li>
+                <li>✅ Editar productos existentes</li>
+                <li>✅ Eliminar productos</li>
+                <li>✅ Gestionar stock</li>
+                <li>✅ Ver estadísticas</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
+    </footer>
+</body>
+</html>
+
