@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Login</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">🎮 GameShop</a>
+            <nav>
+                <a href="/">Inicio</a>
+                <a href="/catalogo/disponibles">Disponibles</a>
+                <a href="/catalogo/populares">Populares</a>
+                <a href="/carrito">🛒 Carrito</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="auth-container">
+            <div class="auth-form login-form">
+                <h1>🔐 Inicia Sesión</h1>
+
+                <!-- Mensaje de error -->
+                <div th:if="${error}" class="alert alert-error">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <form method="post" action="/login">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contrasena">Contraseña</label>
+                        <input type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="form-opciones">
+                        <label class="checkbox">
+                            <input type="checkbox" name="recuerdame">
+                            <span>Recuérdame</span>
+                        </label>
+                        <a href="#" class="olvide-contrasena">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Inicia Sesión</button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>¿No tienes cuenta? <a href="/registro">Regístrate aquí</a></p>
+                </div>
+
+                <!-- Datos de prueba -->
+                <div class="info-prueba">
+                    <h4>📝 Datos de prueba:</h4>
+                    <p><strong>Admin:</strong> admin@gameshop.com / admin123</p>
+                    <p><strong>Usuario 1:</strong> juan@example.com / pass123</p>
+                    <p><strong>Usuario 2:</strong> maria@example.com / pass456</p>
+                </div>
+            </div>
+
+            <div class="auth-imagen">
+                <div class="imagen-placeholder">
+                    <p>🎮</p>
+                    <p>Bienvenido a GameShop</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
+    </footer>
+</body>
+</html>
+
