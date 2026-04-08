@@ -155,7 +155,7 @@
         <div class="checkout-container">
             <!-- FORMULARIO DE CHECKOUT -->
             <form method="post" action="/checkout/procesar" class="checkout-form">
-                <input type="hidden" name="usuarioId" th:value="${usuarioId}">
+                <!-- usuarioId viene de la sesión HTTP, no hace falta campo oculto -->
 
                 <!-- DATOS PERSONALES -->
                 <div class="form-section">

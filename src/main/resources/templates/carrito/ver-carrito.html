@@ -56,7 +56,6 @@
 
                         <div class="col-cantidad">
                             <form th:action="@{/carrito/actualizar/{id}(id=${item.videojuegoId})}" method="post" class="form-cantidad">
-                                <input type="hidden" name="usuarioId" th:value="${usuarioId}">
                                 <input type="number" name="nuevaCantidad" th:value="${item.cantidad}" min="1" max="99" class="input-cantidad">
                                 <button type="submit" class="btn-actualizar">✓</button>
                             </form>
@@ -65,7 +64,7 @@
                         <div class="col-subtotal" th:text="${'€' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></div>
 
                         <div class="col-accion">
-                            <a th:href="@{/carrito/eliminar/{id}(id=${item.videojuegoId}, usuarioId=${usuarioId})}" class="btn-eliminar">🗑️ Eliminar</a>
+                            <a th:href="@{/carrito/eliminar/{id}(id=${item.videojuegoId})}" class="btn-eliminar">🗑️ Eliminar</a>
                         </div>
                     </div>
                 </div>
@@ -103,10 +102,12 @@
 
                     <div class="botones-carrito">
                         <a href="/" class="btn-continuar-compra">← Continuar Comprando</a>
-                        <button class="btn-checkout">Proceder al Pago →</button>
+                        <!-- Si no hay sesión, redirige a login con destino checkout -->
+                        <a th:if="${session.usuarioId != null}" href="/checkout" class="btn-checkout">Proceder al Pago →</a>
+                        <a th:unless="${session.usuarioId != null}" href="/login?redirect=/checkout" class="btn-checkout">🔐 Login para Pagar →</a>
                     </div>
 
-                    <a th:href="@{/carrito/vaciar(usuarioId=${usuarioId})}" class="btn-vaciar-carrito">Vaciar Carrito</a>
+                    <a href="/carrito/vaciar" class="btn-vaciar-carrito">Vaciar Carrito</a>
                 </div>
             </div>
         </div>

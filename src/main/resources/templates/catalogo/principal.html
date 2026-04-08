@@ -16,6 +16,11 @@
                 <a href="/catalogo/disponibles">Disponibles</a>
                 <a href="/catalogo/populares">Populares</a>
                 <a href="/carrito">🛒 Carrito</a>
+                <span th:if="${session.usuarioNombre != null}" style="color:#00d4ff;">👤 <span th:text="${session.usuarioNombre}"></span></span>
+                <a th:if="${session.usuarioId != null}" href="/pedidos">Mis Pedidos</a>
+                <a th:if="${session.usuarioRol == 'ADMIN'}" href="/admin">Admin</a>
+                <a th:if="${session.usuarioId != null}" href="/logout" style="color:#ff3333;">Cerrar Sesión</a>
+                <a th:unless="${session.usuarioId != null}" href="/login">Login</a>
             </nav>
             <form action="/catalogo/buscar" method="get" class="search-bar">
                 <input type="text" name="titulo" placeholder="Buscar videojuego..." required>
@@ -39,23 +44,31 @@
         <h2 style="color: #00d4ff; margin-bottom: 20px; margin-top: 40px;">Juegos Destacados</h2>
         <div class="videojuegos">
             <div class="videojuego-card" th:each="videojuego : ${videojuegos.subList(0, Math.min(8, videojuegos.size()))}">
-                <div class="videojuego-imagen">
-                    <span th:text="${videojuego.imagen}"></span>
-                </div>
-                <div class="videojuego-info">
-                    <h3 th:title="${videojuego.titulo}" th:text="${videojuego.titulo}"></h3>
-                    <div class="videojuego-precio" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></div>
-                    <div class="videojuego-calificacion" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 2)}"></div>
-                    <div class="videojuego-stock">
-                        <span th:if="${videojuego.disponible}" style="color: #00ff00;" th:text="${videojuego.stock + ' en stock'}"></span>
-                        <span th:unless="${videojuego.disponible}" style="color: #ff3333;">Agotado</span>
+                    <div class="videojuego-imagen">
+                        <img th:src="@{/uploads/images/{img}(img=${videojuego.imagen})}"
+                             th:alt="${videojuego.titulo}"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                        <span style="display:none;font-size:3em;">🎮</span>
                     </div>
-                    <div class="videojuego-botones">
-                        <button class="btn-detalles">Detalles</button>
-                        <button class="btn-carrito" th:if="${videojuego.disponible}" th:onclick="'agregarAlCarrito(' + ${videojuego.id} + ')'">Añadir</button>
-                        <button class="btn-carrito" th:unless="${videojuego.disponible}" disabled style="opacity: 0.5; cursor: not-allowed;">Agotado</button>
+                    <div class="videojuego-info">
+                        <h3 th:text="${videojuego.titulo}"></h3>
+                        <div class="videojuego-precio" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></div>
+                        <div class="videojuego-calificacion" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 2)}"></div>
+                        <div class="videojuego-stock">
+                            <span th:if="${videojuego.disponible}" style="color: #00ff00;" th:text="${videojuego.stock + ' en stock'}"></span>
+                            <span th:unless="${videojuego.disponible}" style="color: #ff3333;">Agotado</span>
+                        </div>
+                        <div class="videojuego-botones">
+                            <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn-detalles">Detalles</a>
+                            <!-- Formulario POST para añadir al carrito sin JavaScript -->
+                            <form th:if="${videojuego.disponible}"
+                                  th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}"
+                                  method="post" style="display:inline;">
+                                <button type="submit" class="btn-carrito">🛒 Añadir</button>
+                            </form>
+                            <button th:unless="${videojuego.disponible}" class="btn-carrito" disabled style="opacity:0.5;cursor:not-allowed;">Agotado</button>
+                        </div>
                     </div>
-                </div>
             </div>
         </div>
     </div>
@@ -63,12 +76,6 @@
     <footer>
         <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
     </footer>
-
-    <script>
-        function agregarAlCarrito(videojuegoId) {
-            alert('Videojuego ' + videojuegoId + ' agregado al carrito (funcionalidad en desarrollo)');
-        }
-    </script>
 </body>
 </html>
 
