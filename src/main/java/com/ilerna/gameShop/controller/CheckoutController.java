@@ -1,67 +1,64 @@
 package com.ilerna.gameShop.controller;
 
 import com.ilerna.gameShop.model.CarritoItem;
+import com.ilerna.gameShop.model.Pedido;
 import com.ilerna.gameShop.service.CarritoService;
+import com.ilerna.gameShop.service.PedidoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpSession;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Controlador para el proceso de checkout y pago
- * Rutas principales:
- * - GET /checkout : Formulario de checkout
- * - POST /checkout/procesar : Procesar la compra
+ * Controlador del proceso de checkout.
+ * ⚠️ REQUIERE LOGIN: si no hay sesión activa, redirige a /login.
+ * - GET  /checkout          : Formulario de pago (muestra carrito)
+ * - POST /checkout/procesar : Procesa pago, guarda pedido y vacía carrito
  */
 @Controller
 @RequestMapping("/checkout")
 public class CheckoutController {
-    
+
     private CarritoService carritoService;
-    
-    // Constructor
+    private PedidoService pedidoService;
+
     public CheckoutController() {
         this.carritoService = new CarritoService();
+        this.pedidoService = new PedidoService();
     }
-    
-    /**
-     * Mostrar página de checkout
-     */
+
+    // ──────────────── MOSTRAR CHECKOUT ────────────────
+
     @GetMapping
-    public String mostrarCheckout(
-            @RequestParam(defaultValue = "1") int usuarioId,
-            Model model) {
-        
+    public String mostrarCheckout(HttpSession session, Model model) {
+        // Requiere login
+        Integer usuarioId = (Integer) session.getAttribute("usuarioId");
+        if (usuarioId == null) {
+            return "redirect:/login?redirect=/checkout";
+        }
+
         List<CarritoItem> items = carritoService.obtenerCarrito(usuarioId);
+        if (items.isEmpty()) {
+            return "redirect:/carrito";
+        }
+
         double total = carritoService.obtenerTotalCarrito(usuarioId);
         double impuestos = total * 0.21;
-        double totalConImpuestos = total + impuestos;
-        
-        if (items.isEmpty()) {
-            return "redirect:/carrito?usuarioId=" + usuarioId;
-        }
-        
+
         model.addAttribute("items", items);
         model.addAttribute("total", total);
         model.addAttribute("impuestos", impuestos);
-        model.addAttribute("totalConImpuestos", totalConImpuestos);
-        model.addAttribute("usuarioId", usuarioId);
+        model.addAttribute("totalConImpuestos", total + impuestos);
         model.addAttribute("titulo", "Checkout - GameShop");
-        
         return "checkout/checkout";
     }
-    
-    /**
-     * Procesar la compra (simulado)
-     */
+
+    // ──────────────── PROCESAR PAGO ────────────────
+
     @PostMapping("/procesar")
     public String procesarCompra(
-            @RequestParam int usuarioId,
             @RequestParam String nombreCompleto,
             @RequestParam String email,
             @RequestParam String direccion,
@@ -71,68 +68,49 @@ public class CheckoutController {
             @RequestParam String mesExpiracion,
             @RequestParam String anioExpiracion,
             @RequestParam String cvv,
+            HttpSession session,
             Model model) {
-        
-        List<CarritoItem> items = carritoService.obtenerCarrito(usuarioId);
-        double total = carritoService.obtenerTotalCarrito(usuarioId);
-        
-        if (items.isEmpty()) {
-            return "redirect:/carrito?usuarioId=" + usuarioId;
+
+        // Requiere login
+        Integer usuarioId = (Integer) session.getAttribute("usuarioId");
+        if (usuarioId == null) {
+            return "redirect:/login?redirect=/checkout";
         }
-        
-        // Simulación de procesamiento de pago
-        // En producción, aquí se usaría una pasarela de pago real
-        boolean pagoProcesado = validarDatosPago(numeroTarjeta, cvv);
-        
-        if (pagoProcesado) {
-            // Pago exitoso - Generar pedido
-            int numeroPedido = generarNumeroPedido();
-            LocalDate fechaEntrega = LocalDate.now().plusDays(3);
-            
-            // Vaciar carrito
-            carritoService.vaciarCarrito(usuarioId);
-            
-            // Mostrar confirmación
-            model.addAttribute("numeroPedido", numeroPedido);
-            model.addAttribute("total", total);
-            model.addAttribute("totalConImpuestos", total * 1.21);
-            model.addAttribute("fechaEntrega", fechaEntrega);
-            model.addAttribute("nombreCompleto", nombreCompleto);
-            model.addAttribute("email", email);
-            model.addAttribute("items", items);
-            model.addAttribute("titulo", "Pedido Confirmado - GameShop");
-            
-            return "checkout/confirmacion";
-        } else {
-            // Pago fallido
+
+        List<CarritoItem> items = carritoService.obtenerCarrito(usuarioId);
+        double subtotal = carritoService.obtenerTotalCarrito(usuarioId);
+
+        if (items.isEmpty()) {
+            return "redirect:/carrito";
+        }
+
+        // Validación simulada de tarjeta
+        if (!validarDatosPago(numeroTarjeta, cvv)) {
             model.addAttribute("error", "Error al procesar el pago. Verifica los datos de tu tarjeta.");
-            model.addAttribute("usuarioId", usuarioId);
             model.addAttribute("titulo", "Error en el Pago - GameShop");
-            
             return "checkout/error-pago";
         }
+
+        // ✅ Guardar pedido
+        Pedido pedido = pedidoService.crearPedido(
+                usuarioId, nombreCompleto, email,
+                direccion, ciudad, codigoPostal,
+                items, subtotal
+        );
+
+        // Vaciar carrito
+        carritoService.vaciarCarrito(usuarioId);
+
+        // Pasar datos a la vista de confirmación
+        model.addAttribute("pedido", pedido);
+        model.addAttribute("titulo", "Pedido Confirmado - GameShop");
+        return "checkout/confirmacion";
     }
-    
-    /**
-     * Validar datos de pago (simulado)
-     */
+
+    // ──────────────── UTILIDADES ────────────────
+
     private boolean validarDatosPago(String numeroTarjeta, String cvv) {
-        // Validaciones básicas simuladas
-        return numeroTarjeta.length() == 16 && cvv.length() == 3 && isNumeric(numeroTarjeta) && isNumeric(cvv);
-    }
-    
-    /**
-     * Verificar si una cadena es numérica
-     */
-    private boolean isNumeric(String str) {
-        return str != null && str.matches("[0-9]+");
-    }
-    
-    /**
-     * Generar número de pedido (simulado)
-     */
-    private int generarNumeroPedido() {
-        return (int) (System.currentTimeMillis() % 1000000) + 100000;
+        return numeroTarjeta != null && numeroTarjeta.matches("[0-9]{16}")
+                && cvv != null && cvv.matches("[0-9]{3}");
     }
 }
-
