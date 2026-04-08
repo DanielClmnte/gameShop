@@ -2,89 +2,71 @@ package com.ilerna.gameShop.controller;
 
 import com.ilerna.gameShop.model.Plataforma;
 import com.ilerna.gameShop.model.Videojuego;
+import com.ilerna.gameShop.service.ImagenService;
 import com.ilerna.gameShop.service.PlataformaService;
 import com.ilerna.gameShop.service.VideojuegoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Controlador para el panel de administración
- * Rutas principales:
- * - GET /admin : Dashboard
- * - GET /admin/productos : Listar productos
- * - GET /admin/productos/nuevo : Formulario nuevo
- * - POST /admin/productos/guardar : Guardar producto
- * - GET /admin/productos/editar/{id} : Editar producto
- * - GET /admin/productos/eliminar/{id} : Eliminar producto
+ * Controlador del panel de administración.
+ * Todas las rutas /admin/** están protegidas por AdminSecurityInterceptor.
+ * Solo usuarios con rol ADMIN pueden acceder.
  */
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    
+
     private VideojuegoService videojuegoService;
     private PlataformaService plataformaService;
-    
-    // Constructor
+    private ImagenService imagenService;
+
     public AdminController() {
         this.videojuegoService = new VideojuegoService();
         this.plataformaService = new PlataformaService();
+        this.imagenService = new ImagenService();
     }
-    
-    /**
-     * Dashboard del administrador
-     */
+
+    // ──────────────── DASHBOARD ────────────────
+
     @GetMapping
     public String mostrarDashboard(Model model) {
         List<Videojuego> videojuegos = videojuegoService.obtenerTodos();
-        
         model.addAttribute("totalProductos", videojuegos.size());
         model.addAttribute("productosDisponibles", videojuegoService.obtenerDisponibles().size());
         model.addAttribute("productosAgotados", videojuegos.size() - videojuegoService.obtenerDisponibles().size());
         model.addAttribute("titulo", "Panel de Administración - GameShop");
-        
         return "admin/dashboard";
     }
-    
-    /**
-     * Listar todos los productos
-     */
+
+    // ──────────────── LISTAR PRODUCTOS ────────────────
+
     @GetMapping("/productos")
     public String listarProductos(Model model) {
-        List<Videojuego> videojuegos = videojuegoService.obtenerTodos();
-        List<Plataforma> plataformas = plataformaService.obtenerTodas();
-        
-        model.addAttribute("videojuegos", videojuegos);
-        model.addAttribute("plataformas", plataformas);
+        model.addAttribute("videojuegos", videojuegoService.obtenerTodos());
+        model.addAttribute("plataformas", plataformaService.obtenerTodas());
         model.addAttribute("titulo", "Gestionar Productos - GameShop");
-        
         return "admin/productos";
     }
-    
-    /**
-     * Mostrar formulario para crear nuevo producto
-     */
+
+    // ──────────────── FORMULARIO NUEVO PRODUCTO ────────────────
+
     @GetMapping("/productos/nuevo")
     public String mostrarFormularioNuevo(Model model) {
-        List<Plataforma> plataformas = plataformaService.obtenerTodas();
-        
-        model.addAttribute("plataformas", plataformas);
+        model.addAttribute("plataformas", plataformaService.obtenerTodas());
         model.addAttribute("titulo", "Crear Producto - GameShop");
-        
         return "admin/form-producto";
     }
-    
-    /**
-     * Guardar un nuevo producto (POST)
-     */
+
+    // ──────────────── GUARDAR NUEVO PRODUCTO (multipart) ────────────────
+
     @PostMapping("/productos/guardar")
     public String guardarProducto(
             @RequestParam String titulo,
@@ -93,43 +75,42 @@ public class AdminController {
             @RequestParam int stock,
             @RequestParam int plataformaId,
             @RequestParam String desarrollador,
-            @RequestParam(required = false) String imagen) {
-        
-        Videojuego videojuego = new Videojuego(0, titulo, descripcion, precio, stock, plataformaId, imagen != null ? imagen : "sin-imagen.jpg");
+            @RequestParam(required = false) MultipartFile imagenFile,
+            @RequestParam(required = false) String imagenNombre) {
+
+        String nombreImagen = resolverNombreImagen(imagenFile, imagenNombre, "sin-imagen.jpg");
+
+        // Generar ID único para el nuevo videojuego
+        int nuevoId = videojuegoService.obtenerTodos().stream()
+                .mapToInt(Videojuego::getId)
+                .max().orElse(0) + 1;
+
+        Videojuego videojuego = new Videojuego(nuevoId, titulo, descripcion, precio, stock, plataformaId, nombreImagen);
         videojuego.setDesarrollador(desarrollador);
         videojuego.setFechaLanzamiento(LocalDate.now());
         videojuego.setCalificacion(0.0);
-        
+
         videojuegoService.crearVideojuego(videojuego);
-        
+
         return "redirect:/admin/productos";
     }
-    
-    /**
-     * Mostrar formulario para editar producto
-     */
+
+    // ──────────────── FORMULARIO EDITAR PRODUCTO ────────────────
+
     @GetMapping("/productos/editar/{id}")
-    public String mostrarFormularioEditar(
-            @PathVariable int id,
-            Model model) {
-        
+    public String mostrarFormularioEditar(@PathVariable int id, Model model) {
         Optional<Videojuego> videojuego = videojuegoService.obtenerPorId(id);
-        List<Plataforma> plataformas = plataformaService.obtenerTodas();
-        
         if (videojuego.isPresent()) {
             model.addAttribute("videojuego", videojuego.get());
-            model.addAttribute("plataformas", plataformas);
+            model.addAttribute("plataformas", plataformaService.obtenerTodas());
             model.addAttribute("titulo", "Editar Producto - GameShop");
-            
             return "admin/form-producto";
         }
-        
         return "redirect:/admin/productos";
     }
-    
-    /**
-     * Actualizar un producto existente (POST)
-     */
+
+    // ──────────────── ACTUALIZAR PRODUCTO (multipart) ────────────────
+
     @PostMapping("/productos/actualizar/{id}")
     public String actualizarProducto(
             @PathVariable int id,
@@ -139,10 +120,10 @@ public class AdminController {
             @RequestParam int stock,
             @RequestParam int plataformaId,
             @RequestParam String desarrollador,
-            @RequestParam(required = false) String imagen) {
-        
+            @RequestParam(required = false) MultipartFile imagenFile,
+            @RequestParam(required = false) String imagenActual) {
+
         Optional<Videojuego> videojuego = videojuegoService.obtenerPorId(id);
-        
         if (videojuego.isPresent()) {
             Videojuego vj = videojuego.get();
             vj.setTitulo(titulo);
@@ -151,23 +132,49 @@ public class AdminController {
             vj.setStock(stock);
             vj.setPlataformaId(plataformaId);
             vj.setDesarrollador(desarrollador);
-            if (imagen != null && !imagen.isEmpty()) {
-                vj.setImagen(imagen);
-            }
-            
+
+            // Solo cambiar imagen si se subió una nueva
+            String nuevaImagen = resolverNombreImagen(imagenFile, null, imagenActual);
+            vj.setImagen(nuevaImagen);
+
             videojuegoService.actualizarVideojuego(vj);
         }
-        
         return "redirect:/admin/productos";
     }
-    
-    /**
-     * Eliminar un producto
-     */
+
+    // ──────────────── ELIMINAR PRODUCTO ────────────────
+
     @GetMapping("/productos/eliminar/{id}")
     public String eliminarProducto(@PathVariable int id) {
+        // Eliminar imagen asociada
+        videojuegoService.obtenerPorId(id).ifPresent(vj ->
+                imagenService.eliminarImagen(vj.getImagen()));
         videojuegoService.eliminarVideojuego(id);
         return "redirect:/admin/productos";
+    }
+
+    // ──────────────── UTILIDADES ────────────────
+
+    /**
+     * Determina el nombre de imagen a usar:
+     * 1. Si se subió un archivo → guardarlo y devolver su nombre
+     * 2. Si no → usar el nombre existente (imagenFallback)
+     */
+    private String resolverNombreImagen(MultipartFile file, String nombreTexto, String fallback) {
+        // Archivo subido tiene prioridad
+        if (file != null && !file.isEmpty()) {
+            try {
+                return imagenService.guardarImagen(file);
+            } catch (IOException | IllegalArgumentException e) {
+                System.err.println("Error al guardar imagen: " + e.getMessage());
+            }
+        }
+        // Nombre escrito en el campo de texto
+        if (nombreTexto != null && !nombreTexto.isBlank()) {
+            return nombreTexto;
+        }
+        // Mantener la imagen anterior
+        return (fallback != null && !fallback.isBlank()) ? fallback : "sin-imagen.jpg";
     }
 }
 
