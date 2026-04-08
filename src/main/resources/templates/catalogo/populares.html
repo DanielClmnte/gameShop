@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Populares</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/catalogo.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">🎮 GameShop</a>
+            <nav>
+                <a href="/">Inicio</a>
+                <a href="/catalogo/disponibles">Disponibles</a>
+                <a href="/catalogo/populares">Populares</a>
+                <a href="/carrito">🛒 Carrito</a>
+            </nav>
+            <form action="/catalogo/buscar" method="get" class="search-bar">
+                <input type="text" name="titulo" placeholder="Buscar videojuego..." required>
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Juegos Más Populares</h1>
+
+        <div class="videojuegos">
+            <div class="videojuego-card" th:each="videojuego : ${videojuegos}">
+                <div class="videojuego-imagen">
+                    <span th:text="${videojuego.imagen}"></span>
+                </div>
+                <div class="videojuego-info">
+                    <h3 th:text="${videojuego.titulo}"></h3>
+                    <div class="videojuego-calificacion" th:text="${'⭐⭐⭐⭐⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 2)}"></div>
+                    <div class="videojuego-precio" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></div>
+                    <div class="videojuego-botones">
+                        <button class="btn-carrito" th:onclick="'agregarAlCarrito(' + ${videojuego.id} + ')'">Añadir al carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
+    </footer>
+
+    <script>
+        function agregarAlCarrito(videojuegoId) {
+            alert('Videojuego ' + videojuegoId + ' agregado al carrito (funcionalidad en desarrollo)');
+        }
+    </script>
+</body>
+</html>
+
