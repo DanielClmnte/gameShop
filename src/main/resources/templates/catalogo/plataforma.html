@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Plataforma</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/catalogo.css}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">🎮 GameShop</a>
+            <nav>
+                <a href="/">Inicio</a>
+                <a href="/catalogo/disponibles">Disponibles</a>
+                <a href="/catalogo/populares">Populares</a>
+                <a href="/carrito">🛒 Carrito</a>
+            </nav>
+            <form action="/catalogo/buscar" method="get" class="search-bar">
+                <input type="text" name="titulo" placeholder="Buscar videojuego..." required>
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> > <span th:text="${plataforma.nombre}"></span>
+        </div>
+
+        <h1 th:text="${'Juegos de ' + plataforma.nombre}">Juegos de Plataforma</h1>
+
+        <div class="filtros">
+            <a href="/catalogo/plataforma/1" class="filtro-btn">PlayStation 5</a>
+            <a href="/catalogo/plataforma/2" class="filtro-btn">Xbox Series X</a>
+            <a href="/catalogo/plataforma/3" class="filtro-btn">PC</a>
+        </div>
+
+        <div th:if="${videojuegos.size() > 0}" class="videojuegos">
+            <div class="videojuego-card" th:each="videojuego : ${videojuegos}">
+                <div class="videojuego-imagen">
+                    <span th:text="${videojuego.imagen}"></span>
+                </div>
+                <div class="videojuego-info">
+                    <h3 th:title="${videojuego.titulo}" th:text="${videojuego.titulo}"></h3>
+                    <div class="videojuego-precio" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></div>
+                    <div class="videojuego-calificacion" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 2)}"></div>
+                    <div class="videojuego-stock">
+                        <span th:if="${videojuego.disponible}" style="color: #00ff00;" th:text="${videojuego.stock + ' en stock'}"></span>
+                        <span th:unless="${videojuego.disponible}" style="color: #ff3333;">Agotado</span>
+                    </div>
+                    <div class="videojuego-botones">
+                        <button class="btn-detalles">Detalles</button>
+                        <button class="btn-carrito" th:if="${videojuego.disponible}" th:onclick="'agregarAlCarrito(' + ${videojuego.id} + ')'">Añadir</button>
+                        <button class="btn-carrito" th:unless="${videojuego.disponible}" disabled style="opacity: 0.5; cursor: not-allowed;">Agotado</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:unless="${videojuegos.size() > 0}" class="sin-resultados">
+            <p>No hay videojuegos disponibles para esta plataforma.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
+    </footer>
+
+    <script>
+        function agregarAlCarrito(videojuegoId) {
+            alert('Videojuego ' + videojuegoId + ' agregado al carrito (funcionalidad en desarrollo)');
+        }
+    </script>
+</body>
+</html>
+
