@@ -37,15 +37,24 @@
         <div th:if="${videojuegos.size() > 0}" class="videojuegos">
             <div class="videojuego-card" th:each="videojuego : ${videojuegos}">
                 <div class="videojuego-imagen">
-                    <span th:text="${videojuego.imagen}"></span>
-                </div>
-                <div class="videojuego-info">
-                    <h3 th:text="${videojuego.titulo}"></h3>
-                    <div class="videojuego-precio" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></div>
-                    <div class="videojuego-botones">
-                        <button class="btn-carrito" th:onclick="'agregarAlCarrito(' + ${videojuego.id} + ')'">Añadir al carrito</button>
+                        <img th:src="@{/uploads/images/{img}(img=${videojuego.imagen})}"
+                             th:alt="${videojuego.titulo}"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                        <span style="display:none;font-size:2em;">🎮</span>
                     </div>
-                </div>
+                    <div class="videojuego-info">
+                        <h3 th:text="${videojuego.titulo}"></h3>
+                        <div class="videojuego-precio" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></div>
+                        <div class="videojuego-botones">
+                            <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn-detalles">Ver detalles</a>
+                            <form th:if="${videojuego.disponible}"
+                                  th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}"
+                                  method="post" style="display:inline;">
+                                <button type="submit" class="btn-carrito">🛒 Añadir</button>
+                            </form>
+                            <button th:unless="${videojuego.disponible}" class="btn-carrito" disabled style="opacity:0.5;">Agotado</button>
+                        </div>
+                    </div>
             </div>
         </div>
 
@@ -58,12 +67,6 @@
     <footer>
         <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
     </footer>
-
-    <script>
-        function agregarAlCarrito(videojuegoId) {
-            alert('Videojuego ' + videojuegoId + ' agregado al carrito (funcionalidad en desarrollo)');
-        }
-    </script>
 </body>
 </html>
 
