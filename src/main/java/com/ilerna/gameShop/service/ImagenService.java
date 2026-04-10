@@ -54,21 +54,25 @@ public class ImagenService {
         Path rutaDestino = directorioPath.resolve(nombreFinal);
         Files.copy(archivo.getInputStream(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
 
-        return nombreFinal;
+        // Devolver la URL completa accesible desde el navegador
+        return "/uploads/images/" + nombreFinal;
     }
 
     /**
-     * Elimina una imagen del directorio de uploads.
-     *
-     * @param nombreArchivo nombre del archivo a eliminar
+     * Elimina una imagen del directorio de uploads a partir de su URL completa.
+     * Acepta tanto "/uploads/images/archivo.jpg" como solo "archivo.jpg".
      */
-    public void eliminarImagen(String nombreArchivo) {
-        if (nombreArchivo == null || nombreArchivo.isBlank()) return;
+    public void eliminarImagen(String urlONombre) {
+        if (urlONombre == null || urlONombre.isBlank()) return;
         try {
+            // Extraer solo el nombre del archivo si viene con la ruta completa
+            String nombreArchivo = urlONombre.startsWith("/uploads/images/")
+                    ? urlONombre.substring("/uploads/images/".length())
+                    : urlONombre;
             Path ruta = Paths.get(UPLOAD_DIR).resolve(nombreArchivo);
             Files.deleteIfExists(ruta);
         } catch (IOException e) {
-            System.err.println("No se pudo eliminar la imagen: " + nombreArchivo);
+            System.err.println("No se pudo eliminar la imagen: " + urlONombre);
         }
     }
 
