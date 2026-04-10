@@ -156,25 +156,26 @@ public class AdminController {
     // ──────────────── UTILIDADES ────────────────
 
     /**
-     * Determina el nombre de imagen a usar:
-     * 1. Si se subió un archivo → guardarlo y devolver su nombre
-     * 2. Si no → usar el nombre existente (imagenFallback)
+     * Determina la URL de imagen a usar:
+     * 1. Si se subió un archivo → guarda el fichero y devuelve /uploads/images/nombre
+     * 2. Si se escribió un nombre en el texto → si no tiene la ruta, la añade
+     * 3. Si nada → mantiene la URL anterior (fallback)
      */
     private String resolverNombreImagen(MultipartFile file, String nombreTexto, String fallback) {
-        // Archivo subido tiene prioridad
         if (file != null && !file.isEmpty()) {
             try {
-                return imagenService.guardarImagen(file);
+                return imagenService.guardarImagen(file); // ya devuelve "/uploads/images/..."
             } catch (IOException | IllegalArgumentException e) {
                 System.err.println("Error al guardar imagen: " + e.getMessage());
             }
         }
-        // Nombre escrito en el campo de texto
         if (nombreTexto != null && !nombreTexto.isBlank()) {
-            return nombreTexto;
+            // Si el admin escribe solo "elden-ring.jpg", construir la URL completa
+            return nombreTexto.startsWith("/uploads/")
+                    ? nombreTexto
+                    : "/uploads/images/" + nombreTexto;
         }
-        // Mantener la imagen anterior
-        return (fallback != null && !fallback.isBlank()) ? fallback : "sin-imagen.jpg";
+        return (fallback != null && !fallback.isBlank()) ? fallback : "/uploads/images/sin-imagen.jpg";
     }
 }
 
