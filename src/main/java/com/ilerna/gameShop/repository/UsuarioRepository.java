@@ -11,7 +11,7 @@ import java.util.Optional;
  * Repositorio para gestionar usuarios.
  * Consultas SQL contra la tabla 'usuarios' de gameshop_db.
  */
-public class UsuarioRepository {
+public class UsuarioRepository implements IUsuarioRepository {
 
     private Connection getConnection() {
         return Conexion.getInstancia().getConnection();

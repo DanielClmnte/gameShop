@@ -13,7 +13,7 @@ import java.util.UUID;
  * Servicio para gestionar la subida y almacenamiento de imágenes.
  * Las imágenes se guardan en uploads/images/ (accesibles desde /uploads/images/).
  */
-public class ImagenService {
+public class ImagenService implements IImagenService {
 
     private static final String UPLOAD_DIR = "uploads/images";
 

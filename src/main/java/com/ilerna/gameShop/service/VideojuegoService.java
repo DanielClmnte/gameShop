@@ -9,7 +9,7 @@ import java.util.Optional;
  * Servicio para gestionar videojuegos
  * Contiene la lógica de negocio relacionada con videojuegos
  */
-public class VideojuegoService {
+public class VideojuegoService implements IVideojuegoService {
     
     private VideojuegoRepository videojuegoRepository;
     

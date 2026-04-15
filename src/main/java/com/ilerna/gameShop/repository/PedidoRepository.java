@@ -12,7 +12,7 @@ import java.util.Optional;
  * Repositorio para gestionar pedidos.
  * Consultas SQL contra las tablas 'pedidos' y 'detalle_pedidos' de gameshop_db.
  */
-public class PedidoRepository {
+public class PedidoRepository implements IPedidoRepository {
 
     private Connection getConnection() {
         return Conexion.getInstancia().getConnection();

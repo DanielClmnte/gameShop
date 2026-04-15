@@ -12,7 +12,7 @@ import java.util.Optional;
  * Repositorio para gestionar videojuegos.
  * Consultas SQL contra la tabla 'videojuegos' de gameshop_db.
  */
-public class VideojuegoRepository {
+public class VideojuegoRepository implements IVideojuegoRepository {
 
     private Connection getConnection() {
         return Conexion.getInstancia().getConnection();

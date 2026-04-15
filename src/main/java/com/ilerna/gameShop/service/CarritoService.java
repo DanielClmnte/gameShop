@@ -8,7 +8,7 @@ import java.util.List;
  * Servicio para gestionar el carrito de compras
  * Contiene la lógica de negocio del carrito
  */
-public class CarritoService {
+public class CarritoService implements ICarritoService {
     
     private CarritoRepository carritoRepository;
     private VideojuegoService videojuegoService;

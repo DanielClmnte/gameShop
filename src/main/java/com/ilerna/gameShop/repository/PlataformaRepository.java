@@ -11,7 +11,7 @@ import java.util.Optional;
  * Repositorio para gestionar plataformas.
  * Consultas SQL contra la tabla 'plataformas' de gameshop_db.
  */
-public class PlataformaRepository {
+public class PlataformaRepository implements IPlataformaRepository {
 
     private Connection getConnection() {
         return Conexion.getInstancia().getConnection();

@@ -10,7 +10,7 @@ import java.util.List;
  * Repositorio para gestionar la tabla 'favoritos'.
  * JDBC puro contra gameshop_db.
  */
-public class FavoritoRepository {
+public class FavoritoRepository implements IFavoritoRepository {
 
     private Connection getConnection() {
         return Conexion.getInstancia().getConnection();

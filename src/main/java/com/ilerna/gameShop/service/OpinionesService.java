@@ -9,7 +9,7 @@ import java.util.Optional;
  * Servicio para gestionar opiniones de usuarios
  * Contiene la lógica de negocio relacionada con reseñas
  */
-public class OpinionesService {
+public class OpinionesService implements IOpinionesService {
     
     private OpinionesRepository opinionesRepository;
     

@@ -10,7 +10,7 @@ import java.util.List;
  * Repositorio para gestionar carritos de compras.
  * Consultas SQL contra la tabla 'carrito_items' de gameshop_db.
  */
-public class CarritoRepository {
+public class CarritoRepository implements ICarritoRepository {
 
     private Connection getConnection() {
         return Conexion.getInstancia().getConnection();

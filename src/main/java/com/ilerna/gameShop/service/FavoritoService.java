@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Servicio para gestionar la lista de deseados/favoritos.
  */
-public class FavoritoService {
+public class FavoritoService implements IFavoritoService {
 
     private FavoritoRepository favoritoRepository;
 

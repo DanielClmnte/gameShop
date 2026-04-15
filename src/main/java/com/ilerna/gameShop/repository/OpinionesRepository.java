@@ -11,7 +11,7 @@ import java.util.Optional;
  * Repositorio para gestionar opiniones de usuarios.
  * Consultas SQL contra la tabla 'opiniones' de gameshop_db.
  */
-public class OpinionesRepository {
+public class OpinionesRepository implements IOpinionesRepository {
 
     private Connection getConnection() {
         return Conexion.getInstancia().getConnection();

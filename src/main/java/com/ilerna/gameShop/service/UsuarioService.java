@@ -9,7 +9,7 @@ import java.util.Optional;
  * Servicio para gestionar usuarios
  * Contiene la lógica de negocio relacionada con usuarios
  */
-public class UsuarioService {
+public class UsuarioService implements IUsuarioService {
     
     private UsuarioRepository usuarioRepository;
     

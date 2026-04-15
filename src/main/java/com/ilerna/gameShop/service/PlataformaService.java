@@ -9,7 +9,7 @@ import java.util.Optional;
  * Servicio para gestionar plataformas
  * Contiene la lógica de negocio relacionada con plataformas
  */
-public class PlataformaService {
+public class PlataformaService implements IPlataformaService {
     
     private PlataformaRepository plataformaRepository;
     

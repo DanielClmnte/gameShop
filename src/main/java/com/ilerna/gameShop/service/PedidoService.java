@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * Servicio para gestionar pedidos.
  */
-public class PedidoService {
+public class PedidoService implements IPedidoService {
 
     private PedidoRepository pedidoRepository;
 
