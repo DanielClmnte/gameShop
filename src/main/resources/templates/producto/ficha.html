@@ -23,7 +23,7 @@
                 <h1 class="product-title" th:text="${videojuego.titulo}"></h1>
                 <div class="product-meta">
                     <span><strong>Desarrollador:</strong> <span th:text="${videojuego.desarrollador}"></span></span>
-                    <span><strong>Lanzamiento:</strong> <span th:text="${#temporals.format(videojuego.fechaLanzamiento, 'dd/MM/yyyy')}"></span></span>
+                    <span><strong>Lanzamiento:</strong> <span th:if="${videojuego.fechaLanzamiento != null}" th:text="${#temporals.format(videojuego.fechaLanzamiento, 'dd/MM/yyyy')}"></span><span th:unless="${videojuego.fechaLanzamiento != null}">Sin fecha</span></span>
                 </div>
                 <div class="product-rating">
                     <span class="stars" th:text="${'⭐ ' + #numbers.formatDecimal(calificacionPromedio, 1, 2)}"></span>
@@ -68,7 +68,7 @@
                             <span class="review-stars" th:text="${'⭐ ' + opinion.calificacion}"></span>
                             <span th:if="${opinion.verificado}" class="review-verified">✓ Verificado</span>
                         </div>
-                        <span class="review-date" th:text="${#temporals.format(opinion.fecha, 'dd/MM/yyyy')}"></span>
+                        <span class="review-date" th:if="${opinion.fecha != null}" th:text="${#temporals.format(opinion.fecha, 'dd/MM/yyyy')}"></span>
                     </div>
                     <p class="review-text" th:text="${opinion.comentario}"></p>
                 </div>
