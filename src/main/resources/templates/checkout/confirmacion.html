@@ -58,7 +58,8 @@
             </p>
             <p style="margin-top:8px;color:var(--text-secondary);">
                 <strong style="color:var(--text);">Fecha estimada de entrega:</strong>
-                <span th:text="${#temporals.format(pedido.fechaEntregaEstimada, 'dd/MM/yyyy')}"></span>
+                <span th:if="${pedido.fechaEntregaEstimada != null}" th:text="${#temporals.format(pedido.fechaEntregaEstimada, 'dd/MM/yyyy')}"></span>
+                <span th:unless="${pedido.fechaEntregaEstimada != null}">Por confirmar</span>
             </p>
             <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">
                 Confirmación enviada a <strong th:text="${pedido.email}"></strong>
