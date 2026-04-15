@@ -1,6 +1,8 @@
 package com.ilerna.gameShop.controller;
 
+import com.ilerna.gameShop.model.CarritoItem;
 import com.ilerna.gameShop.model.Usuario;
+import com.ilerna.gameShop.service.CarritoService;
 import com.ilerna.gameShop.service.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,23 +11,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Controlador para gestionar login y registro de usuarios.
- * Rutas:
- * - GET /login  : Formulario de login
- * - POST /login : Procesar login → guarda sesión
- * - GET /logout : Cierra sesión e invalida HttpSession
- * - GET /registro / POST /registro : Alta de usuario
+ * Al hacer login/registro, migra el carrito de sesión (anónimo) a BD.
  */
 @Controller
 public class LoginController {
 
     private UsuarioService usuarioService;
+    private CarritoService carritoService;
 
     public LoginController() {
         this.usuarioService = new UsuarioService();
+        this.carritoService = new CarritoService();
     }
 
     // ──────────────── LOGIN ────────────────
@@ -47,7 +48,6 @@ public class LoginController {
             HttpSession session,
             Model model) {
 
-        // 'email' puede ser email o nombre de usuario
         Optional<Usuario> usuario = usuarioService.autenticar(email.trim(), contrasena);
 
         if (usuario.isPresent()) {
@@ -56,11 +56,13 @@ public class LoginController {
             session.setAttribute("usuarioNombre", usuario.get().getNombre());
             session.setAttribute("usuarioRol", usuario.get().getRol());
 
+            // ★ Migrar carrito de sesión (anónimo) a BD
+            migrarCarritoSesionABD(session, usuario.get().getId());
+
             // Si venía de una página protegida, volver allí
             if (redirect != null && !redirect.isBlank()) {
                 return "redirect:" + redirect;
             }
-            // Admin → panel admin; cliente → catálogo
             return "ADMIN".equals(usuario.get().getRol())
                     ? "redirect:/admin"
                     : "redirect:/";
@@ -115,6 +117,8 @@ public class LoginController {
                 session.setAttribute("usuarioId", u.getId());
                 session.setAttribute("usuarioNombre", u.getNombre());
                 session.setAttribute("usuarioRol", u.getRol());
+                // ★ Migrar carrito de sesión a BD
+                migrarCarritoSesionABD(session, u.getId());
             });
             return "redirect:/";
         }
@@ -145,5 +149,21 @@ public class LoginController {
         }
         return "redirect:/login";
     }
-}
 
+    // ──────────────── UTILIDAD: migrar carrito ────────────────
+
+    /**
+     * Migra los items del carrito de sesión (anónimo) a la BD del usuario logueado.
+     * Luego limpia el carrito de sesión.
+     */
+    @SuppressWarnings("unchecked")
+    private void migrarCarritoSesionABD(HttpSession session, int usuarioId) {
+        List<CarritoItem> carritoSesion = (List<CarritoItem>) session.getAttribute("carritoSesion");
+        if (carritoSesion != null && !carritoSesion.isEmpty()) {
+            for (CarritoItem item : carritoSesion) {
+                carritoService.agregarAlCarrito(usuarioId, item.getVideojuegoId(), item.getCantidad());
+            }
+            session.removeAttribute("carritoSesion");
+        }
+    }
+}
