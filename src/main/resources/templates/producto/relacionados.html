@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${titulo}">GameShop - Disponibles</title>
-    <link rel="stylesheet" th:href="@{/css/common.css}"><link rel="stylesheet" th:href="@{/css/catalogo.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Productos Relacionados - GameShop</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/catalogo.css}">
 </head>
 <body>
     <div th:replace="~{fragments/layout :: header}"></div>
+
     <div class="container">
         <div class="breadcrumb">
-            <a href="/">Inicio</a> <span>›</span> <span>Disponibles</span>
+            <a href="/">Inicio</a> <span>›</span> <span>Productos Relacionados</span>
         </div>
 
-        <div class="section-header">
-            <h1 class="page-title" style="margin-bottom:0">Juegos <span class="highlight">Disponibles</span></h1>
-            <a href="/" class="btn btn-ghost btn-sm">← Volver al Inicio</a>
-        </div>
+        <h1 class="page-title" th:text="${titulo}">Productos Relacionados</h1>
 
-        <div class="games-grid">
+        <div th:if="${videojuegos != null and !videojuegos.isEmpty()}" class="games-grid">
             <div class="game-card" th:each="videojuego : ${videojuegos}">
                 <div class="game-card-img">
-                    <img th:src="${videojuego.imagen}" th:alt="${videojuego.titulo}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <img th:src="${videojuego.imagen}" th:alt="${videojuego.titulo}"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                     <div class="img-fallback">🎮</div>
                     <div class="game-card-badge" th:if="${videojuego.calificacion >= 4.5}">⭐ TOP</div>
                     <div class="game-card-platform-tag"
@@ -34,23 +35,34 @@
                     <div class="game-card-meta">
                         <span class="game-card-rating" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 1)}"></span>
                         <span class="game-card-stock-inline">
-                            <span class="stock-dot stock-dot-green"></span>
-                            <span class="stock-text-sm">En stock</span>
+                            <span th:if="${videojuego.disponible}" class="stock-dot stock-dot-green"></span>
+                            <span th:unless="${videojuego.disponible}" class="stock-dot stock-dot-red"></span>
+                            <span th:if="${videojuego.disponible}" class="stock-text-sm" th:text="${videojuego.stock + ' en stock'}"></span>
+                            <span th:unless="${videojuego.disponible}" class="stock-text-sm stock-text-out">Agotado</span>
                         </span>
                     </div>
                     <div class="game-card-footer">
                         <span class="game-card-price" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></span>
                         <div class="game-card-actions">
                             <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-ghost btn-sm">Ver</a>
-                            <form th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
+                            <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
                                 <button type="submit" class="btn btn-primary btn-sm">🛒</button>
                             </form>
+                            <button th:unless="${videojuego.disponible}" class="btn btn-ghost btn-sm" disabled>—</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div th:if="${videojuegos == null or videojuegos.isEmpty()}" class="empty-state">
+            <div class="empty-state-icon">🎮</div>
+            <h2>No se encontraron juegos relacionados</h2>
+            <p>Vuelve al catálogo para descubrir más juegos.</p>
+            <a href="/" class="btn btn-primary">Volver al Catálogo</a>
+        </div>
     </div>
+
     <div th:replace="~{fragments/layout :: footer}"></div>
     <script th:src="@{/js/main.js}"></script>
 </body>

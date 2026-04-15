@@ -78,14 +78,10 @@ public class AdminController {
             @RequestParam(required = false) MultipartFile imagenFile,
             @RequestParam(required = false) String imagenNombre) {
 
-        String nombreImagen = resolverNombreImagen(imagenFile, imagenNombre, "sin-imagen.jpg");
+        String nombreImagen = resolverNombreImagen(imagenFile, imagenNombre, "/uploads/images/sin-imagen.jpg");
 
-        // Generar ID único para el nuevo videojuego
-        int nuevoId = videojuegoService.obtenerTodos().stream()
-                .mapToInt(Videojuego::getId)
-                .max().orElse(0) + 1;
-
-        Videojuego videojuego = new Videojuego(nuevoId, titulo, descripcion, precio, stock, plataformaId, nombreImagen);
+        // ID asignado automáticamente por AUTO_INCREMENT de la BD
+        Videojuego videojuego = new Videojuego(0, titulo, descripcion, precio, stock, plataformaId, nombreImagen);
         videojuego.setDesarrollador(desarrollador);
         videojuego.setFechaLanzamiento(LocalDate.now());
         videojuego.setCalificacion(0.0);

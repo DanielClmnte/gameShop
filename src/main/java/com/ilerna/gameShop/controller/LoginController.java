@@ -47,7 +47,8 @@ public class LoginController {
             HttpSession session,
             Model model) {
 
-        Optional<Usuario> usuario = usuarioService.autenticar(email, contrasena);
+        // 'email' puede ser email o nombre de usuario
+        Optional<Usuario> usuario = usuarioService.autenticar(email.trim(), contrasena);
 
         if (usuario.isPresent()) {
             // Guardar datos en sesión

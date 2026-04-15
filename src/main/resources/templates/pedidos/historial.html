@@ -5,105 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${titulo}">Mis Pedidos - GameShop</title>
     <link rel="stylesheet" th:href="@{/css/common.css}">
-    <style>
-        .historial-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        .historial-container h1 { color: #00d4ff; margin-bottom: 30px; }
-
-        .pedido-card {
-            background-color: #1a1a2e;
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-            transition: border-color 0.2s;
-        }
-        .pedido-card:hover { border-color: #00d4ff; }
-
-        .pedido-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .pedido-numero { font-size: 20px; font-weight: bold; color: #00d4ff; }
-        .pedido-fecha { color: #b0b0b0; font-size: 14px; }
-
-        .badge-estado {
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .estado-procesando { background-color: #ffc107; color: #0a0a0a; }
-        .estado-enviado    { background-color: #00d4ff; color: #0a0a0a; }
-        .estado-entregado  { background-color: #00ff00; color: #0a0a0a; }
-
-        .pedido-items { border-top: 1px solid #333; padding-top: 15px; margin-top: 5px; }
-        .pedido-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #222;
-            font-size: 14px;
-        }
-        .pedido-item:last-child { border-bottom: none; }
-
-        .pedido-totales {
-            display: flex;
-            justify-content: flex-end;
-            gap: 30px;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 2px solid #00d4ff;
-        }
-        .total-label { color: #b0b0b0; font-size: 14px; }
-        .total-valor { color: #00ff00; font-weight: bold; font-size: 18px; }
-
-        .pedido-entrega {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: #0f3460;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #b0b0b0;
-        }
-        .pedido-entrega span { color: #ffc107; font-weight: bold; }
-
-        .sin-pedidos {
-            text-align: center;
-            padding: 60px 20px;
-            color: #b0b0b0;
-        }
-        .sin-pedidos .icono { font-size: 60px; margin-bottom: 20px; }
-        .btn-ir-catalogo {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 30px;
-            background-color: #00d4ff;
-            color: #0a0a0a;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/pedidos.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Catálogo</a>
-                <a href="/carrito">🛒 Carrito</a>
-                <span th:if="${session.usuarioNombre != null}" style="color:#00d4ff;">
-                    👤 <span th:text="${session.usuarioNombre}"></span>
-                </span>
-                <a href="/pedidos" style="color:#00d4ff;font-weight:bold;">📋 Mis Pedidos</a>
-                <a href="/logout" style="color:#ff3333;">Cerrar Sesión</a>
-            </nav>
-        </div>
-    </header>
+    <div th:replace="~{fragments/layout :: header}"></div>
 
     <div class="historial-container">
         <h1>📋 Mis Pedidos</h1>
@@ -135,7 +40,7 @@
                     <div class="pedido-item" th:each="item : ${pedido.items}">
                         <span>
                             <strong th:text="${item.tituloVideojuego}">Nombre juego</strong>
-                            <small style="color:#b0b0b0;" th:text="${' × ' + item.cantidad}"> × 1</small>
+                            <small style="color:var(--text-muted);" th:text="${' × ' + item.cantidad}"> × 1</small>
                         </span>
                         <span th:text="${'€' + #numbers.formatDecimal(item.subtotal, 1, 2)}">€49.99</span>
                     </div>
@@ -145,11 +50,11 @@
                 <div class="pedido-totales">
                     <div>
                         <div class="total-label">Subtotal</div>
-                        <div style="color:#b0b0b0;" th:text="${'€' + #numbers.formatDecimal(pedido.subtotal, 1, 2)}">€49.99</div>
+                        <div style="color:var(--text-muted);" th:text="${'€' + #numbers.formatDecimal(pedido.subtotal, 1, 2)}">€49.99</div>
                     </div>
                     <div>
                         <div class="total-label">IVA (21%)</div>
-                        <div style="color:#ffc107;" th:text="${'€' + #numbers.formatDecimal(pedido.impuestos, 1, 2)}">€10.50</div>
+                        <div style="color:var(--yellow);" th:text="${'€' + #numbers.formatDecimal(pedido.impuestos, 1, 2)}">€10.50</div>
                     </div>
                     <div>
                         <div class="total-label">Total</div>
@@ -170,9 +75,8 @@
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
 

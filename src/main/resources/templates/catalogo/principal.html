@@ -8,75 +8,133 @@
     <link rel="stylesheet" th:href="@{/css/catalogo.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Inicio</a>
-                <a href="/catalogo/disponibles">Disponibles</a>
-                <a href="/catalogo/populares">Populares</a>
-                <a href="/carrito">🛒 Carrito</a>
-                <span th:if="${session.usuarioNombre != null}" style="color:#00d4ff;">👤 <span th:text="${session.usuarioNombre}"></span></span>
-                <a th:if="${session.usuarioId != null}" href="/pedidos">Mis Pedidos</a>
-                <a th:if="${session.usuarioRol == 'ADMIN'}" href="/admin">Admin</a>
-                <a th:if="${session.usuarioId != null}" href="/logout" style="color:#ff3333;">Cerrar Sesión</a>
-                <a th:unless="${session.usuarioId != null}" href="/login">Login</a>
-            </nav>
-            <form action="/catalogo/buscar" method="get" class="search-bar">
-                <input type="text" name="titulo" placeholder="Buscar videojuego..." required>
-                <button type="submit">Buscar</button>
-            </form>
+    <div th:replace="~{fragments/layout :: header}"></div>
+
+    <!-- ═══════ HERO BANNER ═══════ -->
+    <section class="hero-banner">
+        <div class="hero-content">
+            <h1 class="hero-title">Los mejores <span class="highlight">videojuegos</span> al mejor precio</h1>
+            <p class="hero-subtitle">Descubre las últimas novedades y los clásicos de siempre. Entrega digital instantánea con los precios más competitivos del mercado.</p>
+            <div class="hero-actions">
+                <a href="/catalogo/disponibles" class="btn btn-primary btn-lg">🔥 Ver Ofertas</a>
+                <a href="/catalogo/populares" class="btn btn-outline btn-lg">⭐ Más Populares</a>
+            </div>
         </div>
-    </header>
+        <div class="hero-decoration">
+            <span class="hero-emoji">🎮</span>
+        </div>
+    </section>
 
     <div class="container">
-        <h1 th:text="${titulo}">Catálogo de Videojuegos</h1>
-
-        <h2 style="color: #00d4ff; margin-bottom: 20px; margin-top: 40px;">Plataformas</h2>
-        <div class="plataformas">
-            <div class="plataforma-card" th:each="plataforma : ${plataformas}">
-                <h2 th:text="${plataforma.nombre}">Plataforma</h2>
-                <p th:text="${plataforma.descripcion}">Descripción</p>
-                <a th:href="@{/catalogo/plataforma/{id}(id=${plataforma.id})}">Ver Juegos</a>
+        <!-- ═══════ SELECTOR DE PLATAFORMA (compact pills) ═══════ -->
+        <div class="platform-selector">
+            <span class="platform-label">Plataforma:</span>
+            <div class="platform-pills">
+                <a href="/" class="platform-pill active">
+                    <span>🏠</span> Todas
+                </a>
+                <a th:each="plataforma : ${plataformas}"
+                   th:href="@{/catalogo/plataforma/{id}(id=${plataforma.id})}"
+                   class="platform-pill">
+                    <span th:text="${plataforma.id == 1 ? '🎮' : (plataforma.id == 2 ? '🕹️' : '🖥️')}">🎮</span>
+                    <span th:text="${plataforma.nombre}">Plataforma</span>
+                </a>
             </div>
         </div>
 
-        <h2 style="color: #00d4ff; margin-bottom: 20px; margin-top: 40px;">Juegos Destacados</h2>
-        <div class="videojuegos">
-            <div class="videojuego-card" th:each="videojuego : ${videojuegos.subList(0, Math.min(8, videojuegos.size()))}">
-                    <div class="videojuego-imagen">
-                        <img th:src="@{/uploads/images/{img}(img=${videojuego.imagen})}"
-                             th:alt="${videojuego.titulo}"
-                             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                        <span style="display:none;font-size:3em;">🎮</span>
+        <!-- ═══════ PROMO BANNER ═══════ -->
+        <div class="promo-banner" style="margin-top: 24px;">
+            <div class="promo-banner-text">
+                <h3>🎉 ¡Envío digital instantáneo en todos los juegos!</h3>
+                <p>Compra tu juego favorito y recíbelo al momento. Pago 100% seguro.</p>
+            </div>
+            <a href="/catalogo/disponibles" class="btn btn-primary btn-sm">Ver disponibles →</a>
+        </div>
+
+        <!-- ═══════ JUEGOS DESTACADOS ═══════ -->
+        <div class="section-header">
+            <h2 class="section-title">🔥 Juegos <span class="highlight">Destacados</span></h2>
+            <a href="/catalogo/disponibles" class="btn btn-ghost btn-sm">Ver catálogo completo →</a>
+        </div>
+
+        <div class="games-grid">
+            <div class="game-card" th:each="videojuego : ${videojuegos}">
+                <div class="game-card-img">
+                    <img th:src="${videojuego.imagen}" th:alt="${videojuego.titulo}"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <div class="img-fallback">🎮</div>
+                    <div class="game-card-badge" th:if="${videojuego.calificacion >= 4.5}">⭐ TOP</div>
+                    <div class="game-card-platform-tag"
+                         th:text="${videojuego.plataformaId == 1 ? 'PS5' : (videojuego.plataformaId == 2 ? 'XBOX' : 'PC')}">PC</div>
+                    <!-- Hover overlay con acción rápida -->
+                    <div class="game-card-overlay">
+                        <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-primary btn-sm">Ver detalles</a>
                     </div>
-                    <div class="videojuego-info">
-                        <h3 th:text="${videojuego.titulo}"></h3>
-                        <div class="videojuego-precio" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></div>
-                        <div class="videojuego-calificacion" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 2)}"></div>
-                        <div class="videojuego-stock">
-                            <span th:if="${videojuego.disponible}" style="color: #00ff00;" th:text="${videojuego.stock + ' en stock'}"></span>
-                            <span th:unless="${videojuego.disponible}" style="color: #ff3333;">Agotado</span>
-                        </div>
-                        <div class="videojuego-botones">
-                            <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn-detalles">Detalles</a>
-                            <!-- Formulario POST para añadir al carrito sin JavaScript -->
-                            <form th:if="${videojuego.disponible}"
-                                  th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}"
-                                  method="post" style="display:inline;">
-                                <button type="submit" class="btn-carrito">🛒 Añadir</button>
+                </div>
+                <div class="game-card-body">
+                    <div class="game-card-title" th:text="${videojuego.titulo}"></div>
+                    <div class="game-card-meta">
+                        <span class="game-card-rating" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 1)}"></span>
+                        <span class="game-card-stock-inline">
+                            <span th:if="${videojuego.disponible}" class="stock-dot stock-dot-green"></span>
+                            <span th:unless="${videojuego.disponible}" class="stock-dot stock-dot-red"></span>
+                            <span th:if="${videojuego.disponible}" class="stock-text-sm">En stock</span>
+                            <span th:unless="${videojuego.disponible}" class="stock-text-sm stock-text-out">Agotado</span>
+                        </span>
+                    </div>
+                    <div class="game-card-footer">
+                        <span class="game-card-price" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></span>
+                        <div class="game-card-actions">
+                            <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-ghost btn-sm">Ver</a>
+                            <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
+                                <button type="submit" class="btn btn-primary btn-sm">🛒</button>
                             </form>
-                            <button th:unless="${videojuego.disponible}" class="btn-carrito" disabled style="opacity:0.5;cursor:not-allowed;">Agotado</button>
+                            <button th:unless="${videojuego.disponible}" class="btn btn-ghost btn-sm" disabled>—</button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════ BOTÓN VER TODO ═══════ -->
+        <div class="view-all-section">
+            <a href="/catalogo/disponibles" class="btn btn-primary btn-lg">📦 Ver todo el catálogo</a>
+        </div>
+
+        <!-- ═══════ FEATURES BAR ═══════ -->
+        <div class="features-bar">
+            <div class="feature-item">
+                <span class="feature-icon">⚡</span>
+                <div>
+                    <strong>Entrega Instantánea</strong>
+                    <p>Recibe tu juego al momento</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🔒</span>
+                <div>
+                    <strong>Pago Seguro</strong>
+                    <p>Transacciones protegidas</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">💰</span>
+                <div>
+                    <strong>Mejores Precios</strong>
+                    <p>Garantía de precio bajo</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🎧</span>
+                <div>
+                    <strong>Soporte 24/7</strong>
+                    <p>Siempre disponibles</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
-
-

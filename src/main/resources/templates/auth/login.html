@@ -8,21 +8,11 @@
     <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Inicio</a>
-                <a href="/catalogo/disponibles">Disponibles</a>
-                <a href="/catalogo/populares">Populares</a>
-                <a href="/carrito">🛒 Carrito</a>
-            </nav>
-        </div>
-    </header>
+    <div th:replace="~{fragments/layout :: header}"></div>
 
     <div class="container">
-        <div class="auth-container">
-            <div class="auth-form login-form">
+        <div class="auth-layout">
+            <div class="auth-card">
                 <h1>🔐 Inicia Sesión</h1>
 
                 <!-- Mensaje de error -->
@@ -30,10 +20,11 @@
                     <p th:text="${error}"></p>
                 </div>
 
-                <form method="post" action="/login">
+                <form method="post" action="/login" class="auth-form">
+                    <input type="hidden" name="redirect" th:value="${redirect}">
                     <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                        <label for="email">Usuario o Email</label>
+                        <input type="text" id="email" name="email" placeholder="Nombre de usuario o email" required>
                     </div>
 
                     <div class="form-group">
@@ -41,15 +32,15 @@
                         <input type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
                     </div>
 
-                    <div class="form-opciones">
-                        <label class="checkbox">
+                    <div class="form-options">
+                        <label>
                             <input type="checkbox" name="recuerdame">
                             <span>Recuérdame</span>
                         </label>
-                        <a href="#" class="olvide-contrasena">¿Olvidaste tu contraseña?</a>
+                        <a href="#">¿Olvidaste tu contraseña?</a>
                     </div>
 
-                    <button type="submit" class="btn-submit">Inicia Sesión</button>
+                    <button type="submit" class="btn-auth">Inicia Sesión</button>
                 </form>
 
                 <div class="auth-footer">
@@ -57,26 +48,24 @@
                 </div>
 
                 <!-- Datos de prueba -->
-                <div class="info-prueba">
+                <div class="test-data">
                     <h4>📝 Datos de prueba:</h4>
-                    <p><strong>Admin:</strong> admin@gameshop.com / admin123</p>
+                    <p><strong>Admin:</strong> admin / admin</p>
                     <p><strong>Usuario 1:</strong> juan@example.com / pass123</p>
                     <p><strong>Usuario 2:</strong> maria@example.com / pass456</p>
                 </div>
             </div>
 
-            <div class="auth-imagen">
-                <div class="imagen-placeholder">
-                    <p>🎮</p>
-                    <p>Bienvenido a GameShop</p>
-                </div>
+            <div class="auth-banner">
+                <div class="auth-banner-icon">🎮</div>
+                <div class="auth-banner-text">Bienvenido a GameShop</div>
+                <p style="color: var(--text-secondary); margin-top: 12px; font-size: 15px;">Tu tienda de videojuegos favorita</p>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
 

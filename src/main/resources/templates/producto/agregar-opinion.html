@@ -8,45 +8,31 @@
     <link rel="stylesheet" th:href="@{/css/producto.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Inicio</a>
-                <a href="/catalogo/disponibles">Disponibles</a>
-                <a href="/catalogo/populares">Populares</a>
-                <a href="/carrito">🛒 Carrito</a>
-            </nav>
-        </div>
-    </header>
+    <div th:replace="~{fragments/layout :: header}"></div>
 
     <div class="container">
         <div class="breadcrumb">
-            <a href="/">Inicio</a> > <a th:href="@{/producto/{id}(id=${videojuegoId})}">Producto</a> > <span>Agregar Opinión</span>
+            <a href="/">Inicio</a> <span>›</span> <a th:href="@{/producto/{id}(id=${videojuegoId})}">Producto</a> <span>›</span> <span>Agregar Opinión</span>
         </div>
 
-        <div class="formulario-opinion">
-            <h1>Escribir tu opinión</h1>
-            <p class="info-juego" th:text="${'Juego: ' + videojuegoTitulo}"></p>
+        <div class="opinion-form-container">
+            <h1>✍️ Escribir tu opinión</h1>
+            <p class="subtitle" th:text="${'Juego: ' + videojuegoTitulo}"></p>
 
-            <form th:action="@{/producto/{id}/guardar-opinion(id=${videojuegoId})}" method="post" class="form-opinion">
+            <form th:action="@{/producto/{id}/guardar-opinion(id=${videojuegoId})}" method="post">
 
                 <!-- CALIFICACIÓN -->
                 <div class="form-group">
-                    <label for="calificacion">Calificación *</label>
+                    <label class="form-label">Calificación *</label>
                     <div class="rating-selector">
                         <input type="radio" name="calificacion" value="1" id="star1" required>
                         <label for="star1" class="star">⭐</label>
-
                         <input type="radio" name="calificacion" value="2" id="star2" required>
                         <label for="star2" class="star">⭐</label>
-
                         <input type="radio" name="calificacion" value="3" id="star3" required>
                         <label for="star3" class="star">⭐</label>
-
                         <input type="radio" name="calificacion" value="4" id="star4" required>
                         <label for="star4" class="star">⭐</label>
-
                         <input type="radio" name="calificacion" value="5" id="star5" required>
                         <label for="star5" class="star">⭐</label>
                     </div>
@@ -54,107 +40,22 @@
 
                 <!-- COMENTARIO -->
                 <div class="form-group">
-                    <label for="comentario">Tu opinión *</label>
-                    <textarea id="comentario" name="comentario" rows="8" placeholder="Comparte tu experiencia con este juego..." required></textarea>
-                    <small>Mínimo 10 caracteres, máximo 500</small>
+                    <label for="comentario" class="form-label">Tu opinión *</label>
+                    <textarea id="comentario" name="comentario" rows="8" class="form-textarea" placeholder="Comparte tu experiencia con este juego..." required></textarea>
+                    <span class="form-hint">Mínimo 10 caracteres, máximo 500</span>
                 </div>
 
-                <!-- USUARIO ID -->
-                <div class="form-group">
-                    <label for="usuarioId">ID de Usuario *</label>
-                    <input type="number" id="usuarioId" name="usuarioId" placeholder="Tu ID de usuario" required value="1">
-                    <small>Por ahora, ingresa 1, 2 o 3</small>
-                </div>
 
                 <!-- BOTONES -->
-                <div class="form-botones">
-                    <button type="submit" class="btn-enviar">✓ Enviar Opinión</button>
-                    <a th:href="@{/producto/{id}(id=${videojuegoId})}" class="btn-cancelar">✕ Cancelar</a>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">✓ Enviar Opinión</button>
+                    <a th:href="@{/producto/{id}(id=${videojuegoId})}" class="btn btn-ghost">✕ Cancelar</a>
                 </div>
             </form>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
-
-    <style>
-        .rating-selector {
-            display: flex;
-            gap: 20px;
-            margin: 20px 0;
-            font-size: 40px;
-        }
-
-        .rating-selector input {
-            display: none;
-        }
-
-        .rating-selector label.star {
-            cursor: pointer;
-            opacity: 0.3;
-            transition: opacity 0.2s;
-            font-size: 40px;
-        }
-
-        .rating-selector input:checked ~ label.star,
-        .rating-selector label.star:hover {
-            opacity: 1;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 15px;
-            background-color: #1a1a2e;
-            color: #e0e0e0;
-            border: 1px solid #00d4ff;
-            border-radius: 5px;
-            font-family: inherit;
-            resize: vertical;
-        }
-
-        .form-botones {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn-enviar, .btn-cancelar {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 16px;
-        }
-
-        .btn-enviar {
-            background-color: #00d4ff;
-            color: #0a0a0a;
-        }
-
-        .btn-enviar:hover {
-            background-color: #00a8cc;
-        }
-
-        .btn-cancelar {
-            background-color: #333;
-            color: #00d4ff;
-            border: 1px solid #00d4ff;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-cancelar:hover {
-            background-color: #00d4ff;
-            color: #0a0a0a;
-        }
-    </style>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
-

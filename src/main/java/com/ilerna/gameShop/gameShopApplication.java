@@ -11,7 +11,7 @@ public class gameShopApplication {
      */
     /*
 
-      Enlace: http://localhost:8080/productos
+      Enlace: http://localhost:8080
       Probar el controlador: http://localhost:8080/prueba
       Probar el manejo de errores: http://localhost:8080/pruebaError
      */

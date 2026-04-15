@@ -5,68 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${titulo}">Pedido Confirmado - GameShop</title>
     <link rel="stylesheet" th:href="@{/css/common.css}">
-    <style>
-        .confirmacion-container { max-width: 650px; margin: 60px auto; padding: 0 20px; text-align: center; }
-        .success-box { background: linear-gradient(135deg, #0f3460 0%, #16213e 100%); border: 2px solid #00ff00; border-radius: 10px; padding: 40px 30px; margin-bottom: 30px; }
-        .checkmark { font-size: 80px; margin-bottom: 20px; }
-        .success-box h1 { color: #00ff00; margin-bottom: 10px; }
-        .numero-pedido { background-color: #1a1a2e; padding: 20px; border-radius: 5px; margin: 20px 0; }
-        .numero-pedido strong { color: #00d4ff; font-size: 24px; }
-        .detalles-pedido { background-color: #1a1a2e; border: 1px solid #333; border-radius: 5px; padding: 20px; margin: 30px 0; text-align: left; }
-        .detalle-item { padding: 10px 0; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
-        .detalle-item:last-child { border-bottom: none; }
-        .total-pedido { font-size: 20px; font-weight: bold; color: #00ff00; margin-top: 15px; padding-top: 15px; border-top: 2px solid #00d4ff; display: flex; justify-content: space-between; }
-        .info-entrega { background-color: #0f3460; border-left: 4px solid #ffc107; padding: 20px; margin: 30px 0; border-radius: 5px; text-align: left; }
-        .botones-confirmacion { display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
-        .btn-volver { display: inline-block; padding: 12px 30px; background-color: #00d4ff; color: #0a0a0a; text-decoration: none; border-radius: 5px; font-weight: bold; transition: all 0.3s; }
-        .btn-historial { display: inline-block; padding: 12px 30px; background-color: #0f3460; color: #00d4ff; text-decoration: none; border-radius: 5px; font-weight: bold; border: 2px solid #00d4ff; transition: all 0.3s; }
-        .btn-volver:hover { background-color: #00a8cc; }
-        .btn-historial:hover { background-color: #16213e; }
-        .badge-estado { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background-color: #ffc107; color: #0a0a0a; margin-left: 10px; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Catálogo</a>
-                <a href="/pedidos">Mis Pedidos</a>
-                <a href="/logout" style="color:#ff3333;">Cerrar Sesión</a>
-            </nav>
-        </div>
-    </header>
+    <div th:replace="~{fragments/layout :: header}"></div>
 
     <div class="confirmacion-container">
         <div class="success-box">
             <div class="checkmark">✅</div>
             <h1>¡Pedido Confirmado!</h1>
-            <p>Tu compra ha sido procesada exitosamente</p>
+            <p style="color:var(--text-secondary);">Tu compra ha sido procesada exitosamente</p>
         </div>
 
         <div class="numero-pedido">
-            <p>Número de Pedido:</p>
+            <p style="color:var(--text-secondary);">Número de Pedido:</p>
             <strong th:text="${'#' + pedido.numeroPedido}">#123456</strong>
             <span class="badge-estado" th:text="${pedido.estado}">PROCESANDO</span>
         </div>
 
         <!-- DETALLES DEL PEDIDO -->
         <div class="detalles-pedido">
-            <h3 style="color: #00d4ff; margin-bottom: 15px;">🎮 Productos del Pedido</h3>
+            <h3 style="color:var(--primary);margin-bottom:15px;">🎮 Productos del Pedido</h3>
 
             <div class="detalle-item" th:each="item : ${pedido.items}">
                 <span>
                     <strong th:text="${item.tituloVideojuego}"></strong><br>
-                    <small style="color: #b0b0b0;" th:text="${'Cantidad: ' + item.cantidad}"></small>
+                    <small style="color:var(--text-muted);" th:text="${'Cantidad: ' + item.cantidad}"></small>
                 </span>
                 <span th:text="${'€' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></span>
             </div>
 
-            <div style="padding:10px 0;border-bottom:1px solid #333;display:flex;justify-content:space-between;color:#b0b0b0;">
+            <div class="detalle-item" style="color:var(--text-secondary);">
                 <span>Subtotal:</span>
                 <span th:text="${'€' + #numbers.formatDecimal(pedido.subtotal, 1, 2)}"></span>
             </div>
-            <div style="padding:10px 0;border-bottom:1px solid #333;display:flex;justify-content:space-between;color:#ffc107;">
+            <div class="detalle-item" style="color:var(--yellow);">
                 <span>Impuestos (21%):</span>
                 <span th:text="${'€' + #numbers.formatDecimal(pedido.impuestos, 1, 2)}"></span>
             </div>
@@ -78,28 +51,27 @@
 
         <!-- INFO DE ENTREGA -->
         <div class="info-entrega">
-            <h3 style="color: #ffc107; margin-bottom: 10px;">📦 Información de Entrega</h3>
-            <p><strong>Destinatario:</strong> <span th:text="${pedido.nombreCompleto}"></span></p>
-            <p style="margin-top:8px;"><strong>Dirección:</strong>
+            <h3 style="color:var(--yellow);margin-bottom:10px;">📦 Información de Entrega</h3>
+            <p style="color:var(--text-secondary);"><strong style="color:var(--text);">Destinatario:</strong> <span th:text="${pedido.nombreCompleto}"></span></p>
+            <p style="margin-top:8px;color:var(--text-secondary);"><strong style="color:var(--text);">Dirección:</strong>
                 <span th:text="${pedido.direccion + ', ' + pedido.ciudad + ' ' + pedido.codigoPostal}"></span>
             </p>
-            <p style="margin-top:8px;">
-                <strong>Fecha estimada de entrega:</strong>
+            <p style="margin-top:8px;color:var(--text-secondary);">
+                <strong style="color:var(--text);">Fecha estimada de entrega:</strong>
                 <span th:text="${#temporals.format(pedido.fechaEntregaEstimada, 'dd/MM/yyyy')}"></span>
             </p>
-            <p style="margin-top:8px;font-size:12px;color:#b0b0b0;">
+            <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">
                 Confirmación enviada a <strong th:text="${pedido.email}"></strong>
             </p>
         </div>
 
         <div class="botones-confirmacion">
-            <a href="/" class="btn-volver">🏠 Volver al Catálogo</a>
-            <a href="/pedidos" class="btn-historial">📋 Ver Mis Pedidos</a>
+            <a href="/" class="btn btn-primary">🏠 Volver al Catálogo</a>
+            <a href="/pedidos" class="btn btn-outline">📋 Ver Mis Pedidos</a>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

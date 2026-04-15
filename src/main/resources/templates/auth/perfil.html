@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Mi Perfil - GameShop</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: header}"></div>
+
+    <div class="container">
+        <div class="profile-container">
+            <div class="profile-card">
+                <h1>👤 Mi Perfil</h1>
+
+                <div class="profile-row">
+                    <span class="profile-label">Nombre</span>
+                    <span class="profile-value" th:text="${usuario.nombre}">Nombre</span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Email</span>
+                    <span class="profile-value" th:text="${usuario.email}">email@example.com</span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Teléfono</span>
+                    <span class="profile-value" th:text="${usuario.telefono != null ? usuario.telefono : 'No especificado'}">—</span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Dirección</span>
+                    <span class="profile-value" th:text="${usuario.direccion != null ? usuario.direccion : 'No especificada'}">—</span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Ciudad</span>
+                    <span class="profile-value" th:text="${usuario.ciudad != null ? usuario.ciudad : 'No especificada'}">—</span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Código Postal</span>
+                    <span class="profile-value" th:text="${usuario.codigoPostal != null ? usuario.codigoPostal : 'No especificado'}">—</span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Rol</span>
+                    <span class="profile-value">
+                        <span class="badge-role"
+                              th:classappend="${usuario.rol == 'ADMIN' ? 'role-admin' : 'role-cliente'}"
+                              th:text="${usuario.rol}">ROL</span>
+                    </span>
+                </div>
+
+                <div class="profile-row">
+                    <span class="profile-label">Miembro desde</span>
+                    <span class="profile-value" th:text="${#temporals.format(usuario.fechaRegistro, 'dd/MM/yyyy')}">01/01/2024</span>
+                </div>
+
+                <div class="profile-actions">
+                    <a href="/pedidos" class="btn btn-primary">📋 Mis Pedidos</a>
+                    <a href="/" class="btn btn-outline">🎮 Ir al Catálogo</a>
+                    <a href="/logout" class="btn btn-danger">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

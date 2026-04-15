@@ -1,63 +1,60 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${titulo}">GameShop - Populares</title>
-    <link rel="stylesheet" th:href="@{/css/common.css}">
-    <link rel="stylesheet" th:href="@{/css/catalogo.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}"><link rel="stylesheet" th:href="@{/css/catalogo.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Inicio</a>
-                <a href="/catalogo/disponibles">Disponibles</a>
-                <a href="/catalogo/populares">Populares</a>
-                <a href="/carrito">🛒 Carrito</a>
-                <span th:if="${session.usuarioNombre != null}" style="color:#00d4ff;">👤 <span th:text="${session.usuarioNombre}"></span></span>
-                <a th:if="${session.usuarioId != null}" href="/pedidos">Mis Pedidos</a>
-                <a th:if="${session.usuarioRol == 'ADMIN'}" href="/admin">Admin</a>
-                <a th:if="${session.usuarioId != null}" href="/logout" style="color:#ff3333;">Cerrar Sesión</a>
-                <a th:unless="${session.usuarioId != null}" href="/login">Login</a>
-            </nav>
-            <form action="/catalogo/buscar" method="get" class="search-bar">
-                <input type="text" name="titulo" placeholder="Buscar videojuego..." required>
-                <button type="submit">Buscar</button>
-            </form>
-        </div>
-    </header>
-
+    <div th:replace="~{fragments/layout :: header}"></div>
     <div class="container">
-        <h1>Juegos Más Populares</h1>
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> <span>›</span> <span>Más Populares</span>
+        </div>
 
-        <div class="videojuegos">
-            <div class="videojuego-card" th:each="videojuego : ${videojuegos}">
-                <div class="videojuego-imagen">
-                    <span th:text="${videojuego.imagen}"></span>
+        <div class="section-header">
+            <h1 class="page-title" style="margin-bottom:0">Juegos Más <span class="highlight">Populares</span></h1>
+            <a href="/" class="btn btn-ghost btn-sm">← Volver al Inicio</a>
+        </div>
+
+        <div class="games-grid">
+            <div class="game-card" th:each="videojuego : ${videojuegos}">
+                <div class="game-card-img">
+                    <img th:src="${videojuego.imagen}" th:alt="${videojuego.titulo}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <div class="img-fallback">🎮</div>
+                    <div class="game-card-badge" th:if="${videojuego.calificacion >= 4.5}">⭐ TOP</div>
+                    <div class="game-card-platform-tag"
+                         th:text="${videojuego.plataformaId == 1 ? 'PS5' : (videojuego.plataformaId == 2 ? 'XBOX' : 'PC')}">PC</div>
+                    <div class="game-card-overlay">
+                        <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-primary btn-sm">Ver detalles</a>
+                    </div>
                 </div>
-                <div class="videojuego-info">
-                    <h3 th:text="${videojuego.titulo}"></h3>
-                    <div class="videojuego-calificacion" th:text="${'⭐⭐⭐⭐⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 2)}"></div>
-                    <div class="videojuego-precio" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></div>
-                    <div class="videojuego-botones">
-                        <button class="btn-carrito" th:onclick="'agregarAlCarrito(' + ${videojuego.id} + ')'">Añadir al carrito</button>
+                <div class="game-card-body">
+                    <div class="game-card-title" th:text="${videojuego.titulo}"></div>
+                    <div class="game-card-meta">
+                        <span class="game-card-rating" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 1)}"></span>
+                        <span class="game-card-stock-inline">
+                            <span th:if="${videojuego.disponible}" class="stock-dot stock-dot-green"></span>
+                            <span th:unless="${videojuego.disponible}" class="stock-dot stock-dot-red"></span>
+                            <span th:if="${videojuego.disponible}" class="stock-text-sm">En stock</span>
+                            <span th:unless="${videojuego.disponible}" class="stock-text-sm stock-text-out">Agotado</span>
+                        </span>
+                    </div>
+                    <div class="game-card-footer">
+                        <span class="game-card-price" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></span>
+                        <div class="game-card-actions">
+                            <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-ghost btn-sm">Ver</a>
+                            <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
+                                <button type="submit" class="btn btn-primary btn-sm">🛒</button>
+                            </form>
+                            <button th:unless="${videojuego.disponible}" class="btn btn-ghost btn-sm" disabled>—</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
-
-    <script>
-        function agregarAlCarrito(videojuegoId) {
-            alert('Videojuego ' + videojuegoId + ' agregado al carrito (funcionalidad en desarrollo)');
-        }
-    </script>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
-

@@ -1,115 +1,200 @@
 package com.ilerna.gameShop.repository;
 
 import com.ilerna.gameShop.model.Usuario;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio para gestionar usuarios
- * Simula consultas a la base de datos (sin JPA por ahora)
+ * Repositorio para gestionar usuarios.
+ * Consultas SQL contra la tabla 'usuarios' de gameshop_db.
  */
 public class UsuarioRepository {
-    
-    // Simulamos una lista de usuarios en memoria
-    private static List<Usuario> usuarios = new ArrayList<>();
-    
-    static {
-        // Datos iniciales de prueba
-        Usuario admin = new Usuario(1, "Admin GameShop", "admin@gameshop.com", "admin123", "ADMIN");
-        admin.setTelefono("666111222");
-        usuarios.add(admin);
-        
-        Usuario usuario1 = new Usuario(2, "Juan Pérez", "juan@example.com", "pass123", "CLIENTE");
-        usuario1.setTelefono("666222333");
-        usuarios.add(usuario1);
-        
-        Usuario usuario2 = new Usuario(3, "María García", "maria@example.com", "pass456", "CLIENTE");
-        usuario2.setTelefono("666333444");
-        usuarios.add(usuario2);
+
+    private Connection getConnection() {
+        return Conexion.getInstancia().getConnection();
     }
-    
+
     /**
      * Obtener todos los usuarios
      */
     public List<Usuario> obtenerTodos() {
-        return new ArrayList<>(usuarios);
+        List<Usuario> usuarios = new ArrayList<>();
+        String sql = "SELECT * FROM usuarios";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                usuarios.add(mapearUsuario(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al listar usuarios.");
+            e.printStackTrace();
+        }
+        return usuarios;
     }
-    
+
     /**
      * Obtener un usuario por ID
      */
     public Optional<Usuario> obtenerPorId(int id) {
-        return usuarios.stream()
-                .filter(u -> u.getId() == id)
-                .findFirst();
+        String sql = "SELECT * FROM usuarios WHERE id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapearUsuario(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al obtener usuario por ID.");
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
-    
+
     /**
      * Obtener un usuario por email
      */
     public Optional<Usuario> obtenerPorEmail(String email) {
-        return usuarios.stream()
-                .filter(u -> u.getEmail().equalsIgnoreCase(email))
-                .findFirst();
+        String sql = "SELECT * FROM usuarios WHERE email = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapearUsuario(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al obtener usuario por email.");
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
-    
+
     /**
      * Verificar si un usuario existe por email
      */
     public boolean existePorEmail(String email) {
-        return usuarios.stream()
-                .anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
+        String sql = "SELECT COUNT(*) FROM usuarios WHERE email = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al verificar email.");
+            e.printStackTrace();
+        }
+        return false;
     }
-    
+
     /**
-     * Guardar un nuevo usuario
+     * Guardar un nuevo usuario (ID asignado por AUTO_INCREMENT)
      */
     public void guardar(Usuario usuario) {
-        if (!existePorEmail(usuario.getEmail())) {
-            // Asignar ID automático
-            int nuevoId = usuarios.stream()
-                    .mapToInt(Usuario::getId)
-                    .max()
-                    .orElse(0) + 1;
-            usuario.setId(nuevoId);
-            usuarios.add(usuario);
+        String sql = "INSERT INTO usuarios (nombre, email, contrasena, telefono, direccion, ciudad, codigo_postal, rol, activo) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, usuario.getNombre());
+            pstmt.setString(2, usuario.getEmail());
+            pstmt.setString(3, usuario.getContrasena());
+            pstmt.setString(4, usuario.getTelefono());
+            pstmt.setString(5, usuario.getDireccion());
+            pstmt.setString(6, usuario.getCiudad());
+            pstmt.setString(7, usuario.getCodigoPostal());
+            pstmt.setString(8, usuario.getRol() != null ? usuario.getRol() : "CLIENTE");
+            pstmt.setBoolean(9, usuario.isActivo());
+            pstmt.executeUpdate();
+
+            try (ResultSet keys = pstmt.getGeneratedKeys()) {
+                if (keys.next()) {
+                    usuario.setId(keys.getInt(1));
+                }
+            }
+            System.out.println("✅ Usuario guardado correctamente.");
+        } catch (SQLException e) {
+            System.err.println("❌ Error al guardar usuario.");
+            e.printStackTrace();
         }
     }
-    
+
     /**
      * Actualizar un usuario existente
      */
     public void actualizar(Usuario usuario) {
-        usuarios.stream()
-                .filter(u -> u.getId() == usuario.getId())
-                .findFirst()
-                .ifPresent(u -> {
-                    u.setNombre(usuario.getNombre());
-                    u.setEmail(usuario.getEmail());
-                    u.setTelefono(usuario.getTelefono());
-                    u.setDireccion(usuario.getDireccion());
-                    u.setCiudad(usuario.getCiudad());
-                    u.setCodigoPostal(usuario.getCodigoPostal());
-                });
+        String sql = "UPDATE usuarios SET nombre = ?, email = ?, telefono = ?, direccion = ?, "
+                   + "ciudad = ?, codigo_postal = ? WHERE id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, usuario.getNombre());
+            pstmt.setString(2, usuario.getEmail());
+            pstmt.setString(3, usuario.getTelefono());
+            pstmt.setString(4, usuario.getDireccion());
+            pstmt.setString(5, usuario.getCiudad());
+            pstmt.setString(6, usuario.getCodigoPostal());
+            pstmt.setInt(7, usuario.getId());
+            pstmt.executeUpdate();
+            System.out.println("✅ Usuario actualizado correctamente.");
+        } catch (SQLException e) {
+            System.err.println("❌ Error al actualizar usuario.");
+            e.printStackTrace();
+        }
     }
-    
+
     /**
      * Eliminar un usuario por ID
      */
     public void eliminarPorId(int id) {
-        usuarios.removeIf(u -> u.getId() == id);
+        String sql = "DELETE FROM usuarios WHERE id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            System.out.println("✅ Usuario eliminado correctamente.");
+        } catch (SQLException e) {
+            System.err.println("❌ Error al eliminar usuario.");
+            e.printStackTrace();
+        }
     }
-    
+
     /**
-     * Autenticar usuario (login)
+     * Autenticar usuario (login) — acepta email O nombre de usuario
      */
-    public Optional<Usuario> autenticar(String email, String contrasena) {
-        return usuarios.stream()
-                .filter(u -> u.getEmail().equalsIgnoreCase(email) 
-                         && u.getContrasena().equals(contrasena)
-                         && u.isActivo())
-                .findFirst();
+    public Optional<Usuario> autenticar(String identificador, String contrasena) {
+        String sql = "SELECT * FROM usuarios WHERE (email = ? OR nombre = ?) AND contrasena = ? AND activo = TRUE";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, identificador);
+            pstmt.setString(2, identificador);
+            pstmt.setString(3, contrasena);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapearUsuario(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al autenticar usuario.");
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    // ── Mapear ResultSet a Usuario ──
+    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
+        Usuario u = new Usuario();
+        u.setId(rs.getInt("id"));
+        u.setNombre(rs.getString("nombre"));
+        u.setEmail(rs.getString("email"));
+        u.setContrasena(rs.getString("contrasena"));
+        u.setTelefono(rs.getString("telefono"));
+        u.setDireccion(rs.getString("direccion"));
+        u.setCiudad(rs.getString("ciudad"));
+        u.setCodigoPostal(rs.getString("codigo_postal"));
+        u.setRol(rs.getString("rol"));
+        u.setActivo(rs.getBoolean("activo"));
+        Timestamp fechaReg = rs.getTimestamp("fecha_registro");
+        u.setFechaRegistro(fechaReg != null ? fechaReg.toLocalDateTime().toLocalDate() : null);
+        return u;
     }
 }
-

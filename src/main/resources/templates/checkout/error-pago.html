@@ -5,35 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${titulo}">Error en el Pago - GameShop</title>
     <link rel="stylesheet" th:href="@{/css/common.css}">
-    <style>
-        .error-container { max-width: 550px; margin: 80px auto; padding: 0 20px; text-align: center; }
-        .error-box { background-color: #1a1a2e; border: 2px solid #ff3333; border-radius: 10px; padding: 40px 30px; }
-        .error-box h1 { color: #ff3333; }
-        .error-msg { margin: 20px 0; color: #b0b0b0; }
-        .btn-reintentar { display: inline-block; margin-top: 20px; padding: 12px 30px; background-color: #00d4ff; color: #0a0a0a; text-decoration: none; border-radius: 5px; font-weight: bold; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav><a href="/carrito">🛒 Carrito</a></nav>
-        </div>
-    </header>
+    <div th:replace="~{fragments/layout :: header}"></div>
 
     <div class="error-container">
         <div class="error-box">
             <div style="font-size:60px;">❌</div>
             <h1>Error en el Pago</h1>
             <p class="error-msg" th:text="${error}">Error al procesar el pago.</p>
-            <p style="font-size:13px;color:#b0b0b0;">Verifica que el número de tarjeta tenga 16 dígitos y el CVV 3 dígitos.</p>
-            <a href="/checkout" class="btn-reintentar">🔄 Intentar de Nuevo</a>
+            <p class="error-hint">Verifica que el número de tarjeta tenga 16 dígitos y el CVV 3 dígitos.</p>
+            <a href="/checkout" class="btn btn-primary" style="margin-top:20px;">🔄 Intentar de Nuevo</a>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
-

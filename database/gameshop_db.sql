@@ -1,7 +1,7 @@
 -- ==============================================
 -- Base de Datos: Tienda de Videojuegos
 -- Proyecto: GameShop - 1 DAM
--- Autor: Daniel Clemente Gomez / Angel Pozo
+-- Autor: Daniel Clemente Gomez
 -- Version: 2.0 - Actualizada para coincidir con modelos Java
 -- ==============================================
 
@@ -61,8 +61,7 @@ CREATE TABLE usuarios (
 
 -- ==============================================
 -- Tabla: videojuegos
--- imagen: nombre de archivo (ej: elden-ring.jpg)
---         se sirve desde /uploads/images/{imagen}
+-- imagen: URL completa (ej: /uploads/images/elden-ring.jpg)
 -- disponible: TRUE cuando stock > 0
 -- ==============================================
 CREATE TABLE videojuegos (
@@ -72,7 +71,7 @@ CREATE TABLE videojuegos (
     precio DECIMAL(10, 2) NOT NULL,
     stock INT NOT NULL DEFAULT 0,
     plataforma_id INT NOT NULL,
-    imagen VARCHAR(255) DEFAULT 'sin-imagen.jpg',
+    imagen VARCHAR(255) DEFAULT '/uploads/images/sin-imagen.jpg',
     fecha_lanzamiento DATE,
     desarrollador VARCHAR(150),
     calificacion DECIMAL(3, 2) DEFAULT 0.00,
@@ -186,27 +185,28 @@ INSERT INTO plataformas (nombre, descripcion) VALUES
 ('PC',            'Videojuegos para computadora');
 
 -- Usuarios (contrasenas en texto plano - SOLO DESARROLLO)
+-- Admin: login con nombre 'admin' y contraseña 'admin'
 INSERT INTO usuarios (nombre, email, contrasena, telefono, rol) VALUES
-('Admin GameShop', 'admin@gameshop.com', 'admin123', '666111222', 'ADMIN'),
+('admin', 'admin@gameshop.com', 'admin', '666111222', 'ADMIN'),
 ('Juan Perez',     'juan@example.com',   'pass123',  '666222333', 'CLIENTE'),
 ('Maria Garcia',   'maria@example.com',  'pass456',  '666333444', 'CLIENTE');
 
 -- Videojuegos PlayStation 5 (plataforma_id = 1)
 INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, desarrollador, fecha_lanzamiento, calificacion) VALUES
-('Elden Ring',        'Juego de rol de accion epico en un mundo abierto', 49.99, 15, 1, 'elden-ring.jpg',  'FromSoftware',    '2022-02-25', 4.80),
-('Final Fantasy XVI', 'Epica conclusion de la saga Final Fantasy',         59.99, 10, 1, 'ff16.jpg',         'Square Enix',     '2023-06-22', 4.60),
-('Spider-Man 2',      'Aventura de Spider-Man en Nueva York',              69.99, 20, 1, 'spiderman2.jpg',   'Insomniac Games', '2023-10-20', 4.70);
+('Elden Ring',        'Juego de rol de accion epico en un mundo abierto', 49.99, 15, 1, '/uploads/images/elden-ring.jpg',  'FromSoftware',    '2022-02-25', 4.80),
+('Final Fantasy XVI', 'Epica conclusion de la saga Final Fantasy',         59.99, 10, 1, '/uploads/images/ff16.jpg',         'Square Enix',     '2023-06-22', 4.60),
+('Spider-Man 2',      'Aventura de Spider-Man en Nueva York',              69.99, 20, 1, '/uploads/images/spiderman2.jpg',   'Insomniac Games', '2023-10-20', 4.70);
 
 -- Videojuegos Xbox Series X (plataforma_id = 2)
 INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, desarrollador, fecha_lanzamiento, calificacion) VALUES
-('Halo Infinite', 'Nueva entrega de la iconica saga Halo', 59.99, 12, 2, 'halo-infinite.jpg', 'Bungie',                '2021-12-08', 4.40),
-('Starfield',     'RPG de ciencia ficcion de Bethesda',     69.99,  8, 2, 'starfield.jpg',     'Bethesda Game Studios', '2023-09-06', 4.50);
+('Halo Infinite', 'Nueva entrega de la iconica saga Halo', 59.99, 12, 2, '/uploads/images/halo-infinite.jpg', 'Bungie',                '2021-12-08', 4.40),
+('Starfield',     'RPG de ciencia ficcion de Bethesda',     69.99,  8, 2, '/uploads/images/starfield.jpg',     'Bethesda Game Studios', '2023-09-06', 4.50);
 
 -- Videojuegos PC (plataforma_id = 3)
 INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, desarrollador, fecha_lanzamiento, calificacion) VALUES
-("Baldur's Gate 3", 'RPG de fantasia epico',                    59.99, 25, 3, 'baldurs-gate3.jpg', 'Larian Studios', '2023-08-03', 4.90),
-('Cyberpunk 2077',  'RPG de ciencia ficcion en una megaciudad', 39.99, 18, 3, 'cyberpunk2077.jpg', 'CD Projekt Red', '2020-12-10', 4.20),
-('The Witcher 3',   'Aventura de fantasia con Geralt de Rivia', 29.99, 30, 3, 'witcher3.jpg',      'CD Projekt Red', '2015-05-19', 4.80);
+("Baldur's Gate 3", 'RPG de fantasia epico',                    59.99, 25, 3, '/uploads/images/baldurs-gate3.jpg', 'Larian Studios', '2023-08-03', 4.90),
+('Cyberpunk 2077',  'RPG de ciencia ficcion en una megaciudad', 39.99, 18, 3, '/uploads/images/cyberpunk2077.jpg', 'CD Projekt Red', '2020-12-10', 4.20),
+('The Witcher 3',   'Aventura de fantasia con Geralt de Rivia', 29.99, 30, 3, '/uploads/images/witcher3.jpg',      'CD Projekt Red', '2015-05-19', 4.80);
 
 -- Reactivar comprobacion de claves foraneas
 SET FOREIGN_KEY_CHECKS = 1;

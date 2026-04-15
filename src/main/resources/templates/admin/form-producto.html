@@ -8,25 +8,16 @@
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Catálogo</a>
-                <a href="/admin">Dashboard</a>
-                <a href="/admin/productos">Productos</a>
-                <a href="/logout">Cerrar Sesión</a>
-            </nav>
-        </div>
-    </header>
+    <div th:replace="~{fragments/admin-layout :: header-admin}"></div>
 
-    <div class="container admin-container">
-        <div class="form-container">
+    <div class="container admin-page">
+        <div class="admin-form-container">
             <h1 th:if="${videojuego == null}">➕ Crear Nuevo Producto</h1>
             <h1 th:unless="${videojuego == null}">✏️ Editar Producto</h1>
 
+            <!-- FORMULARIO DE CREACIÓN -->
             <form th:if="${videojuego == null}" method="post" action="/admin/productos/guardar"
-                  class="form-producto" enctype="multipart/form-data">
+                  class="admin-form" enctype="multipart/form-data">
 
                 <div class="form-group">
                     <label for="titulo">Título del Producto *</label>
@@ -43,12 +34,10 @@
                                     th:text="${plataforma.nombre}">PS5</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label for="precio">Precio (€) *</label>
                         <input type="number" id="precio" name="precio" step="0.01" required placeholder="49.99">
                     </div>
-
                     <div class="form-group">
                         <label for="stock">Stock *</label>
                         <input type="number" id="stock" name="stock" required placeholder="10">
@@ -65,11 +54,10 @@
                         <label for="desarrollador">Desarrollador *</label>
                         <input type="text" id="desarrollador" name="desarrollador" required placeholder="FromSoftware">
                     </div>
-
                     <div class="form-group">
                         <label for="imagenFile">Imagen del producto</label>
                         <input type="file" id="imagenFile" name="imagenFile" accept="image/*">
-                        <small style="color:#b0b0b0;">Formatos: jpg, png, gif, webp. Máx. 10 MB.</small>
+                        <small>Formatos: jpg, png, gif, webp. Máx. 10 MB.</small>
                     </div>
                     <div class="form-group">
                         <label for="imagenNombre">O escribe el nombre de imagen existente</label>
@@ -77,9 +65,9 @@
                     </div>
                 </div>
 
-                <div class="form-botones">
-                    <button type="submit" class="btn-guardar">💾 Guardar Producto</button>
-                    <a href="/admin/productos" class="btn-cancelar">✕ Cancelar</a>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 Guardar Producto</button>
+                    <a href="/admin/productos" class="btn btn-ghost">✕ Cancelar</a>
                 </div>
             </form>
 
@@ -87,7 +75,7 @@
             <form th:unless="${videojuego == null}"
                   th:method="post"
                   th:action="@{/admin/productos/actualizar/{id}(id=${videojuego.id})}"
-                  class="form-producto" enctype="multipart/form-data">
+                  class="admin-form" enctype="multipart/form-data">
 
                 <div class="form-group">
                     <label for="titulo">Título del Producto *</label>
@@ -104,12 +92,10 @@
                                     th:selected="${plataforma.id == videojuego.plataformaId}">PS5</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label for="precio">Precio (€) *</label>
                         <input type="number" id="precio" name="precio" step="0.01" required th:value="${videojuego.precio}">
                     </div>
-
                     <div class="form-group">
                         <label for="stock">Stock *</label>
                         <input type="number" id="stock" name="stock" required th:value="${videojuego.stock}">
@@ -126,34 +112,30 @@
                         <label for="desarrollador">Desarrollador *</label>
                         <input type="text" id="desarrollador" name="desarrollador" required th:value="${videojuego.desarrollador}">
                     </div>
-
                     <div class="form-group">
                         <label for="imagenFile">Nueva imagen (opcional)</label>
                         <input type="file" id="imagenFile" name="imagenFile" accept="image/*">
-                        <small style="color:#b0b0b0;">Sube una nueva imagen para reemplazar la actual.</small>
+                        <small>Sube una nueva imagen para reemplazar la actual.</small>
                     </div>
                     <div class="form-group">
                         <label>Imagen actual</label>
                         <input type="hidden" name="imagenActual" th:value="${videojuego.imagen}">
-                        <img th:src="@{/uploads/images/{img}(img=${videojuego.imagen})}"
-                             th:alt="${videojuego.titulo}"
-                             style="max-height:80px;border-radius:4px;margin-top:4px;"
+                        <img th:src="${videojuego.imagen}" th:alt="${videojuego.titulo}"
+                             class="img-preview"
                              onerror="this.style.display='none'">
-                        <small style="color:#b0b0b0;" th:text="${videojuego.imagen}"></small>
+                        <small th:text="${videojuego.imagen}"></small>
                     </div>
                 </div>
 
-                <div class="form-botones">
-                    <button type="submit" class="btn-guardar">💾 Guardar Cambios</button>
-                    <a href="/admin/productos" class="btn-cancelar">✕ Cancelar</a>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+                    <a href="/admin/productos" class="btn btn-ghost">✕ Cancelar</a>
                 </div>
             </form>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
-

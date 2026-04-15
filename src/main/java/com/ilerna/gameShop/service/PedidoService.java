@@ -48,10 +48,8 @@ public class PedidoService {
      * Devuelve todos los pedidos de un usuario, del más reciente al más antiguo.
      */
     public List<Pedido> obtenerPedidosDeUsuario(int usuarioId) {
-        List<Pedido> lista = pedidoRepository.obtenerPorUsuario(usuarioId);
-        // Invertir para mostrar el más reciente primero
-        java.util.Collections.reverse(lista);
-        return lista;
+        // El repositorio ya devuelve ordenado por fecha DESC (más reciente primero)
+        return pedidoRepository.obtenerPorUsuario(usuarioId);
     }
 
     /**

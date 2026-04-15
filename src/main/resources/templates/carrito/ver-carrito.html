@@ -8,124 +8,105 @@
     <link rel="stylesheet" th:href="@{/css/carrito.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Inicio</a>
-                <a href="/catalogo/disponibles">Disponibles</a>
-                <a href="/catalogo/populares">Populares</a>
-                <a href="/carrito">🛒 Carrito</a>
-            </nav>
-            <form action="/catalogo/buscar" method="get" class="search-bar">
-                <input type="text" name="titulo" placeholder="Buscar videojuego..." required>
-                <button type="submit">Buscar</button>
-            </form>
-        </div>
-    </header>
+    <div th:replace="~{fragments/layout :: header}"></div>
 
     <div class="container">
         <div class="breadcrumb">
-            <a href="/">Inicio</a> > <span>Carrito de Compras</span>
+            <a href="/">Inicio</a> <span>›</span> <span>Carrito de Compras</span>
         </div>
 
-        <h1>🛒 Carrito de Compras</h1>
+        <h1 class="page-title">🛒 Carrito de <span class="highlight">Compras</span></h1>
 
         <!-- CARRITO CON ITEMS -->
-        <div th:if="${cantidad > 0}" class="carrito-contenido">
+        <div th:if="${cantidad > 0}" class="cart-layout">
 
             <!-- TABLA DE PRODUCTOS -->
-            <div class="tabla-carrito">
-                <div class="tabla-header">
-                    <div class="col-imagen">Producto</div>
-                    <div class="col-precio">Precio</div>
-                    <div class="col-cantidad">Cantidad</div>
-                    <div class="col-subtotal">Subtotal</div>
-                    <div class="col-accion">Acción</div>
+            <div class="cart-table">
+                <div class="cart-table-head">
+                    <div>Producto</div>
+                    <div>Precio</div>
+                    <div>Cantidad</div>
+                    <div>Subtotal</div>
+                    <div>Acción</div>
                 </div>
 
-                <div class="tabla-body">
-                    <div class="tabla-row" th:each="item : ${items}">
-                        <div class="col-imagen">
-                            <div class="item-imagen">
-                                <span th:text="${item.imagenVideojuego}"></span>
-                            </div>
-                            <span class="item-titulo" th:text="${item.tituloVideojuego}"></span>
+                <div th:each="item : ${items}" class="cart-row">
+                    <div class="cart-item-info">
+                        <div class="cart-item-img">
+                            <img th:src="${item.imagenVideojuego}"
+                                 th:alt="${item.tituloVideojuego}"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                            <span style="display:none;font-size:2em;">🎮</span>
                         </div>
-                        <div class="col-precio" th:text="${'€' + #numbers.formatDecimal(item.precioUnitario, 1, 2)}"></div>
+                        <span class="cart-item-name" th:text="${item.tituloVideojuego}"></span>
+                    </div>
+                    <div class="cart-col-price" th:text="${'€' + #numbers.formatDecimal(item.precioUnitario, 1, 2)}"></div>
 
-                        <div class="col-cantidad">
-                            <form th:action="@{/carrito/actualizar/{id}(id=${item.videojuegoId})}" method="post" class="form-cantidad">
-                                <input type="number" name="nuevaCantidad" th:value="${item.cantidad}" min="1" max="99" class="input-cantidad">
-                                <button type="submit" class="btn-actualizar">✓</button>
-                            </form>
-                        </div>
+                    <div class="cart-col-qty">
+                        <form th:action="@{/carrito/actualizar/{id}(id=${item.videojuegoId})}" method="post" class="qty-form">
+                            <input type="number" name="nuevaCantidad" th:value="${item.cantidad}" min="1" max="99" class="qty-input">
+                            <button type="submit" class="qty-btn">✓</button>
+                        </form>
+                    </div>
 
-                        <div class="col-subtotal" th:text="${'€' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></div>
+                    <div class="cart-col-subtotal" th:text="${'€' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></div>
 
-                        <div class="col-accion">
-                            <a th:href="@{/carrito/eliminar/{id}(id=${item.videojuegoId})}" class="btn-eliminar">🗑️ Eliminar</a>
-                        </div>
+                    <div class="cart-col-action">
+                        <a th:href="@{/carrito/eliminar/{id}(id=${item.videojuegoId})}" class="cart-remove">🗑️ Eliminar</a>
                     </div>
                 </div>
             </div>
 
             <!-- RESUMEN Y CHECKOUT -->
-            <div class="carrito-resumen">
-                <div class="resumen-box">
-                    <h2>Resumen del Pedido</h2>
+            <div class="cart-summary">
+                <h2>Resumen del Pedido</h2>
 
-                    <div class="resumen-item">
-                        <span>Productos:</span>
-                        <span th:text="${cantidad}"></span>
-                    </div>
-
-                    <div class="resumen-item">
-                        <span>Subtotal:</span>
-                        <span th:text="${'€' + #numbers.formatDecimal(total, 1, 2)}"></span>
-                    </div>
-
-                    <div class="resumen-item">
-                        <span>Envío:</span>
-                        <span>Gratis</span>
-                    </div>
-
-                    <div class="resumen-item impuestos">
-                        <span>Impuestos (21%):</span>
-                        <span th:text="${'€' + #numbers.formatDecimal(total * 0.21, 1, 2)}"></span>
-                    </div>
-
-                    <div class="resumen-total">
-                        <span>Total:</span>
-                        <span th:text="${'€' + #numbers.formatDecimal(total * 1.21, 1, 2)}"></span>
-                    </div>
-
-                    <div class="botones-carrito">
-                        <a href="/" class="btn-continuar-compra">← Continuar Comprando</a>
-                        <!-- Si no hay sesión, redirige a login con destino checkout -->
-                        <a th:if="${session.usuarioId != null}" href="/checkout" class="btn-checkout">Proceder al Pago →</a>
-                        <a th:unless="${session.usuarioId != null}" href="/login?redirect=/checkout" class="btn-checkout">🔐 Login para Pagar →</a>
-                    </div>
-
-                    <a href="/carrito/vaciar" class="btn-vaciar-carrito">Vaciar Carrito</a>
+                <div class="summary-line">
+                    <span>Productos:</span>
+                    <span th:text="${cantidad}"></span>
                 </div>
+
+                <div class="summary-line">
+                    <span>Subtotal:</span>
+                    <span th:text="${'€' + #numbers.formatDecimal(total, 1, 2)}"></span>
+                </div>
+
+                <div class="summary-line">
+                    <span>Envío:</span>
+                    <span>Gratis</span>
+                </div>
+
+                <div class="summary-line tax">
+                    <span>Impuestos (21%):</span>
+                    <span th:text="${'€' + #numbers.formatDecimal(total * 0.21, 1, 2)}"></span>
+                </div>
+
+                <div class="summary-total">
+                    <span>Total:</span>
+                    <span th:text="${'€' + #numbers.formatDecimal(total * 1.21, 1, 2)}"></span>
+                </div>
+
+                <div class="summary-actions">
+                    <a href="/" class="btn btn-ghost btn-block">← Continuar Comprando</a>
+                    <a th:if="${session.usuarioId != null}" href="/checkout" class="btn btn-success btn-block">Proceder al Pago →</a>
+                    <a th:unless="${session.usuarioId != null}" href="/login?redirect=/checkout" class="btn btn-primary btn-block">🔐 Login para Pagar →</a>
+                </div>
+
+                <a href="/carrito/vaciar" class="btn-clear-cart">Vaciar Carrito</a>
             </div>
         </div>
 
         <!-- CARRITO VACÍO -->
-        <div th:unless="${cantidad > 0}" class="carrito-vacio">
-            <div class="contenido-vacio">
-                <p class="icono">🛒</p>
-                <h2>Tu carrito está vacío</h2>
-                <p>¡No has agregado ningún videojuego aún!</p>
-                <a href="/" class="btn-empezar-compra">Ir al Catálogo</a>
-            </div>
+        <div th:unless="${cantidad > 0}" class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <h2>Tu carrito está vacío</h2>
+            <p>¡No has agregado ningún videojuego aún!</p>
+            <a href="/" class="btn btn-primary btn-lg">Ir al Catálogo</a>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
 

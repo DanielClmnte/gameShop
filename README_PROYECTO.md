@@ -4,7 +4,7 @@
 GameShop es una tienda de videojuegos online (e-commerce nicho gamer) desarrollada en **Spring Boot** con **Thymeleaf** como framework de vistas. El proyecto es ideal para aprender conceptos de desarrollo web como CRUD, relaciones entre entidades, autenticación y comercio electrónico.
 
 **Proyecto de Fin de Año - 1º DAM**  
-**Autor**: Daniel Clemente Gomez / Ángel Pozo Yarlequé
+**Autor**: Daniel Clemente Gomez
 
 ---
 

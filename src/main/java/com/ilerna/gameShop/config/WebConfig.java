@@ -18,6 +18,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AdminSecurityInterceptor())
                 .addPathPatterns("/admin/**");
+        // Inyecta carritoCount en todas las vistas
+        registry.addInterceptor(new CartCountInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/css/**", "/js/**", "/uploads/**");
     }
 
     /**

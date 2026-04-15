@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<body>
+
+<!-- ═══════════════ HEADER PÚBLICO ═══════════════ -->
+<header th:fragment="header" class="site-header">
+    <div class="header-container">
+        <a href="/" class="logo">
+            <span class="logo-icon">🎮</span>
+            <span class="logo-text">Game<span class="logo-accent">Shop</span></span>
+        </a>
+
+        <nav class="nav-main" id="navMain">
+            <a href="/" class="nav-link">Inicio</a>
+            <a href="/catalogo/disponibles" class="nav-link">Disponibles</a>
+            <a href="/catalogo/populares" class="nav-link">Populares</a>
+            <a th:if="${session.usuarioId != null}" href="/pedidos" class="nav-link">Mis Pedidos</a>
+            <a th:if="${session.usuarioRol == 'ADMIN'}" href="/admin" class="nav-link nav-admin">Admin</a>
+        </nav>
+
+        <div class="header-actions">
+            <form action="/catalogo/buscar" method="get" class="search-bar">
+                <input type="text" name="titulo" placeholder="Buscar juegos..." required>
+                <button type="submit" aria-label="Buscar">🔍</button>
+            </form>
+
+            <a href="/carrito" class="cart-btn">
+                🛒
+                <span class="cart-badge" th:if="${carritoCount != null and carritoCount > 0}" th:text="${carritoCount}">0</span>
+            </a>
+
+            <div class="user-area" th:if="${session.usuarioId != null}">
+                <a href="/perfil" class="user-link">
+                    <span class="user-avatar">👤</span>
+                    <span class="user-name" th:text="${session.usuarioNombre}">Usuario</span>
+                </a>
+                <a href="/logout" class="nav-link nav-logout">Salir</a>
+            </div>
+            <a th:unless="${session.usuarioId != null}" href="/login" class="btn-login">Iniciar Sesión</a>
+        </div>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Menú">☰</button>
+    </div>
+</header>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer th:fragment="footer" class="site-footer">
+    <div class="footer-container">
+        <div class="footer-brand">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span class="logo-icon">🎮</span>
+                <span class="logo-text">Game<span class="logo-accent">Shop</span></span>
+            </div>
+            <p>Tu tienda de videojuegos de confianza. Los mejores precios con entrega digital instantánea.</p>
+        </div>
+        <div class="footer-links">
+            <h4>Navegación</h4>
+            <a href="/">Catálogo</a>
+            <a href="/catalogo/disponibles">Disponibles</a>
+            <a href="/catalogo/populares">Populares</a>
+        </div>
+        <div class="footer-links">
+            <h4>Mi Cuenta</h4>
+            <a href="/login">Iniciar Sesión</a>
+            <a href="/registro">Registrarse</a>
+            <a href="/carrito">Mi Carrito</a>
+            <a href="/pedidos">Mis Pedidos</a>
+        </div>
+        <div class="footer-links">
+            <h4>Plataformas</h4>
+            <a href="/catalogo/plataforma/1">PlayStation 5</a>
+            <a href="/catalogo/plataforma/2">Xbox Series X</a>
+            <a href="/catalogo/plataforma/3">PC</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 GameShop — Desarrollado por Daniel Clemente</p>
+    </div>
+</footer>
+
+</body>
+</html>
+

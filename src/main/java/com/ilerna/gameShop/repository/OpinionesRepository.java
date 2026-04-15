@@ -1,100 +1,187 @@
 package com.ilerna.gameShop.repository;
 
 import com.ilerna.gameShop.model.Opiniones;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
- * Repositorio para gestionar opiniones de usuarios
- * Simula consultas a la base de datos (sin JPA por ahora)
+ * Repositorio para gestionar opiniones de usuarios.
+ * Consultas SQL contra la tabla 'opiniones' de gameshop_db.
  */
 public class OpinionesRepository {
-    
-    // Simulamos una lista de opiniones en memoria
-    private static List<Opiniones> opiniones = new ArrayList<>();
-    
-    static {
-        // Datos iniciales de prueba
-        opiniones.add(new Opiniones(1, 1, 1, 5, "Juego excelente, muy recomendado", true));
-        opiniones.add(new Opiniones(2, 1, 2, 4, "Muy bueno, aunque un poco largo", false));
-        opiniones.add(new Opiniones(3, 2, 1, 5, "Final Fantasy siempre es buena opción", true));
-        opiniones.add(new Opiniones(4, 6, 1, 5, "Baldur's Gate 3 es épico, mejora que Elden Ring", true));
+
+    private Connection getConnection() {
+        return Conexion.getInstancia().getConnection();
     }
-    
+
     /**
      * Obtener todas las opiniones
      */
     public List<Opiniones> obtenerTodas() {
-        return new ArrayList<>(opiniones);
+        List<Opiniones> opiniones = new ArrayList<>();
+        String sql = "SELECT * FROM opiniones";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                opiniones.add(mapearOpinion(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al listar opiniones.");
+            e.printStackTrace();
+        }
+        return opiniones;
     }
-    
+
     /**
      * Obtener opiniones de un videojuego específico
      */
     public List<Opiniones> obtenerPorVideojuego(int videojuegoId) {
-        return opiniones.stream()
-                .filter(o -> o.getVideojuegoId() == videojuegoId)
-                .collect(Collectors.toList());
+        List<Opiniones> opiniones = new ArrayList<>();
+        String sql = "SELECT * FROM opiniones WHERE videojuego_id = ? ORDER BY fecha DESC";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, videojuegoId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    opiniones.add(mapearOpinion(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al obtener opiniones por videojuego.");
+            e.printStackTrace();
+        }
+        return opiniones;
     }
-    
+
     /**
      * Obtener opiniones de un usuario específico
      */
     public List<Opiniones> obtenerPorUsuario(int usuarioId) {
-        return opiniones.stream()
-                .filter(o -> o.getUsuarioId() == usuarioId)
-                .collect(Collectors.toList());
+        List<Opiniones> opiniones = new ArrayList<>();
+        String sql = "SELECT * FROM opiniones WHERE usuario_id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, usuarioId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    opiniones.add(mapearOpinion(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al obtener opiniones por usuario.");
+            e.printStackTrace();
+        }
+        return opiniones;
     }
-    
+
     /**
      * Obtener una opinión por ID
      */
     public Optional<Opiniones> obtenerPorId(int id) {
-        return opiniones.stream()
-                .filter(o -> o.getId() == id)
-                .findFirst();
+        String sql = "SELECT * FROM opiniones WHERE id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapearOpinion(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al obtener opinión por ID.");
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
-    
+
     /**
      * Obtener calificación promedio de un videojuego
      */
     public double obtenerCalificacionPromedio(int videojuegoId) {
-        return opiniones.stream()
-                .filter(o -> o.getVideojuegoId() == videojuegoId)
-                .mapToInt(Opiniones::getCalificacion)
-                .average()
-                .orElse(0.0);
+        String sql = "SELECT AVG(calificacion) AS promedio FROM opiniones WHERE videojuego_id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, videojuegoId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("promedio");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al obtener calificación promedio.");
+            e.printStackTrace();
+        }
+        return 0.0;
     }
-    
+
     /**
      * Guardar una nueva opinión
      */
     public void guardar(Opiniones opinion) {
-        if (!opiniones.contains(opinion)) {
-            opiniones.add(opinion);
+        String sql = "INSERT INTO opiniones (videojuego_id, usuario_id, calificacion, comentario, verificado) "
+                   + "VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, opinion.getVideojuegoId());
+            pstmt.setInt(2, opinion.getUsuarioId());
+            pstmt.setInt(3, opinion.getCalificacion());
+            pstmt.setString(4, opinion.getComentario());
+            pstmt.setBoolean(5, opinion.isVerificado());
+            pstmt.executeUpdate();
+
+            try (ResultSet keys = pstmt.getGeneratedKeys()) {
+                if (keys.next()) {
+                    opinion.setId(keys.getInt(1));
+                }
+            }
+            System.out.println("✅ Opinión guardada correctamente.");
+        } catch (SQLException e) {
+            System.err.println("❌ Error al guardar opinión.");
+            e.printStackTrace();
         }
     }
-    
+
     /**
      * Actualizar una opinión existente
      */
     public void actualizar(Opiniones opinion) {
-        opiniones.stream()
-                .filter(o -> o.getId() == opinion.getId())
-                .findFirst()
-                .ifPresent(o -> {
-                    o.setCalificacion(opinion.getCalificacion());
-                    o.setComentario(opinion.getComentario());
-                });
+        String sql = "UPDATE opiniones SET calificacion = ?, comentario = ? WHERE id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, opinion.getCalificacion());
+            pstmt.setString(2, opinion.getComentario());
+            pstmt.setInt(3, opinion.getId());
+            pstmt.executeUpdate();
+            System.out.println("✅ Opinión actualizada correctamente.");
+        } catch (SQLException e) {
+            System.err.println("❌ Error al actualizar opinión.");
+            e.printStackTrace();
+        }
     }
-    
+
     /**
      * Eliminar una opinión por ID
      */
     public void eliminarPorId(int id) {
-        opiniones.removeIf(o -> o.getId() == id);
+        String sql = "DELETE FROM opiniones WHERE id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            System.out.println("✅ Opinión eliminada correctamente.");
+        } catch (SQLException e) {
+            System.err.println("❌ Error al eliminar opinión.");
+            e.printStackTrace();
+        }
+    }
+
+    // ── Mapear ResultSet a Opiniones ──
+    private Opiniones mapearOpinion(ResultSet rs) throws SQLException {
+        Opiniones o = new Opiniones();
+        o.setId(rs.getInt("id"));
+        o.setVideojuegoId(rs.getInt("videojuego_id"));
+        o.setUsuarioId(rs.getInt("usuario_id"));
+        o.setCalificacion(rs.getInt("calificacion"));
+        o.setComentario(rs.getString("comentario"));
+        Timestamp fecha = rs.getTimestamp("fecha");
+        o.setFecha(fecha != null ? fecha.toLocalDateTime().toLocalDate() : null);
+        o.setVerificado(rs.getBoolean("verificado"));
+        return o;
     }
 }
-

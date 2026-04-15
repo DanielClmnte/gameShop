@@ -1,479 +1,108 @@
 /* ============================================
-   GameShop - Estilos Panel Admin
+   GameShop — Admin Panel
    ============================================ */
 
-.admin-container {
-    margin: 40px auto;
-}
+.admin-page h1 { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 32px; letter-spacing: -.3px; }
 
-h1 {
-    text-align: center;
-    color: #00d4ff;
-    margin-bottom: 40px;
-    font-size: 36px;
-}
+/* ── Stats cards ── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 40px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; text-align: center; transition: all var(--transition); }
+.stat-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow-glow); }
+.stat-card h3 { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+.stat-card .stat-number { font-size: 42px; font-weight: 900; color: var(--green); margin: 8px 0; }
+.stat-card .stat-label { font-size: 13px; color: var(--text-muted); }
+.stat-card.stat-available { border-left: 3px solid var(--green); }
+.stat-card.stat-out { border-left: 3px solid var(--red); }
+.stat-card.stat-actions { border-left: 3px solid var(--yellow); }
+.stat-card.stat-actions .quick-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 
-h2 {
-    color: #00d4ff;
-    margin-bottom: 20px;
-}
+.info-panel { background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: var(--radius-sm); padding: 28px; margin-top: 32px; }
+.info-panel h2 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.info-panel p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
+.info-panel ul { list-style: none; padding: 12px 0; }
+.info-panel li { padding: 8px 0; color: var(--text-secondary); font-size: 14px; transition: padding-left var(--transition); }
+.info-panel li:hover { padding-left: 8px; color: var(--text); }
 
-/* ============================================
-   ESTADÍSTICAS
-   ============================================ */
+/* ── Products header ── */
+.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.admin-header h1 { margin-bottom: 0; }
 
-.estadisticas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 60px;
-}
+/* ── Products table ── */
+.admin-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.admin-table-head { display: grid; grid-template-columns: .4fr 2fr 1fr 1fr .7fr 1.5fr; gap: 12px; padding: 14px 20px; background: var(--bg-elevated); font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .4px; }
+.admin-table-row { display: grid; grid-template-columns: .4fr 2fr 1fr 1fr .7fr 1.5fr; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); align-items: center; }
+.admin-table-row:last-child { border-bottom: none; }
+.admin-table-row:hover { background: rgba(108,92,231,.05); }
+.col-id { text-align: center; color: var(--text-muted); font-weight: 500; }
+.col-title { font-weight: 600; color: var(--text); transition: color var(--transition); }
+.col-title:hover { color: var(--primary); }
+.col-platform { text-align: center; font-size: 13px; color: var(--text-secondary); }
+.col-price { text-align: center; color: var(--green); font-weight: 700; }
+.col-stock { text-align: center; }
+.col-actions { display: flex; gap: 8px; justify-content: center; }
 
-.tarjeta-stat {
-    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-    border: 2px solid #00d4ff;
-    border-radius: 10px;
-    padding: 25px;
-    text-align: center;
-    transition: all 0.3s;
-}
-
-.tarjeta-stat:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
-}
-
-.tarjeta-stat h3 {
-    color: #00d4ff;
-    margin-bottom: 15px;
-    font-size: 18px;
-}
-
-.tarjeta-stat .numero {
-    font-size: 48px;
-    color: #00ff00;
-    font-weight: bold;
-    margin: 15px 0;
-}
-
-.tarjeta-stat .subtitulo {
-    color: #b0b0b0;
-    font-size: 14px;
-}
-
-.tarjeta-stat.disponibles {
-    border-color: #00ff00;
-}
-
-.tarjeta-stat.agotados {
-    border-color: #ff3333;
-}
-
-.tarjeta-stat.usuarios {
-    border-color: #ffc107;
-}
-
-.acciones-rapidas {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.btn-accion {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #00d4ff;
-    color: #0a0a0a;
+/* ── Stock page ── */
+.stock-filters { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.filter-btn {
+    padding: 8px 18px;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-size: 13px;
+    font-weight: 500;
     text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: all 0.3s;
+    transition: all var(--transition);
 }
+.filter-btn:hover, .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.stock-row { display: grid; grid-template-columns: 2fr 1fr 1.5fr 1.5fr; gap: 16px; padding: 18px 20px; border-bottom: 1px solid var(--border); align-items: center; }
+.stock-row:hover { background: rgba(108,92,231,.04); }
+.stock-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-xl); margin-left: 8px; }
+.stock-badge.in-stock { background: var(--green-dim); color: var(--green); }
+.stock-badge.out-stock { background: var(--red-dim); color: var(--red); }
+.stock-number { font-size: 24px; font-weight: 800; color: var(--green); display: block; }
+.stock-unit { font-size: 12px; color: var(--text-muted); }
+.stock-actions { display: flex; gap: 8px; }
+.btn-stock { padding: 8px 14px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 15px; transition: all var(--transition); }
+.btn-minus { background: var(--red-dim); color: var(--red); }
+.btn-minus:hover { background: var(--red); color: #fff; }
+.btn-plus { background: var(--green-dim); color: var(--green); }
+.btn-plus:hover { background: var(--green); color: var(--bg-body); }
+.stock-form { display: flex; gap: 6px; }
+.stock-input { width: 70px; padding: 8px; background: var(--bg-input); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius-sm); text-align: center; font-family: var(--font); }
+.stock-input:focus { outline: none; border-color: var(--primary); }
+.stock-save { padding: 8px 12px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; transition: background var(--transition); }
+.stock-save:hover { background: var(--primary-hover); }
 
-.btn-accion:hover {
-    background-color: #00a8cc;
+/* ── Form ── */
+.admin-form-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 40px; max-width: 800px; margin: 0 auto; }
+.admin-form-container h1 { margin-bottom: 24px; text-align: center; }
+.admin-form { display: flex; flex-direction: column; gap: 20px; }
+.admin-form .form-group { display: flex; flex-direction: column; gap: 6px; }
+.admin-form .form-group label { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .4px; }
+.admin-form .form-group input, .admin-form .form-group textarea, .admin-form .form-group select {
+    width: 100%; padding: 12px 16px; background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text); font-family: var(--font); font-size: 14px;
+    transition: border-color var(--transition), box-shadow var(--transition);
 }
+.admin-form .form-group input:focus, .admin-form .form-group textarea:focus, .admin-form .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108,92,231,.15); }
+.admin-form .form-group textarea { resize: vertical; min-height: 120px; }
+.admin-form .form-group small { font-size: 12px; color: var(--text-muted); }
+.admin-form .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.admin-form .form-actions { display: flex; gap: 12px; margin-top: 12px; }
+.admin-form .form-actions .btn { flex: 1; padding: 14px; font-size: 15px; }
+.admin-form .img-preview { max-height: 80px; border-radius: var(--radius-sm); margin-top: 4px; }
 
-/* ============================================
-   INFORMACIÓN
-   ============================================ */
+.empty-message { text-align: center; padding: 60px 20px; color: var(--text-secondary); font-size: 16px; }
+.empty-message a { color: var(--primary); font-weight: 600; }
 
-.info-admin {
-    background-color: #1a1a2e;
-    border-left: 4px solid #00d4ff;
-    padding: 25px;
-    border-radius: 10px;
-    margin-top: 40px;
-}
-
-.info-admin ul {
-    list-style: none;
-    padding: 15px 0;
-}
-
-.info-admin li {
-    padding: 10px 0;
-    color: #e0e0e0;
-}
-
-/* ============================================
-   HEADER PRODUCTOS
-   ============================================ */
-
-.header-productos {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-}
-
-.header-productos h1 {
-    margin: 0;
-}
-
-.btn-nuevo {
-    display: inline-block;
-    padding: 12px 25px;
-    background-color: #00d4ff;
-    color: #0a0a0a;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: all 0.3s;
-}
-
-.btn-nuevo:hover {
-    background-color: #00a8cc;
-}
-
-/* ============================================
-   TABLA DE PRODUCTOS
-   ============================================ */
-
-.tabla-productos {
-    background-color: #1a1a2e;
-    border-radius: 10px;
-    border: 1px solid #333;
-    overflow: hidden;
-}
-
-.tabla-header {
-    display: grid;
-    grid-template-columns: 0.5fr 2fr 1fr 1fr 0.8fr 2fr;
-    gap: 15px;
-    padding: 20px;
-    background-color: #0f3460;
-    border-bottom: 2px solid #00d4ff;
-    font-weight: bold;
-    color: #00d4ff;
-}
-
-.tabla-body {
-    display: flex;
-    flex-direction: column;
-}
-
-.tabla-row {
-    display: grid;
-    grid-template-columns: 0.5fr 2fr 1fr 1fr 0.8fr 2fr;
-    gap: 15px;
-    padding: 20px;
-    border-bottom: 1px solid #333;
-    align-items: center;
-    color: #e0e0e0;
-}
-
-.tabla-row:hover {
-    background-color: #0f3460;
-}
-
-/* ============================================
-   COLUMNAS
-   ============================================ */
-
-.col-id {
-    text-align: center;
-    color: #b0b0b0;
-}
-
-.col-titulo {
-    color: #00d4ff;
-    font-weight: bold;
-}
-
-.col-plataforma {
-    text-align: center;
-    font-size: 14px;
-}
-
-.col-precio {
-    text-align: center;
-    color: #00ff00;
-    font-weight: bold;
-}
-
-.col-stock {
-    text-align: center;
-}
-
-.badge {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 3px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.badge-disponible {
-    background-color: #00ff00;
-    color: #0a0a0a;
-}
-
-.badge-agotado {
-    background-color: #ff3333;
-    color: #fff;
-}
-
-.col-acciones {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.btn-editar,
-.btn-eliminar {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 3px;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.btn-editar {
-    background-color: #ffc107;
-    color: #0a0a0a;
-}
-
-.btn-editar:hover {
-    background-color: #ffb300;
-}
-
-.btn-eliminar {
-    background-color: #ff3333;
-    color: #fff;
-}
-
-.btn-eliminar:hover {
-    background-color: #cc0000;
-}
-
-/* ============================================
-   SIN PRODUCTOS
-   ============================================ */
-
-.sin-productos {
-    text-align: center;
-    padding: 60px 20px;
-    color: #b0b0b0;
-    font-size: 18px;
-}
-
-.sin-productos a {
-    color: #00d4ff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.sin-productos a:hover {
-    text-decoration: underline;
-}
-
-/* ============================================
-   FORMULARIO DE PRODUCTO
-   ============================================ */
-
-.form-container {
-    background-color: #1a1a2e;
-    border: 2px solid #00d4ff;
-    border-radius: 10px;
-    padding: 40px;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.form-container h1 {
-    margin-top: 0;
-}
-
-.form-producto {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group label {
-    color: #00d4ff;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-    padding: 12px 15px;
-    background-color: #0f3460;
-    border: 1px solid #00d4ff;
-    color: #e0e0e0;
-    border-radius: 5px;
-    font-size: 16px;
-    font-family: inherit;
-    transition: all 0.3s;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    outline: none;
-    background-color: #16213e;
-    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 120px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-/* ============================================
-   BOTONES DE FORMULARIO
-   ============================================ */
-
-.form-botones {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.btn-guardar,
-.btn-cancelar {
-    flex: 1;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-decoration: none;
-    text-align: center;
-}
-
-.btn-guardar {
-    background-color: #00ff00;
-    color: #0a0a0a;
-}
-
-.btn-guardar:hover {
-    background-color: #00cc00;
-}
-
-.btn-cancelar {
-    background-color: #333;
-    color: #00d4ff;
-    border: 2px solid #00d4ff;
-}
-
-.btn-cancelar:hover {
-    background-color: #00d4ff;
-    color: #0a0a0a;
-}
-
-/* ============================================
-   RESPONSIVO
-   ============================================ */
-
-@media (max-width: 1024px) {
-    .estadisticas {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .tabla-header,
-    .tabla-row {
-        grid-template-columns: 1fr 1.5fr 1fr 1.5fr;
-    }
-
-    .col-id,
-    .col-stock {
-        display: none;
-    }
-}
-
+/* ── Responsive ── */
 @media (max-width: 768px) {
-    h1 {
-        font-size: 24px;
-    }
-
-    .header-productos {
-        flex-direction: column;
-        gap: 15px;
-        align-items: stretch;
-    }
-
-    .btn-nuevo {
-        text-align: center;
-    }
-
-    .estadisticas {
-        grid-template-columns: 1fr;
-    }
-
-    .tabla-header {
-        display: none;
-    }
-
-    .tabla-row {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
-        background-color: #0f3460;
-        margin-bottom: 15px;
-        border-radius: 5px;
-        border-bottom: none;
-    }
-
-    .col-titulo {
-        font-size: 18px;
-    }
-
-    .col-acciones {
-        flex-direction: column;
-    }
-
-    .form-container {
-        padding: 20px;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-
-    .form-botones {
-        flex-direction: column;
-    }
+    .admin-header { flex-direction: column; gap: 12px; align-items: stretch; }
+    .admin-table-head { display: none; }
+    .admin-table-row { grid-template-columns: 1fr; gap: 8px; padding: 16px; background: var(--bg-elevated); margin-bottom: 8px; border-radius: var(--radius-sm); border-bottom: none; }
+    .stock-row { grid-template-columns: 1fr; gap: 12px; padding: 16px; background: var(--bg-elevated); margin-bottom: 8px; border-radius: var(--radius-sm); border-bottom: none; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .admin-form-container { padding: 24px; }
+    .admin-form .form-row { grid-template-columns: 1fr; }
 }
-

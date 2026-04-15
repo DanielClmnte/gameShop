@@ -8,71 +8,79 @@
     <link rel="stylesheet" th:href="@{/css/catalogo.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Inicio</a>
-                <a href="/catalogo/disponibles">Disponibles</a>
-                <a href="/catalogo/populares">Populares</a>
-                <a href="/carrito">🛒 Carrito</a>
-            </nav>
-            <form action="/catalogo/buscar" method="get" class="search-bar">
-                <input type="text" name="titulo" placeholder="Buscar videojuego..." required>
-                <button type="submit">Buscar</button>
-            </form>
-        </div>
-    </header>
+    <div th:replace="~{fragments/layout :: header}"></div>
 
     <div class="container">
         <div class="breadcrumb">
-            <a href="/">Inicio</a> > <span th:text="${plataforma.nombre}"></span>
+            <a href="/">Inicio</a> <span>›</span> <span th:text="${plataforma.nombre}"></span>
         </div>
 
-        <h1 th:text="${'Juegos de ' + plataforma.nombre}">Juegos de Plataforma</h1>
+        <h1 class="page-title" th:text="${'Juegos de ' + plataforma.nombre}">Juegos</h1>
 
-        <div class="filtros">
-            <a href="/catalogo/plataforma/1" class="filtro-btn">PlayStation 5</a>
-            <a href="/catalogo/plataforma/2" class="filtro-btn">Xbox Series X</a>
-            <a href="/catalogo/plataforma/3" class="filtro-btn">PC</a>
+        <!-- Platform pills selector -->
+        <div class="platform-selector">
+            <span class="platform-label">Plataforma:</span>
+            <div class="platform-pills">
+                <a href="/" class="platform-pill">
+                    <span>🏠</span> Todas
+                </a>
+                <a th:each="p : ${plataformas}"
+                   th:href="@{/catalogo/plataforma/{id}(id=${p.id})}"
+                   th:classappend="${p.id == plataforma.id} ? ' active' : ''"
+                   class="platform-pill">
+                    <span th:text="${p.id == 1 ? '🎮' : (p.id == 2 ? '🕹️' : '🖥️')}">🎮</span>
+                    <span th:text="${p.nombre}">Plataforma</span>
+                </a>
+            </div>
         </div>
 
-        <div th:if="${videojuegos.size() > 0}" class="videojuegos">
-            <div class="videojuego-card" th:each="videojuego : ${videojuegos}">
-                <div class="videojuego-imagen">
-                    <span th:text="${videojuego.imagen}"></span>
-                </div>
-                <div class="videojuego-info">
-                    <h3 th:title="${videojuego.titulo}" th:text="${videojuego.titulo}"></h3>
-                    <div class="videojuego-precio" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></div>
-                    <div class="videojuego-calificacion" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 2)}"></div>
-                    <div class="videojuego-stock">
-                        <span th:if="${videojuego.disponible}" style="color: #00ff00;" th:text="${videojuego.stock + ' en stock'}"></span>
-                        <span th:unless="${videojuego.disponible}" style="color: #ff3333;">Agotado</span>
+        <div th:if="${videojuegos.size() > 0}" class="games-grid" style="margin-top: 24px;">
+            <div class="game-card" th:each="videojuego : ${videojuegos}">
+                <div class="game-card-img">
+                    <img th:src="${videojuego.imagen}" th:alt="${videojuego.titulo}"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <div class="img-fallback">🎮</div>
+                    <div class="game-card-badge" th:if="${videojuego.calificacion >= 4.5}">⭐ TOP</div>
+                    <div class="game-card-platform-tag"
+                         th:text="${videojuego.plataformaId == 1 ? 'PS5' : (videojuego.plataformaId == 2 ? 'XBOX' : 'PC')}">PC</div>
+                    <div class="game-card-overlay">
+                        <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-primary btn-sm">Ver detalles</a>
                     </div>
-                    <div class="videojuego-botones">
-                        <button class="btn-detalles">Detalles</button>
-                        <button class="btn-carrito" th:if="${videojuego.disponible}" th:onclick="'agregarAlCarrito(' + ${videojuego.id} + ')'">Añadir</button>
-                        <button class="btn-carrito" th:unless="${videojuego.disponible}" disabled style="opacity: 0.5; cursor: not-allowed;">Agotado</button>
+                </div>
+                <div class="game-card-body">
+                    <div class="game-card-title" th:text="${videojuego.titulo}"></div>
+                    <div class="game-card-meta">
+                        <span class="game-card-rating" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 1)}"></span>
+                        <span class="game-card-stock-inline">
+                            <span th:if="${videojuego.disponible}" class="stock-dot stock-dot-green"></span>
+                            <span th:unless="${videojuego.disponible}" class="stock-dot stock-dot-red"></span>
+                            <span th:if="${videojuego.disponible}" class="stock-text-sm">En stock</span>
+                            <span th:unless="${videojuego.disponible}" class="stock-text-sm stock-text-out">Agotado</span>
+                        </span>
+                    </div>
+                    <div class="game-card-footer">
+                        <span class="game-card-price" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></span>
+                        <div class="game-card-actions">
+                            <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-ghost btn-sm">Ver</a>
+                            <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
+                                <button type="submit" class="btn btn-primary btn-sm">🛒</button>
+                            </form>
+                            <button th:unless="${videojuego.disponible}" class="btn btn-ghost btn-sm" disabled>—</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div th:unless="${videojuegos.size() > 0}" class="sin-resultados">
-            <p>No hay videojuegos disponibles para esta plataforma.</p>
+        <div th:unless="${videojuegos.size() > 0}" class="empty-state">
+            <div class="empty-state-icon">🎮</div>
+            <h2>Sin juegos para esta plataforma</h2>
+            <p>Prueba con otra plataforma o vuelve al catálogo.</p>
+            <a href="/" class="btn btn-primary">Volver al Catálogo</a>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
-
-    <script>
-        function agregarAlCarrito(videojuegoId) {
-            alert('Videojuego ' + videojuegoId + ' agregado al carrito (funcionalidad en desarrollo)');
-        }
-    </script>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
-

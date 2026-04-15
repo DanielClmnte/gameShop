@@ -8,21 +8,11 @@
     <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">🎮 GameShop</a>
-            <nav>
-                <a href="/">Inicio</a>
-                <a href="/catalogo/disponibles">Disponibles</a>
-                <a href="/catalogo/populares">Populares</a>
-                <a href="/carrito">🛒 Carrito</a>
-            </nav>
-        </div>
-    </header>
+    <div th:replace="~{fragments/layout :: header}"></div>
 
     <div class="container">
-        <div class="auth-container">
-            <div class="auth-form registro-form">
+        <div class="auth-layout">
+            <div class="auth-card">
                 <h1>✍️ Crear Cuenta</h1>
 
                 <!-- Mensaje de error -->
@@ -30,7 +20,7 @@
                     <p th:text="${error}"></p>
                 </div>
 
-                <form method="post" action="/registro">
+                <form method="post" action="/registro" class="auth-form">
                     <div class="form-group">
                         <label for="nombre">Nombre Completo</label>
                         <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required th:value="${nombre}">
@@ -49,7 +39,7 @@
                     <div class="form-group">
                         <label for="contrasena">Contraseña</label>
                         <input type="password" id="contrasena" name="contrasena" placeholder="Mínimo 4 caracteres" required minlength="4">
-                        <small>Usa al menos 4 caracteres</small>
+                        <small style="color:var(--text-muted);font-size:12px;">Usa al menos 4 caracteres</small>
                     </div>
 
                     <div class="form-group">
@@ -57,14 +47,14 @@
                         <input type="password" id="contrasenaRepetida" name="contrasenaRepetida" placeholder="Repite tu contraseña" required minlength="4">
                     </div>
 
-                    <div class="form-opciones">
-                        <label class="checkbox">
+                    <div class="form-options">
+                        <label>
                             <input type="checkbox" required>
                             <span>Acepto los términos y condiciones</span>
                         </label>
                     </div>
 
-                    <button type="submit" class="btn-submit">Crear Cuenta</button>
+                    <button type="submit" class="btn-auth">Crear Cuenta</button>
                 </form>
 
                 <div class="auth-footer">
@@ -72,18 +62,15 @@
                 </div>
             </div>
 
-            <div class="auth-imagen">
-                <div class="imagen-placeholder">
-                    <p>🚀</p>
-                    <p>Únete a la comunidad</p>
-                </div>
+            <div class="auth-banner">
+                <div class="auth-banner-icon">🚀</div>
+                <div class="auth-banner-text">Únete a la comunidad</div>
+                <p style="color: var(--text-secondary); margin-top: 12px; font-size: 15px; position:relative; z-index:1;">Miles de juegos te están esperando</p>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 GameShop - Tienda de Videojuegos. Desarrollado por Daniel Clemente</p>
-    </footer>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
-

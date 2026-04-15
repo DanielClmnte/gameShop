@@ -3,7 +3,6 @@ package com.ilerna.gameShop.controller;
 import com.ilerna.gameShop.model.Opiniones;
 import com.ilerna.gameShop.model.Videojuego;
 import com.ilerna.gameShop.service.OpinionesService;
-import com.ilerna.gameShop.service.PlataformaService;
 import com.ilerna.gameShop.service.VideojuegoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,13 +26,11 @@ public class FichaProductoController {
     
     private VideojuegoService videojuegoService;
     private OpinionesService opinionesService;
-    private PlataformaService plataformaService;
     
     // Constructor
     public FichaProductoController() {
         this.videojuegoService = new VideojuegoService();
         this.opinionesService = new OpinionesService();
-        this.plataformaService = new PlataformaService();
     }
     
     /**
@@ -47,10 +45,15 @@ public class FichaProductoController {
             List<Opiniones> opiniones = opinionesService.obtenerPorVideojuego(id);
             double calificacionPromedio = opinionesService.obtenerCalificacionPromedio(id);
             
+            // Juegos relacionados (misma plataforma, excluyendo el actual)
+            List<Videojuego> relacionados = videojuegoService.obtenerPorPlataforma(vj.getPlataformaId());
+            relacionados.removeIf(v -> v.getId() == id);
+            
             model.addAttribute("videojuego", vj);
             model.addAttribute("opiniones", opiniones);
             model.addAttribute("calificacionPromedio", calificacionPromedio);
             model.addAttribute("totalOpiniones", opiniones.size());
+            model.addAttribute("relacionados", relacionados);
             model.addAttribute("titulo", vj.getTitulo() + " - GameShop");
             
             return "producto/ficha";
@@ -60,10 +63,15 @@ public class FichaProductoController {
     }
     
     /**
-     * Mostrar la página de agregar opinión
+     * Mostrar la página de agregar opinión (requiere login)
      */
     @GetMapping("/producto/{id}/nueva-opinion")
-    public String mostrarFormularioOpinion(@PathVariable int id, Model model) {
+    public String mostrarFormularioOpinion(@PathVariable int id, HttpSession session, Model model) {
+        Integer usuarioId = (Integer) session.getAttribute("usuarioId");
+        if (usuarioId == null) {
+            return "redirect:/login?redirect=/producto/" + id + "/nueva-opinion";
+        }
+
         Optional<Videojuego> videojuego = videojuegoService.obtenerPorId(id);
         
         if (videojuego.isPresent()) {
@@ -77,15 +85,20 @@ public class FichaProductoController {
     }
     
     /**
-     * Guardar una nueva opinión (POST)
+     * Guardar una nueva opinión (POST) — usa el usuario de la sesión
      */
     @PostMapping("/producto/{id}/guardar-opinion")
     public String guardarOpinion(
             @PathVariable int id,
             @RequestParam int calificacion,
             @RequestParam String comentario,
-            @RequestParam int usuarioId) {
-        
+            HttpSession session) {
+
+        Integer usuarioId = (Integer) session.getAttribute("usuarioId");
+        if (usuarioId == null) {
+            return "redirect:/login?redirect=/producto/" + id + "/nueva-opinion";
+        }
+
         Opiniones nuevaOpinion = new Opiniones(0, id, usuarioId, calificacion, comentario, false);
         opinionesService.crearOpinion(nuevaOpinion);
         
