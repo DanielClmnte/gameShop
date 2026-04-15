@@ -43,6 +43,15 @@
                         <button type="submit" class="btn btn-primary btn-lg btn-block">🛒 Agregar al Carrito</button>
                     </form>
                     <button th:unless="${videojuego.disponible}" class="btn btn-ghost btn-lg btn-block" disabled>No disponible</button>
+                    <!-- Botón favoritos -->
+                    <form th:if="${session.usuarioId != null}" th:action="@{/favoritos/toggle/{id}(id=${videojuego.id})}" method="post">
+                        <input type="hidden" name="redirect" th:value="${'/producto/' + videojuego.id}">
+                        <button type="submit" class="btn btn-block" th:classappend="${esFavorito ? 'btn-fav-active' : 'btn-ghost'}" style="margin-top:8px;">
+                            <span th:if="${esFavorito}">♥ En tu lista de deseados</span>
+                            <span th:unless="${esFavorito}">♡ Añadir a lista de deseados</span>
+                        </button>
+                    </form>
+                    <a th:unless="${session.usuarioId != null}" href="/login" class="btn btn-ghost btn-block" style="margin-top:8px;">♡ Inicia sesión para guardar</a>
                 </div>
             </div>
         </div>

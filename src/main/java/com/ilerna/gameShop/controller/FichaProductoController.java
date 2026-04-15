@@ -2,6 +2,7 @@ package com.ilerna.gameShop.controller;
 
 import com.ilerna.gameShop.model.Opiniones;
 import com.ilerna.gameShop.model.Videojuego;
+import com.ilerna.gameShop.service.FavoritoService;
 import com.ilerna.gameShop.service.OpinionesService;
 import com.ilerna.gameShop.service.VideojuegoService;
 import org.springframework.stereotype.Controller;
@@ -26,18 +27,20 @@ public class FichaProductoController {
     
     private VideojuegoService videojuegoService;
     private OpinionesService opinionesService;
+    private FavoritoService favoritoService;
     
     // Constructor
     public FichaProductoController() {
         this.videojuegoService = new VideojuegoService();
         this.opinionesService = new OpinionesService();
+        this.favoritoService = new FavoritoService();
     }
     
     /**
      * Mostrar la ficha completa de un videojuego
      */
     @GetMapping("/producto/{id}")
-    public String mostrarFichaProducto(@PathVariable int id, Model model) {
+    public String mostrarFichaProducto(@PathVariable int id, HttpSession session, Model model) {
         Optional<Videojuego> videojuego = videojuegoService.obtenerPorId(id);
         
         if (videojuego.isPresent()) {
@@ -49,11 +52,19 @@ public class FichaProductoController {
             List<Videojuego> relacionados = videojuegoService.obtenerPorPlataforma(vj.getPlataformaId());
             relacionados.removeIf(v -> v.getId() == id);
             
+            // Comprobar si es favorito del usuario logueado
+            boolean esFavorito = false;
+            Integer usuarioId = (Integer) session.getAttribute("usuarioId");
+            if (usuarioId != null) {
+                esFavorito = favoritoService.esFavorito(usuarioId, id);
+            }
+            
             model.addAttribute("videojuego", vj);
             model.addAttribute("opiniones", opiniones);
             model.addAttribute("calificacionPromedio", calificacionPromedio);
             model.addAttribute("totalOpiniones", opiniones.size());
             model.addAttribute("relacionados", relacionados);
+            model.addAttribute("esFavorito", esFavorito);
             model.addAttribute("titulo", vj.getTitulo() + " - GameShop");
             
             return "producto/ficha";
@@ -128,4 +139,3 @@ public class FichaProductoController {
         return "redirect:/";
     }
 }
-

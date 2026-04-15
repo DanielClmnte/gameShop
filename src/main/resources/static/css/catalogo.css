@@ -474,3 +474,42 @@
     .view-all-section .btn { padding: 14px 32px; font-size: 15px; }
     .game-card-overlay { display: none; }
 }
+
+/* ═══════ BOTÓN FAVORITO EN GAME CARDS ═══════ */
+.fav-btn-form {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 3;
+}
+.fav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    color: #888;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+}
+.fav-btn:hover {
+    background: rgba(0,0,0,0.8);
+    color: #ff4d6d;
+    transform: scale(1.15);
+}
+.fav-btn-active {
+    color: #ff4d6d;
+}
+.btn-fav-active {
+    background: rgba(255,77,109,0.15);
+    color: #ff4d6d !important;
+    border: 1px solid rgba(255,77,109,0.3);
+}
+.btn-fav-active:hover {
+    background: rgba(255,77,109,0.25);
+}
