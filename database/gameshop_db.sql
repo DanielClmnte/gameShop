@@ -2,7 +2,7 @@
 -- Base de Datos: Tienda de Videojuegos
 -- Proyecto: GameShop - 1 DAM
 -- Autor: Daniel Clemente Gomez
--- Version: 2.0 - Actualizada para coincidir con modelos Java
+-- Version: 3.0 - Con favoritos y carrito para anonimos
 -- ==============================================
 
 -- Codificacion UTF-8 para caracteres especiales
@@ -23,6 +23,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ==============================================
 DROP TABLE IF EXISTS detalle_pedidos;
 DROP TABLE IF EXISTS pedidos;
+DROP TABLE IF EXISTS favoritos;
 DROP TABLE IF EXISTS carrito_items;
 DROP TABLE IF EXISTS opiniones;
 DROP TABLE IF EXISTS videojuegos;
@@ -98,8 +99,8 @@ CREATE TABLE opiniones (
 
 -- ==============================================
 -- Tabla: carrito_items
--- titulo_videojuego e imagen_videojuego: snapshot al agregar
--- Coincide con CarritoItem.java
+-- SIN FK en usuario_id para permitir carritos de usuarios anonimos
+-- (los anonimos usan IDs negativos temporales por sesion)
 -- ==============================================
 CREATE TABLE carrito_items (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -110,8 +111,22 @@ CREATE TABLE carrito_items (
     titulo_videojuego VARCHAR(150),
     imagen_videojuego VARCHAR(255),
     fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (videojuego_id) REFERENCES videojuegos(id),
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    FOREIGN KEY (videojuego_id) REFERENCES videojuegos(id)
+    -- Sin FK a usuarios: permite IDs negativos para usuarios anonimos
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ==============================================
+-- Tabla: favoritos (lista de deseados)
+-- Solo para usuarios registrados
+-- ==============================================
+CREATE TABLE favoritos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    usuario_id INT NOT NULL,
+    videojuego_id INT NOT NULL,
+    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_usuario_videojuego (usuario_id, videojuego_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (videojuego_id) REFERENCES videojuegos(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ==============================================
@@ -170,6 +185,8 @@ CREATE INDEX idx_videojuegos_disponible  ON videojuegos(disponible);
 CREATE INDEX idx_opiniones_videojuego    ON opiniones(videojuego_id);
 CREATE INDEX idx_opiniones_usuario       ON opiniones(usuario_id);
 CREATE INDEX idx_carrito_usuario         ON carrito_items(usuario_id);
+CREATE INDEX idx_favoritos_usuario       ON favoritos(usuario_id);
+CREATE INDEX idx_favoritos_videojuego    ON favoritos(videojuego_id);
 CREATE INDEX idx_pedidos_usuario         ON pedidos(usuario_id);
 CREATE INDEX idx_pedidos_numero          ON pedidos(numero_pedido);
 CREATE INDEX idx_detalle_pedido          ON detalle_pedidos(pedido_id);
