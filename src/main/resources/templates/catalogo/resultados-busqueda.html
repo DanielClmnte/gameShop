@@ -16,7 +16,7 @@
             <h1 class="page-title" style="margin-bottom:0">Resultados de <span class="highlight">Búsqueda</span></h1>
             <a href="/" class="btn btn-ghost btn-sm">← Volver al Inicio</a>
         </div>
-        <p class="search-info">Búsqueda: <strong th:text="${terminoBusqueda}"></strong> — <span th:text="${videojuegos.size() + ' resultados'}"></span></p>
+        <p class="search-info">Búsqueda: <strong th:text="${terminoBusqueda}"></strong> — <span th:text="${pagina.totalItems + ' resultados'}"></span></p>
 
         <div th:if="${videojuegos.size() > 0}" class="games-grid">
             <div class="game-card" th:each="videojuego : ${videojuegos}">
@@ -54,6 +54,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- ═══════ PAGINACIÓN ═══════ -->
+        <div th:replace="~{fragments/layout :: pagination(${pagina}, ${baseUrl})}"></div>
 
         <div th:unless="${videojuegos.size() > 0}" class="empty-state">
             <div class="empty-state-icon">🔍</div>

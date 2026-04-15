@@ -79,6 +79,38 @@
     </div>
 </footer>
 
+<!-- ═══════════════ PAGINACIÓN REUTILIZABLE ═══════════════ -->
+<nav th:fragment="pagination(pagina, baseUrl)" th:if="${pagina.totalPaginas > 1}" class="pagination-nav">
+    <div class="pagination">
+        <!-- Info: Página X de Y -->
+        <span class="pagination-info" th:text="${'Página ' + pagina.paginaActual + ' de ' + pagina.totalPaginas + ' (' + pagina.totalItems + ' juegos)'}"></span>
+        <div class="pagination-buttons">
+            <!-- Anterior -->
+            <a th:if="${pagina.hasAnterior}"
+               th:href="${baseUrl.contains('?') ? baseUrl + '&page=' + (pagina.paginaActual - 1) : baseUrl + '?page=' + (pagina.paginaActual - 1)}"
+               class="pagination-btn">‹ Anterior</a>
+            <span th:unless="${pagina.hasAnterior}" class="pagination-btn pagination-btn-disabled">‹ Anterior</span>
+
+            <!-- Números de página -->
+            <th:block th:each="num : ${pagina.numeros}">
+                <a th:if="${num != pagina.paginaActual}"
+                   th:href="${baseUrl.contains('?') ? baseUrl + '&page=' + num : baseUrl + '?page=' + num}"
+                   th:text="${num}"
+                   class="pagination-btn pagination-num"></a>
+                <span th:if="${num == pagina.paginaActual}"
+                      th:text="${num}"
+                      class="pagination-btn pagination-num pagination-active"></span>
+            </th:block>
+
+            <!-- Siguiente -->
+            <a th:if="${pagina.hasSiguiente}"
+               th:href="${baseUrl.contains('?') ? baseUrl + '&page=' + (pagina.paginaActual + 1) : baseUrl + '?page=' + (pagina.paginaActual + 1)}"
+               class="pagination-btn">Siguiente ›</a>
+            <span th:unless="${pagina.hasSiguiente}" class="pagination-btn pagination-btn-disabled">Siguiente ›</span>
+        </div>
+    </div>
+</nav>
+
 </body>
 </html>
 

@@ -72,6 +72,9 @@
             </div>
         </div>
 
+        <!-- ═══════ PAGINACIÓN ═══════ -->
+        <div th:replace="~{fragments/layout :: pagination(${pagina}, ${baseUrl})}"></div>
+
         <div th:unless="${videojuegos.size() > 0}" class="empty-state">
             <div class="empty-state-icon">🎮</div>
             <h2>Sin juegos para esta plataforma</h2>

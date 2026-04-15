@@ -1,5 +1,6 @@
 package com.ilerna.gameShop.service;
 
+import com.ilerna.gameShop.model.PaginaResultado;
 import com.ilerna.gameShop.model.Videojuego;
 import com.ilerna.gameShop.repository.VideojuegoRepository;
 import java.util.List;
@@ -95,6 +96,50 @@ public class VideojuegoService implements IVideojuegoService {
                 videojuegoRepository.actualizar(videojuego);
             }
         }
+    }
+
+    // ══════════════════════════════════════════════
+    // MÉTODOS PAGINADOS (16 items por página)
+    // ══════════════════════════════════════════════
+
+    public PaginaResultado<Videojuego> obtenerTodosPaginado(int pagina) {
+        if (pagina < 1) pagina = 1;
+        int offset = PaginaResultado.calcularOffset(pagina);
+        List<Videojuego> items = videojuegoRepository.obtenerTodosPaginado(offset, PaginaResultado.ITEMS_POR_PAGINA);
+        int total = videojuegoRepository.contarTodos();
+        return new PaginaResultado<>(items, pagina, total);
+    }
+
+    public PaginaResultado<Videojuego> obtenerPorPlataformaPaginado(int plataformaId, int pagina) {
+        if (pagina < 1) pagina = 1;
+        int offset = PaginaResultado.calcularOffset(pagina);
+        List<Videojuego> items = videojuegoRepository.obtenerPorPlataformaPaginado(plataformaId, offset, PaginaResultado.ITEMS_POR_PAGINA);
+        int total = videojuegoRepository.contarPorPlataforma(plataformaId);
+        return new PaginaResultado<>(items, pagina, total);
+    }
+
+    public PaginaResultado<Videojuego> obtenerDisponiblesPaginado(int pagina) {
+        if (pagina < 1) pagina = 1;
+        int offset = PaginaResultado.calcularOffset(pagina);
+        List<Videojuego> items = videojuegoRepository.obtenerDisponiblesPaginado(offset, PaginaResultado.ITEMS_POR_PAGINA);
+        int total = videojuegoRepository.contarDisponibles();
+        return new PaginaResultado<>(items, pagina, total);
+    }
+
+    public PaginaResultado<Videojuego> obtenerPorCalificacionPaginado(int pagina) {
+        if (pagina < 1) pagina = 1;
+        int offset = PaginaResultado.calcularOffset(pagina);
+        List<Videojuego> items = videojuegoRepository.obtenerPorCalificacionPaginado(offset, PaginaResultado.ITEMS_POR_PAGINA);
+        int total = videojuegoRepository.contarTodos();
+        return new PaginaResultado<>(items, pagina, total);
+    }
+
+    public PaginaResultado<Videojuego> buscarPorTituloPaginado(String titulo, int pagina) {
+        if (pagina < 1) pagina = 1;
+        int offset = PaginaResultado.calcularOffset(pagina);
+        List<Videojuego> items = videojuegoRepository.buscarPorTituloPaginado(titulo, offset, PaginaResultado.ITEMS_POR_PAGINA);
+        int total = videojuegoRepository.contarPorTitulo(titulo);
+        return new PaginaResultado<>(items, pagina, total);
     }
 }
 

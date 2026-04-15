@@ -18,5 +18,15 @@ public interface IVideojuegoRepository {
     void guardar(Videojuego videojuego);
     void actualizar(Videojuego videojuego);
     void eliminarPorId(int id);
-}
 
+    // ── Métodos paginados ──
+    List<Videojuego> obtenerTodosPaginado(int offset, int limit);
+    int contarTodos();
+    List<Videojuego> obtenerPorPlataformaPaginado(int plataformaId, int offset, int limit);
+    int contarPorPlataforma(int plataformaId);
+    List<Videojuego> obtenerDisponiblesPaginado(int offset, int limit);
+    int contarDisponibles();
+    List<Videojuego> obtenerPorCalificacionPaginado(int offset, int limit);
+    List<Videojuego> buscarPorTituloPaginado(String titulo, int offset, int limit);
+    int contarPorTitulo(String titulo);
+}

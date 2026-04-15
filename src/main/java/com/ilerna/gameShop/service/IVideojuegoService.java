@@ -1,5 +1,6 @@
 package com.ilerna.gameShop.service;
 
+import com.ilerna.gameShop.model.PaginaResultado;
 import com.ilerna.gameShop.model.Videojuego;
 import java.util.List;
 import java.util.Optional;
@@ -19,5 +20,11 @@ public interface IVideojuegoService {
     void actualizarVideojuego(Videojuego videojuego);
     void eliminarVideojuego(int id);
     void restarStock(int videojuegoId, int cantidad);
-}
 
+    // ── Métodos paginados ──
+    PaginaResultado<Videojuego> obtenerTodosPaginado(int pagina);
+    PaginaResultado<Videojuego> obtenerPorPlataformaPaginado(int plataformaId, int pagina);
+    PaginaResultado<Videojuego> obtenerDisponiblesPaginado(int pagina);
+    PaginaResultado<Videojuego> obtenerPorCalificacionPaginado(int pagina);
+    PaginaResultado<Videojuego> buscarPorTituloPaginado(String titulo, int pagina);
+}

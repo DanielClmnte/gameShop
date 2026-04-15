@@ -50,6 +50,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- ═══════ PAGINACIÓN ═══════ -->
+        <div th:replace="~{fragments/layout :: pagination(${pagina}, ${baseUrl})}"></div>
     </div>
     <div th:replace="~{fragments/layout :: footer}"></div>
     <script th:src="@{/js/main.js}"></script>

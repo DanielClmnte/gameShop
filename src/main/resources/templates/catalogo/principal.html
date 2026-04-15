@@ -96,10 +96,8 @@
             </div>
         </div>
 
-        <!-- ═══════ BOTÓN VER TODO ═══════ -->
-        <div class="view-all-section">
-            <a href="/catalogo/disponibles" class="btn btn-primary btn-lg">📦 Ver todo el catálogo</a>
-        </div>
+        <!-- ═══════ PAGINACIÓN ═══════ -->
+        <div th:replace="~{fragments/layout :: pagination(${pagina}, ${baseUrl})}"></div>
 
         <!-- ═══════ FEATURES BAR ═══════ -->
         <div class="features-bar">

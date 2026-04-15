@@ -207,6 +207,117 @@ public class VideojuegoRepository implements IVideojuegoRepository {
         }
     }
 
+    // ══════════════════════════════════════════════
+    // MÉTODOS PAGINADOS (LIMIT / OFFSET) + COUNT
+    // ══════════════════════════════════════════════
+
+    public List<Videojuego> obtenerTodosPaginado(int offset, int limit) {
+        List<Videojuego> videojuegos = new ArrayList<>();
+        String sql = "SELECT * FROM videojuegos ORDER BY id DESC LIMIT ? OFFSET ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+            pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return videojuegos;
+    }
+
+    public int contarTodos() {
+        String sql = "SELECT COUNT(*) FROM videojuegos";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    public List<Videojuego> obtenerPorPlataformaPaginado(int plataformaId, int offset, int limit) {
+        List<Videojuego> videojuegos = new ArrayList<>();
+        String sql = "SELECT * FROM videojuegos WHERE plataforma_id = ? ORDER BY id DESC LIMIT ? OFFSET ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, plataformaId);
+            pstmt.setInt(2, limit);
+            pstmt.setInt(3, offset);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return videojuegos;
+    }
+
+    public int contarPorPlataforma(int plataformaId) {
+        String sql = "SELECT COUNT(*) FROM videojuegos WHERE plataforma_id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, plataformaId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    public List<Videojuego> obtenerDisponiblesPaginado(int offset, int limit) {
+        List<Videojuego> videojuegos = new ArrayList<>();
+        String sql = "SELECT * FROM videojuegos WHERE disponible = TRUE ORDER BY id DESC LIMIT ? OFFSET ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+            pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return videojuegos;
+    }
+
+    public int contarDisponibles() {
+        String sql = "SELECT COUNT(*) FROM videojuegos WHERE disponible = TRUE";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    public List<Videojuego> obtenerPorCalificacionPaginado(int offset, int limit) {
+        List<Videojuego> videojuegos = new ArrayList<>();
+        String sql = "SELECT * FROM videojuegos ORDER BY calificacion DESC LIMIT ? OFFSET ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+            pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return videojuegos;
+    }
+
+    public List<Videojuego> buscarPorTituloPaginado(String titulo, int offset, int limit) {
+        List<Videojuego> videojuegos = new ArrayList<>();
+        String sql = "SELECT * FROM videojuegos WHERE titulo LIKE ? LIMIT ? OFFSET ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, "%" + titulo + "%");
+            pstmt.setInt(2, limit);
+            pstmt.setInt(3, offset);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return videojuegos;
+    }
+
+    public int contarPorTitulo(String titulo) {
+        String sql = "SELECT COUNT(*) FROM videojuegos WHERE titulo LIKE ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, "%" + titulo + "%");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
     // ── Mapear ResultSet a Videojuego ──
     private Videojuego mapearVideojuego(ResultSet rs) throws SQLException {
         Videojuego vj = new Videojuego();

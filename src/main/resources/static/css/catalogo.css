@@ -513,3 +513,77 @@
 .btn-fav-active:hover {
     background: rgba(255,77,109,0.25);
 }
+
+/* ══════════════════════════════════════════════
+   PAGINACIÓN — dark gamer theme
+   ══════════════════════════════════════════════ */
+.pagination-nav {
+    padding: 36px 0 12px;
+}
+.pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+.pagination-info {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 14px;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition);
+    cursor: pointer;
+}
+.pagination-btn:hover:not(.pagination-btn-disabled):not(.pagination-active) {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+    transform: translateY(-1px);
+}
+.pagination-num {
+    padding: 0 4px;
+}
+.pagination-active {
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 12px rgba(108,92,231,.35);
+    cursor: default;
+}
+.pagination-btn-disabled {
+    color: var(--text-muted);
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+@media (max-width: 768px) {
+    .pagination-btn {
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        font-size: 13px;
+    }
+    .pagination-info { font-size: 12px; }
+}
+
