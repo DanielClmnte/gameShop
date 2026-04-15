@@ -28,7 +28,7 @@
                 <div class="pedido-header">
                     <div>
                         <span class="pedido-numero" th:text="${'Pedido #' + pedido.numeroPedido}">Pedido #123456</span>
-                        <span class="pedido-fecha" th:text="${' · ' + #temporals.format(pedido.fechaPedido, 'dd/MM/yyyy')}"> · 08/04/2026</span>
+                        <span class="pedido-fecha" th:if="${pedido.fechaPedido != null}" th:text="${' · ' + #temporals.format(pedido.fechaPedido, 'dd/MM/yyyy')}"> · 08/04/2026</span>
                     </div>
                     <span class="badge-estado"
                           th:classappend="${pedido.estado == 'PROCESANDO' ? 'estado-procesando' : (pedido.estado == 'ENVIADO' ? 'estado-enviado' : 'estado-entregado')}"
@@ -65,7 +65,8 @@
                 <!-- Entrega -->
                 <div class="pedido-entrega">
                     📦 Entrega estimada:
-                    <span th:text="${#temporals.format(pedido.fechaEntregaEstimada, 'dd/MM/yyyy')}">11/04/2026</span>
+                    <span th:if="${pedido.fechaEntregaEstimada != null}" th:text="${#temporals.format(pedido.fechaEntregaEstimada, 'dd/MM/yyyy')}">11/04/2026</span>
+                    <span th:unless="${pedido.fechaEntregaEstimada != null}">Por confirmar</span>
                     &nbsp;·&nbsp;
                     <span th:text="${pedido.nombreCompleto}">Cliente</span>
                     &nbsp;·&nbsp;
