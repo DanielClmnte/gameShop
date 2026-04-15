@@ -199,5 +199,98 @@ INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imag
  8.99, 30, 3, '/uploads/images/golf-it.jpg', 'Perfuse Entertainment', '2017-02-27', 4.10);
 
 -- ==============================================
--- FIN DE LOS DATOS
+-- VIDEOJUEGOS 41-60 (20 titulos adicionales)
+-- ==============================================
+
+-- ── PlayStation 5 (plataforma_id = 1) ──────────────────────────
+
+INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, desarrollador, fecha_lanzamiento, calificacion) VALUES
+('Dragon Quest XI: Ecos de un Pasado Perdido',
+ 'RPG japones clasico donde un joven heroe marcado por el destino recorre el mundo para derrotar la oscuridad',
+ 39.99, 20, 1, '/uploads/images/dragon-quest-xi.jpg', 'Square Enix', '2018-09-04', 4.70),
+
+('Helldivers 2',
+ 'Shooter cooperativo en tercera persona donde soldados de la Super Tierra luchan por la democracia galactica',
+ 39.99, 18, 1, '/uploads/images/helldivers-2.jpg', 'Arrowhead Game Studios', '2024-02-08', 4.30),
+
+('Little Nightmares 3',
+ 'Aventura de terror en la que dos ninos atrapados en la Espiral intentan escapar de sus pesadillas',
+ 29.99, 14, 1, '/uploads/images/little-nightmares-3.jpg', 'Supermassive Games', '2025-11-18', 4.20),
+
+('Dark Souls Remastered',
+ 'Edicion remasterizada del legendario RPG de accion que definio el genero soulslike con su dificultad implacable',
+ 39.99, 15, 1, '/uploads/images/dark-souls-remastered.jpg', 'FromSoftware', '2018-05-25', 4.70),
+
+('Digimon: Time Strangers',
+ 'RPG de accion donde los jugadores viajan entre eras para salvar el mundo digital junto a sus Digimon',
+ 59.99, 10, 1, '/uploads/images/digimon-time-strangers.jpg', 'Bandai Namco', '2026-08-20', 4.00),
+
+("No Man's Sky",
+ 'Aventura de exploracion espacial procedural con galaxias infinitas, construccion de bases y modo cooperativo',
+ 29.99, 20, 1, '/uploads/images/no-mans-sky.jpg', 'Hello Games', '2016-08-09', 4.30),
+
+('Blasphemous 2',
+ 'Secuela del metroidvania penitente con nuevas armas, habilidades y un mundo gotico aun mas extenso',
+ 29.99, 18, 1, '/uploads/images/blasphemous-2.jpg', 'The Game Kitchen', '2023-08-24', 4.50);
+
+-- ── Xbox Series X (plataforma_id = 2) ──────────────────────────
+
+INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, desarrollador, fecha_lanzamiento, calificacion) VALUES
+('Cuphead',
+ 'Juego run and gun con estetica de dibujos animados de los anos 30 y jefes finales desafiantes',
+ 19.99, 22, 2, '/uploads/images/cuphead.jpg', 'Studio MDHR', '2017-09-29', 4.70),
+
+('Planet of Lana',
+ 'Aventura cinematografica de puzles donde una nina y su companero felino salvan su mundo de una invasion',
+ 19.99, 16, 2, '/uploads/images/planet-of-lana.jpg', 'Wishfully Studios', '2023-05-23', 4.20),
+
+('Sea of Stars',
+ 'RPG por turnos inspirado en los clasicos con combate basado en tiempo, exploracion y una historia epica',
+ 34.99, 18, 2, '/uploads/images/sea-of-stars.jpg', 'Sabotage Studio', '2023-08-29', 4.50),
+
+('Dead by Daylight',
+ 'Juego de terror asimetrico multijugador donde cuatro supervivientes escapan de un asesino implacable',
+ 19.99, 25, 2, '/uploads/images/dead-by-daylight.jpg', 'Behaviour Interactive', '2016-06-14', 4.00),
+
+('Slay the Spire 2',
+ 'Roguelike de construccion de mazos con nuevos personajes, cartas y mecanicas estrategicas adictivas',
+ 29.99, 15, 2, '/uploads/images/slay-the-spire-2.jpg', 'Mega Crit', '2025-04-15', 4.60),
+
+('Temtem',
+ 'MMO de captura de criaturas inspirado en Pokemon con combate por turnos cooperativo y mundo persistente',
+ 34.99, 14, 2, '/uploads/images/temtem.jpg', 'Crema Games', '2022-09-06', 3.80),
+
+('Bread & Fred',
+ 'Plataformas cooperativo donde dos pinguinos atados por una cuerda escalan una montana helada',
+ 14.99, 20, 2, '/uploads/images/bread-and-fred.jpg', 'SandCastles Studio', '2024-05-23', 4.20);
+
+-- ── PC (plataforma_id = 3) ──────────────────────────────────────
+
+INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, desarrollador, fecha_lanzamiento, calificacion) VALUES
+('Stardew Valley',
+ 'Simulador de granja donde heredas una parcela y construyes tu vida cultivando, pescando y haciendo amigos',
+ 14.99, 35, 3, '/uploads/images/stardew-valley.jpg', 'ConcernedApe', '2016-02-26', 4.90),
+
+('Undertale',
+ 'RPG indie donde cada monstruo puede ser derrotado o perdonado en un mundo subterraneo lleno de humor y emocion',
+ 9.99, 30, 3, '/uploads/images/undertale.jpg', 'Toby Fox', '2015-09-15', 4.80),
+
+('Minecraft',
+ 'Sandbox de supervivencia y creatividad donde construyes mundos infinitos bloque a bloque',
+ 23.99, 40, 3, '/uploads/images/minecraft.jpg', 'Mojang Studios', '2011-11-18', 4.90),
+
+('Kingdom Come: Deliverance',
+ 'RPG historico medieval ambientado en Bohemia del siglo XV con combate realista y narrativa inmersiva',
+ 29.99, 18, 3, '/uploads/images/kingdom-come-deliverance.jpg', 'Warhorse Studios', '2018-02-13', 4.40),
+
+('PEAK',
+ 'Juego de escalada y parkour en primera persona donde superas montanas imposibles con fisicas realistas',
+ 19.99, 15, 3, '/uploads/images/peak.jpg', 'Ysbryd Games', '2026-02-14', 4.10),
+
+('The Elder Scrolls V: Skyrim',
+ 'RPG de mundo abierto epico donde el Dovahkiin lucha contra dragones en la provincia nordica de Skyrim',
+ 19.99, 30, 3, '/uploads/images/skyrim.jpg', 'Bethesda Game Studios', '2011-11-11', 4.80);
+
+-- ==============================================
+-- FIN DE LOS DATOS (60 videojuegos en total)
 -- ==============================================
