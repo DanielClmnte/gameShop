@@ -292,5 +292,58 @@ INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imag
  19.99, 30, 3, '/uploads/images/skyrim.jpg', 'Bethesda Game Studios', '2011-11-11', 4.80);
 
 -- ==============================================
--- FIN DE LOS DATOS (60 videojuegos en total)
+-- VIDEOJUEGOS 61-70 (ultima tanda)
+-- ==============================================
+
+-- ── PlayStation 5 (plataforma_id = 1) ──────────────────────────
+
+INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, desarrollador, fecha_lanzamiento, calificacion) VALUES
+('Tekken 8',
+ 'Juego de lucha con graficos de nueva generacion, nuevos mecanicas de calor y la saga Mishima en su punto mas intenso',
+ 69.99, 16, 1, '/uploads/images/tekken-8.jpg', 'Bandai Namco', '2024-01-26', 4.40),
+
+('The Last of Us Part I',
+ 'Remake del aclamado juego de supervivencia donde Joel y Ellie cruzan unos Estados Unidos devastados por una pandemia',
+ 69.99, 14, 1, '/uploads/images/tlou-part-1.jpg', 'Naughty Dog', '2022-09-02', 4.70),
+
+('The Last of Us Part II',
+ 'Secuela donde Ellie emprende un viaje de venganza en un mundo postapocaliptico lleno de violencia y emociones',
+ 49.99, 16, 1, '/uploads/images/tlou-part-2.jpg', 'Naughty Dog', '2020-06-19', 4.60),
+
+('Final Fantasy X/X-2 HD Remaster',
+ 'Remasterizacion en HD de los clasicos RPG de Square Enix con Tidus y Yuna en el mundo de Spira',
+ 29.99, 20, 1, '/uploads/images/ffx-x2-hd.jpg', 'Square Enix', '2019-04-16', 4.60);
+
+-- ── Xbox Series X (plataforma_id = 2) ──────────────────────────
+
+INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, desarrollador, fecha_lanzamiento, calificacion) VALUES
+('BioShock: The Collection',
+ 'Coleccion completa con BioShock, BioShock 2 y BioShock Infinite remasterizados en una sola edicion',
+ 29.99, 18, 2, '/uploads/images/bioshock-collection.jpg', '2K Games', '2016-09-13', 4.70),
+
+('Deep Rock Galactic',
+ 'Shooter cooperativo donde enanos espaciales minan recursos y luchan contra criaturas alienigenas en cuevas procedurales',
+ 29.99, 22, 2, '/uploads/images/deep-rock-galactic.jpg', 'Ghost Ship Games', '2020-05-13', 4.60);
+
+-- ── PC (plataforma_id = 3) ──────────────────────────────────────
+
+INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, desarrollador, fecha_lanzamiento, calificacion) VALUES
+('Slime Rancher 2',
+ 'Secuela del simulador de granja de slimes donde Beatrix explora nuevas islas y descubre nuevas especies',
+ 29.99, 18, 3, '/uploads/images/slime-rancher-2.jpg', 'Monomi Park', '2024-11-12', 4.30),
+
+('Slime Rancher',
+ 'Simulador de granja donde capturas y crias adorables slimes en un planeta lejano lleno de color',
+ 19.99, 25, 3, '/uploads/images/slime-rancher.jpg', 'Monomi Park', '2017-08-01', 4.50),
+
+('Terraria',
+ 'Aventura sandbox 2D con exploracion, construccion, crafting y combate contra jefes en mundos generados proceduralmente',
+ 9.99, 35, 3, '/uploads/images/terraria.jpg', 'Re-Logic', '2011-05-16', 4.90),
+
+('Valheim',
+ 'Juego de supervivencia cooperativo vikingo donde exploras un purgatorio mitico y construyes tu legado',
+ 19.99, 22, 3, '/uploads/images/valheim.jpg', 'Iron Gate AB', '2021-02-02', 4.50);
+
+-- ==============================================
+-- FIN DE LOS DATOS (70 videojuegos en total)
 -- ==============================================
