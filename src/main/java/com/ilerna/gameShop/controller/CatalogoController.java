@@ -32,10 +32,31 @@ public class CatalogoController {
     }
     
     /**
-     * Mostrar el catálogo principal con todas las plataformas (paginado)
+     * Mostrar página de inicio con secciones (destacados, más vendidos, novedades)
      */
     @GetMapping("/")
-    public String mostrarCatalogoPrincipal(
+    public String mostrarInicio(Model model) {
+        List<Plataforma> plataformas = plataformaService.obtenerTodas();
+        
+        // Secciones con límite de items
+        List<Videojuego> destacados = videojuegoService.obtenerPorCalificacion().stream().limit(10).toList();
+        List<Videojuego> masVendidos = videojuegoService.obtenerMasVendidos(10);
+        List<Videojuego> novedades = videojuegoService.obtenerNovedades(10);
+        
+        model.addAttribute("plataformas", plataformas);
+        model.addAttribute("destacados", destacados);
+        model.addAttribute("masVendidos", masVendidos);
+        model.addAttribute("novedades", novedades);
+        model.addAttribute("titulo", "GameShop - Tu tienda de videojuegos");
+        
+        return "catalogo/inicio";
+    }
+    
+    /**
+     * Ver todo el catálogo (paginado)
+     */
+    @GetMapping("/catalogo/todos")
+    public String mostrarTodos(
             @RequestParam(defaultValue = "1") int page,
             Model model) {
         List<Plataforma> plataformas = plataformaService.obtenerTodas();
@@ -44,10 +65,10 @@ public class CatalogoController {
         model.addAttribute("plataformas", plataformas);
         model.addAttribute("videojuegos", pagina.getItems());
         model.addAttribute("pagina", pagina);
-        model.addAttribute("baseUrl", "/");
-        model.addAttribute("titulo", "Catálogo de Videojuegos - GameShop");
+        model.addAttribute("baseUrl", "/catalogo/todos");
+        model.addAttribute("titulo", "Todo el Catálogo - GameShop");
         
-        return "catalogo/principal";
+        return "catalogo/todos";
     }
     
     /**
