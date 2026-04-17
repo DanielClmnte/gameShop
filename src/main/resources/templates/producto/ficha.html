@@ -63,7 +63,12 @@
                 <div class="reviews-summary">
                     <span class="reviews-avg" th:text="${#numbers.formatDecimal(calificacionPromedio, 1, 1)}"></span>
                     <div>
-                        <div class="reviews-stars">⭐⭐⭐⭐⭐</div>
+                        <div class="reviews-stars">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <span th:if="${i <= calificacionPromedio}">⭐</span>
+                                <span th:if="${i > calificacionPromedio}" style="opacity:0.3">⭐</span>
+                            </span>
+                        </div>
                         <div class="reviews-count" th:text="${'Basado en ' + totalOpiniones + ' opiniones'}"></div>
                     </div>
                 </div>

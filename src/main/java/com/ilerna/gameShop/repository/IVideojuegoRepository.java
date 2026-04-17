@@ -19,6 +19,10 @@ public interface IVideojuegoRepository {
     void actualizar(Videojuego videojuego);
     void eliminarPorId(int id);
 
+    // ── Categorías especiales ──
+    List<Videojuego> obtenerNovedades(int limit);
+    List<Videojuego> obtenerMasVendidos(int limit);
+
     // ── Métodos paginados ──
     List<Videojuego> obtenerTodosPaginado(int offset, int limit);
     int contarTodos();
@@ -29,4 +33,8 @@ public interface IVideojuegoRepository {
     List<Videojuego> obtenerPorCalificacionPaginado(int offset, int limit);
     List<Videojuego> buscarPorTituloPaginado(String titulo, int offset, int limit);
     int contarPorTitulo(String titulo);
+    List<Videojuego> obtenerNovedadesPaginado(int offset, int limit);
+    int contarNovedades();
+    List<Videojuego> obtenerMasVendidosPaginado(int offset, int limit);
+    int contarMasVendidos();
 }

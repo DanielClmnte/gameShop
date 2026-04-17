@@ -141,5 +141,29 @@ public class VideojuegoService implements IVideojuegoService {
         int total = videojuegoRepository.contarPorTitulo(titulo);
         return new PaginaResultado<>(items, pagina, total);
     }
+
+    public PaginaResultado<Videojuego> obtenerNovedadesPaginado(int pagina) {
+        if (pagina < 1) pagina = 1;
+        int offset = PaginaResultado.calcularOffset(pagina);
+        List<Videojuego> items = videojuegoRepository.obtenerNovedadesPaginado(offset, PaginaResultado.ITEMS_POR_PAGINA);
+        int total = videojuegoRepository.contarNovedades();
+        return new PaginaResultado<>(items, pagina, total);
+    }
+
+    public PaginaResultado<Videojuego> obtenerMasVendidosPaginado(int pagina) {
+        if (pagina < 1) pagina = 1;
+        int offset = PaginaResultado.calcularOffset(pagina);
+        List<Videojuego> items = videojuegoRepository.obtenerMasVendidosPaginado(offset, PaginaResultado.ITEMS_POR_PAGINA);
+        int total = videojuegoRepository.contarMasVendidos();
+        return new PaginaResultado<>(items, pagina, total);
+    }
+
+    public List<Videojuego> obtenerNovedades(int limit) {
+        return videojuegoRepository.obtenerNovedades(limit);
+    }
+
+    public List<Videojuego> obtenerMasVendidos(int limit) {
+        return videojuegoRepository.obtenerMasVendidos(limit);
+    }
 }
 

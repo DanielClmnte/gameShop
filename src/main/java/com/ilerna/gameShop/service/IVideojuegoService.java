@@ -27,4 +27,8 @@ public interface IVideojuegoService {
     PaginaResultado<Videojuego> obtenerDisponiblesPaginado(int pagina);
     PaginaResultado<Videojuego> obtenerPorCalificacionPaginado(int pagina);
     PaginaResultado<Videojuego> buscarPorTituloPaginado(String titulo, int pagina);
+    PaginaResultado<Videojuego> obtenerNovedadesPaginado(int pagina);
+    PaginaResultado<Videojuego> obtenerMasVendidosPaginado(int pagina);
+    List<Videojuego> obtenerNovedades(int limit);
+    List<Videojuego> obtenerMasVendidos(int limit);
 }

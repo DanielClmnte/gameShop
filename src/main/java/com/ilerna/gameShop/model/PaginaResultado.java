@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class PaginaResultado<T> {
 
-    public static final int ITEMS_POR_PAGINA = 16;
+    public static final int ITEMS_POR_PAGINA = 20;
 
     private List<T> items;
     private int paginaActual;

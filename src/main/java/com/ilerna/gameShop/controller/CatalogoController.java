@@ -133,4 +133,42 @@ public class CatalogoController {
         
         return "catalogo/populares";
     }
+    
+    /**
+     * Mostrar novedades (ordenados por fecha lanzamiento DESC) (paginado)
+     */
+    @GetMapping("/catalogo/novedades")
+    public String mostrarNovedades(
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
+        PaginaResultado<Videojuego> pagina = videojuegoService.obtenerNovedadesPaginado(page);
+        List<Plataforma> plataformas = plataformaService.obtenerTodas();
+        
+        model.addAttribute("videojuegos", pagina.getItems());
+        model.addAttribute("plataformas", plataformas);
+        model.addAttribute("pagina", pagina);
+        model.addAttribute("baseUrl", "/catalogo/novedades");
+        model.addAttribute("titulo", "Novedades - GameShop");
+        
+        return "catalogo/novedades";
+    }
+    
+    /**
+     * Mostrar más vendidos (por total vendido en pedidos) (paginado)
+     */
+    @GetMapping("/catalogo/mas-vendidos")
+    public String mostrarMasVendidos(
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
+        PaginaResultado<Videojuego> pagina = videojuegoService.obtenerMasVendidosPaginado(page);
+        List<Plataforma> plataformas = plataformaService.obtenerTodas();
+        
+        model.addAttribute("videojuegos", pagina.getItems());
+        model.addAttribute("plataformas", plataformas);
+        model.addAttribute("pagina", pagina);
+        model.addAttribute("baseUrl", "/catalogo/mas-vendidos");
+        model.addAttribute("titulo", "Más Vendidos - GameShop");
+        
+        return "catalogo/mas-vendidos";
+    }
 }

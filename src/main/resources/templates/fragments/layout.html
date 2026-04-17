@@ -14,6 +14,8 @@
             <a href="/" class="nav-link">Inicio</a>
             <a href="/catalogo/disponibles" class="nav-link">Disponibles</a>
             <a href="/catalogo/populares" class="nav-link">Populares</a>
+            <a href="/catalogo/novedades" class="nav-link">Novedades</a>
+            <a href="/catalogo/mas-vendidos" class="nav-link">Más Vendidos</a>
             <a th:if="${session.usuarioId != null}" href="/favoritos" class="nav-link">❤️ Favoritos</a>
             <a th:if="${session.usuarioId != null}" href="/pedidos" class="nav-link">Mis Pedidos</a>
             <a th:if="${session.usuarioRol == 'ADMIN'}" href="/admin" class="nav-link nav-admin">Admin</a>
