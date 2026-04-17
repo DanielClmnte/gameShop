@@ -113,9 +113,40 @@ img { max-width: 100%; height: auto; display: block; }
 .search-bar button { background: transparent; border: none; color: var(--text-secondary); padding: 8px 12px; cursor: pointer; font-size: 14px; transition: color var(--transition); }
 .search-bar button:hover { color: var(--primary); }
 
-.cart-btn { position: relative; font-size: 22px; text-decoration: none; padding: 6px; transition: all var(--transition); }
-.cart-btn:hover { transform: scale(1.1); filter: drop-shadow(0 0 8px rgba(108,92,231,.3)); }
-.cart-badge { position: absolute; top: -4px; right: -8px; background: linear-gradient(135deg, var(--primary), #8b5cf6); color: #fff; font-size: 11px; font-weight: 700; min-width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 0 5px; box-shadow: 0 2px 8px rgba(108,92,231,.4); }
+.cart-btn {
+    position: relative;
+    font-size: 22px;
+    text-decoration: none;
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition);
+}
+.cart-btn:hover {
+    transform: translateY(-2px);
+    background: var(--primary-light);
+    border-color: var(--primary);
+    box-shadow: 0 4px 16px rgba(108,92,231,.2);
+}
+.cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: linear-gradient(135deg, #ff5252, #ff1744);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    box-shadow: 0 2px 8px rgba(255,23,68,.4);
+    border: 2px solid var(--bg-body);
+}
 
 .user-area { display: flex; align-items: center; gap: 10px; }
 .user-link { display: flex; align-items: center; gap: 6px; color: var(--text); text-decoration: none; font-size: 14px; font-weight: 500; padding: 6px 12px; border-radius: var(--radius-sm); transition: background var(--transition); }
