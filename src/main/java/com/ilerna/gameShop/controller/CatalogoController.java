@@ -38,10 +38,10 @@ public class CatalogoController {
     public String mostrarInicio(Model model) {
         List<Plataforma> plataformas = plataformaService.obtenerTodas();
         
-        // Secciones con límite de items
-        List<Videojuego> destacados = videojuegoService.obtenerPorCalificacion().stream().limit(10).toList();
-        List<Videojuego> masVendidos = videojuegoService.obtenerMasVendidos(10);
-        List<Videojuego> novedades = videojuegoService.obtenerNovedades(10);
+        // Secciones con límite de items (2 filas de 6 = 12)
+        List<Videojuego> destacados = videojuegoService.obtenerPorCalificacion().stream().limit(12).toList();
+        List<Videojuego> masVendidos = videojuegoService.obtenerMasVendidos(12);
+        List<Videojuego> novedades = videojuegoService.obtenerNovedades(12);
         
         model.addAttribute("plataformas", plataformas);
         model.addAttribute("destacados", destacados);
@@ -53,19 +53,42 @@ public class CatalogoController {
     }
     
     /**
-     * Ver todo el catálogo (paginado)
+     * Ver todo el catálogo (paginado) con filtros de precio opcionales
      */
     @GetMapping("/catalogo/todos")
     public String mostrarTodos(
             @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) Double precioMin,
+            @RequestParam(required = false) Double precioMax,
             Model model) {
         List<Plataforma> plataformas = plataformaService.obtenerTodas();
         PaginaResultado<Videojuego> pagina = videojuegoService.obtenerTodosPaginado(page);
         
+        // Filtrar por precio si se especifican parámetros
+        if (precioMin != null || precioMax != null) {
+            List<Videojuego> filtered = pagina.getItems().stream()
+                .filter(v -> {
+                    boolean cumpleMin = precioMin == null || v.getPrecio() >= precioMin;
+                    boolean cumpleMax = precioMax == null || v.getPrecio() <= precioMax;
+                    return cumpleMin && cumpleMax;
+                })
+                .toList();
+            model.addAttribute("videojuegos", filtered);
+            // Construir baseUrl con parámetros
+            StringBuilder baseUrl = new StringBuilder("/catalogo/todos?");
+            if (precioMin != null) baseUrl.append("precioMin=").append(precioMin).append("&");
+            if (precioMax != null) baseUrl.append("precioMax=").append(precioMax).append("&");
+            model.addAttribute("baseUrl", baseUrl.toString());
+            model.addAttribute("filtroActivo", true);
+        } else {
+            model.addAttribute("videojuegos", pagina.getItems());
+            model.addAttribute("baseUrl", "/catalogo/todos");
+        }
+        
         model.addAttribute("plataformas", plataformas);
-        model.addAttribute("videojuegos", pagina.getItems());
         model.addAttribute("pagina", pagina);
-        model.addAttribute("baseUrl", "/catalogo/todos");
+        model.addAttribute("precioMin", precioMin);
+        model.addAttribute("precioMax", precioMax);
         model.addAttribute("titulo", "Todo el Catálogo - GameShop");
         
         return "catalogo/todos";

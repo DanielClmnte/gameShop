@@ -3,36 +3,150 @@
    ============================================ */
 
 /* ── Template class aliases ── */
-.historial-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-.historial-container h1 { color: var(--primary); margin-bottom: 30px; }
+.historial-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 0 32px;
+}
+.historial-container h1 {
+    font-size: 36px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 40px;
+    letter-spacing: -.6px;
+}
 
-.pedido-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 25px; margin-bottom: 20px; transition: border-color var(--transition); }
-.pedido-card:hover { border-color: var(--primary); }
+.pedido-card {
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin-bottom: 28px;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+.pedido-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(108,92,231,.2), 0 0 0 1px rgba(108,92,231,.2);
+    transform: translateY(-2px);
+}
 
-.pedido-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-.pedido-numero { font-size: 20px; font-weight: bold; color: var(--primary); }
-.pedido-fecha { color: var(--text-muted); font-size: 14px; }
+.pedido-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+}
+.pedido-numero {
+    font-size: 23px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -.4px;
+}
+.pedido-fecha {
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 500;
+}
 
-.badge-estado { padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-.estado-procesando { background: var(--yellow-dim); color: var(--yellow); }
-.estado-enviado    { background: var(--primary-light); color: var(--primary); }
-.estado-entregado  { background: var(--green-dim); color: var(--green); }
+.badge-estado {
+    padding: 7px 18px;
+    border-radius: var(--radius-xl);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.estado-procesando {
+    background: var(--yellow-dim);
+    color: var(--yellow);
+    border: 1px solid rgba(255,193,7,.3);
+}
+.estado-enviado {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid rgba(108,92,231,.3);
+}
+.estado-entregado {
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(0,230,118,.3);
+}
 
-.pedido-items { border-top: 1px solid var(--border); padding-top: 15px; margin-top: 5px; }
-.pedido-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(42,45,66,.5); font-size: 14px; }
-.pedido-item:last-child { border-bottom: none; }
+.pedido-items {
+    border-top: 1px solid rgba(37,40,64,.6);
+    padding-top: 20px;
+    margin-top: 10px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+}
+.pedido-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(37,40,64,.5);
+    font-size: 15px;
+    transition: all var(--transition);
+}
+.pedido-item:last-child {
+    border-bottom: none;
+}
+.pedido-item:hover {
+    padding-left: 8px;
+    color: var(--primary);
+}
 
-.pedido-totales { display: flex; justify-content: flex-end; gap: 30px; margin-top: 15px; padding-top: 10px; border-top: 2px solid var(--primary); }
-.total-label { color: var(--text-muted); font-size: 14px; }
-.total-valor { color: var(--green); font-weight: bold; font-size: 18px; }
+.pedido-totales {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 2px solid var(--primary);
+    background: var(--bg-elevated);
+    padding: 24px;
+    border-radius: var(--radius-sm);
+}
+.pedido-totales > div {
+    text-align: center;
+}
+.total-label {
+    color: var(--text-muted);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+.total-valor {
+    color: var(--green);
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -.4px;
+}
 
-.pedido-entrega { margin-top: 15px; padding: 12px; background: var(--bg-elevated); border-radius: var(--radius-sm); font-size: 13px; color: var(--text-muted); }
-.pedido-entrega span { color: var(--yellow); font-weight: bold; }
-
-.sin-pedidos { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
-.sin-pedidos .icono { font-size: 60px; margin-bottom: 20px; }
-.btn-ir-catalogo { display: inline-block; margin-top: 20px; padding: 12px 30px; background: var(--primary); color: #fff; text-decoration: none; border-radius: var(--radius-sm); font-weight: bold; }
-.btn-ir-catalogo:hover { background: var(--primary-hover); color: #fff; }
+.pedido-entrega {
+    margin-top: 20px;
+    padding: 18px;
+    background: linear-gradient(90deg, var(--bg-elevated), var(--bg-card));
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--text-secondary);
+    border-left: 3px solid var(--yellow);
+    font-weight: 500;
+}
+.pedido-entrega span {
+    color: var(--yellow);
+    font-weight: 700;
+}
 
 /* ── Design-system class names ── */
 .orders-page h1 { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 32px; }
@@ -66,3 +180,21 @@
 .order-delivery { margin-top: 14px; padding: 12px; background: var(--bg-elevated); border-radius: var(--radius-sm); font-size: 13px; color: var(--text-muted); }
 .order-delivery span { color: var(--yellow); font-weight: 600; }
 
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .historial-container { padding: 0 16px; }
+    .historial-container h1 { font-size: 24px; }
+    .pedido-card { padding: 20px; }
+    .pedido-totales {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .pedido-totales > div {
+        display: flex;
+        justify-content: space-between;
+        text-align: left;
+    }
+    .total-label {
+        margin-bottom: 0;
+    }
+}

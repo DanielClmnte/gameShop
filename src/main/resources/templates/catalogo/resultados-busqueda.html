@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${titulo}">GameShop - Búsqueda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/common.css}"><link rel="stylesheet" th:href="@{/css/catalogo.css}">
 </head>
 <body>
@@ -46,7 +47,7 @@
                         <div class="game-card-actions">
                             <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-ghost btn-sm">Ver</a>
                             <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
-                                <button type="submit" class="btn btn-primary btn-sm">🛒</button>
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-basket-shopping"></i></button>
                             </form>
                             <button th:unless="${videojuego.disponible}" class="btn btn-ghost btn-sm" disabled>Agotado</button>
                         </div>
