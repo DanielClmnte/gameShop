@@ -10,7 +10,7 @@
 <body>
     <div th:replace="~{fragments/layout :: header}"></div>
 
-    <div class="confirmacion-container">
+    <div class="container confirmacion-container">
         <div class="success-box">
             <div class="checkmark">✅</div>
             <h1>¡Pedido Confirmado!</h1>
@@ -25,7 +25,7 @@
 
         <!-- DETALLES DEL PEDIDO -->
         <div class="detalles-pedido">
-            <h3 style="color:var(--primary);margin-bottom:15px;">🎮 Productos del Pedido</h3>
+            <h3 class="order-details-title">🎮 Productos del Pedido</h3>
 
             <div class="detalle-item" th:each="item : ${pedido.items}">
                 <span>

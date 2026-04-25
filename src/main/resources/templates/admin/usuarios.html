@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Gestionar Usuarios - GameShop Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/admin-layout :: header-admin}"></div>
+
+    <div class="container admin-page">
+        <div class="admin-header">
+            <h1>👥 Gestionar Usuarios</h1>
+            <a href="/admin/usuarios/nuevo" class="btn btn-primary">➕ Nuevo Usuario</a>
+        </div>
+
+        <div th:if="${param.exito}" class="alert alert-success">
+            <span th:if="${param.exito[0] == 'creado'}">✅ Usuario creado correctamente.</span>
+            <span th:if="${param.exito[0] == 'actualizado'}">✅ Usuario actualizado correctamente.</span>
+            <span th:if="${param.exito[0] == 'eliminado'}">✅ Usuario eliminado correctamente.</span>
+        </div>
+
+        <!-- TABLA DE USUARIOS -->
+        <div class="admin-table">
+            <div class="admin-table-head users-head">
+                <div class="col-id">ID</div>
+                <div>Nombre</div>
+                <div>Email</div>
+                <div>Teléfono</div>
+                <div style="text-align:center">Rol</div>
+                <div style="text-align:center">Estado</div>
+                <div class="col-actions">Acciones</div>
+            </div>
+
+            <div class="admin-table-row users-row" th:each="u : ${usuarios}">
+                <div class="col-id" th:text="${u.id}">1</div>
+                <div class="col-title" th:text="${u.nombre}">Nombre</div>
+                <div style="font-size:13px;color:var(--text-secondary)" th:text="${u.email}">email</div>
+                <div style="font-size:13px;color:var(--text-secondary)"
+                     th:text="${u.telefono != null ? u.telefono : '—'}">—</div>
+                <div style="text-align:center">
+                    <span class="badge"
+                          th:classappend="${u.rol == 'ADMIN'} ? ' badge-yellow' : ' badge-primary'"
+                          th:text="${u.rol}">ROL</span>
+                </div>
+                <div style="text-align:center">
+                    <span class="badge"
+                          th:classappend="${u.activo} ? ' badge-green' : ' badge-red'"
+                          th:text="${u.activo} ? 'Activo' : 'Inactivo'">Estado</span>
+                </div>
+                <div class="col-actions">
+                    <a th:href="@{/admin/usuarios/editar/{id}(id=${u.id})}"
+                       class="btn btn-ghost btn-sm">✏️ Editar</a>
+                    <a th:href="@{/admin/usuarios/eliminar/{id}(id=${u.id})}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('¿Eliminar este usuario?')">🗑️</a>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(usuarios)}" class="empty-message" style="padding:40px">
+                No hay usuarios registrados.
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

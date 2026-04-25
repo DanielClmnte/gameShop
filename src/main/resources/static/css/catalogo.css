@@ -191,8 +191,6 @@
 }
 .games-grid-small .game-card-actions .btn-primary i {
     font-size: 13px;
-}
-.games-grid-small .game-card-footer {
     padding-top: 8px;
     gap: 4px;
 }
@@ -376,15 +374,16 @@
 .game-card-actions .btn-primary {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 4px;
     font-weight: 700;
-    padding: 8px 12px;
+    padding: 6px 10px;
+}
+    content: '';
+    font-weight: 700;
 }
 .game-card-actions .btn-primary i {
     font-size: 14px;
 }
-.game-card-actions form { display: inline; }
-
 /* ══════════════════════════════════════════════
    VIEW ALL / CTA SECTION
    ══════════════════════════════════════════════ */
@@ -565,10 +564,9 @@
     .games-grid-small .game-card-title { font-size: 14px; }
     .games-grid-small .game-card-price { font-size: 18px; }
     .games-grid-small .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .games-grid-small .game-card-actions .btn-primary { padding: 6px 12px; font-size: 12px; gap: 4px; }
     .games-grid-small .game-card-actions .btn-primary { padding: 8px 12px; }
     .games-grid-small .game-card-actions .btn-primary i { font-size: 15px; }
-    .game-card-img { height: 250px; }
-    .game-card-body { padding: 10px 12px; }
     .game-card-title { font-size: 13px; }
     .game-card-price { font-size: 17px; }
     .hero-banner { flex-direction: column; text-align: center; padding: 36px 20px; gap: 20px; }
@@ -695,4 +693,16 @@
     }
     .pagination-info { font-size: 12px; }
 }
+
+/* ══════════════════════════════════════════════
+   UTILITY CLASSES — inline styles moved to CSS
+   ══════════════════════════════════════════════ */
+.page-title-no-margin { margin-bottom: 0; }
+.games-grid-top-margin { margin-top: 24px; }
+.promo-banner-top-margin { margin-top: 24px; }
+.text-secondary-color { color: var(--text-secondary); }
+.text-muted-color { color: var(--text-muted); }
+.center-text { text-align: center; }
+.hidden-icon { display: none; font-size: 2em; }
+.checkout-hint-top-margin { margin-top: 0.5rem; }
 

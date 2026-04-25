@@ -15,43 +15,83 @@
             <a href="/">Inicio</a> <span>›</span> <a href="/carrito">Carrito</a> <span>›</span> <span>Checkout</span>
         </div>
 
-        <h1 class="page-title" style="text-align: center;">💳 <span class="highlight">Checkout</span></h1>
+        <h1 class="page-title text-center">💳 <span class="highlight">Checkout</span></h1>
+
+        <!-- ERRORES DE VALIDACIÓN BACKEND -->
+        <div th:if="${errores != null and !#lists.isEmpty(errores)}" class="alert alert-error alert-bottom-margin">
+            <strong>⚠️ Corrige los siguientes errores:</strong>
+            <ul class="alert-list">
+                <li th:each="e : ${errores}" th:text="${e}"></li>
+            </ul>
+        </div>
 
         <div class="checkout-container">
             <!-- FORMULARIO DE CHECKOUT -->
-            <form method="post" action="/checkout/procesar" class="checkout-form">
-                <!-- usuarioId viene de la sesión HTTP, no hace falta campo oculto -->
-
-                <!-- DATOS PERSONALES -->
-                <div class="form-section">
-                    <h2>Datos Personales</h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="nombreCompleto">Nombre Completo *</label>
-                            <input type="text" id="nombreCompleto" name="nombreCompleto" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email *</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                    </div>
-                </div>
+            <form method="post" action="/checkout/procesar" class="checkout-form" id="checkoutForm" novalidate>
 
                 <!-- DIRECCIÓN DE ENVÍO -->
                 <div class="form-section">
                     <h2>Dirección de Envío</h2>
-                    <div class="form-group">
-                        <label for="direccion">Dirección *</label>
-                        <input type="text" id="direccion" name="direccion" required>
+
+                    <!-- Selector de dirección guardada si el usuario tiene alguna -->
+                    <div th:if="${direcciones != null and !#lists.isEmpty(direcciones)}" class="form-group">
+                        <label>
+                            <input type="checkbox" id="usarDireccionGuardada" name="usarDireccionGuardada" value="true" checked>
+                            Usar una de mis direcciones guardadas
+                        </label>
+                        <select id="direccionId" name="direccionId" class="form-control">
+                            <option th:each="dir : ${direcciones}"
+                                    th:value="${dir.id}"
+                                    th:text="${dir.resumen}"
+                                    th:selected="${dir.esPrincipal}"></option>
+                        </select>
                     </div>
-                    <div class="form-row">
+
+                    <!-- Campos manuales (se ocultan si usa dirección guardada) -->
+                    <div id="camposDireccionManual">
                         <div class="form-group">
-                            <label for="ciudad">Ciudad *</label>
-                            <input type="text" id="ciudad" name="ciudad" required>
+                            <label for="nombreCompleto">Nombre Completo *</label>
+                            <input type="text" id="nombreCompleto" name="nombreCompleto"
+                                   th:value="${usuario != null ? usuario.nombre : ''}"
+                                   minlength="2" maxlength="100"
+                                   placeholder="Ej: Juan García López">
+                            <span class="field-error" id="err-nombre"></span>
                         </div>
                         <div class="form-group">
-                            <label for="codigoPostal">Código Postal *</label>
-                            <input type="text" id="codigoPostal" name="codigoPostal" required>
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email"
+                                   th:value="${usuario != null ? usuario.email : ''}"
+                                   maxlength="150"
+                                   placeholder="correo@ejemplo.com">
+                            <span class="field-error" id="err-email"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="direccion">Dirección *</label>
+                            <input type="text" id="direccion" name="direccion"
+                                   th:value="${usuario != null ? usuario.direccion : ''}"
+                                   minlength="5" maxlength="255"
+                                   placeholder="Calle Mayor 123, 2ºA">
+                            <span class="field-error" id="err-direccion"></span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ciudad">Ciudad *</label>
+                                <input type="text" id="ciudad" name="ciudad"
+                                       th:value="${usuario != null ? usuario.ciudad : ''}"
+                                       minlength="2" maxlength="100"
+                                       placeholder="Madrid">
+                                <span class="field-error" id="err-ciudad"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="codigoPostal">Código Postal *</label>
+                                <input type="text" id="codigoPostal" name="codigoPostal"
+                                       th:value="${usuario != null ? usuario.codigoPostal : ''}"
+                                       inputmode="numeric" pattern="[0-9]{5}"
+                                       maxlength="5"
+                                       placeholder="28001"
+                                       title="5 dígitos numéricos">
+                                <span class="field-error" id="err-cp"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -59,44 +99,80 @@
                 <!-- DATOS DE PAGO -->
                 <div class="form-section">
                     <h2>Información de Pago</h2>
-                    <div class="form-group">
-                        <label for="numeroTarjeta">Número de Tarjeta (16 dígitos) *</label>
-                        <input type="text" id="numeroTarjeta" name="numeroTarjeta" placeholder="1234 5678 9012 3456" maxlength="16" required>
+
+                    <!-- Selector de tarjeta guardada si el usuario tiene alguna -->
+                    <div th:if="${metodosPago != null and !#lists.isEmpty(metodosPago)}" class="form-group">
+                        <label>
+                            <input type="checkbox" id="usarTarjetaGuardada" name="usarTarjetaGuardada" value="true" checked>
+                            Usar una de mis tarjetas guardadas
+                        </label>
+                        <select id="metodoPagoId" name="metodoPagoId" class="form-control">
+                            <option th:each="mp : ${metodosPago}"
+                                    th:value="${mp.id}"
+                                    th:text="${mp.resumen}"
+                                    th:selected="${mp.esPrincipal}"></option>
+                        </select>
+                        <p class="checkout-hint checkout-hint-top-margin">
+                            💡 Solo necesitarás introducir el CVV por seguridad (simulado).
+                        </p>
                     </div>
-                    <div class="form-row">
+
+                    <!-- Campos manuales (se ocultan si usa tarjeta guardada) -->
+                    <div id="camposTarjetaManual">
                         <div class="form-group">
-                            <label for="mesExpiracion">Mes Expiración *</label>
-                            <select id="mesExpiracion" name="mesExpiracion" required>
-                                <option value="">Selecciona mes</option>
-                                <option value="01">01 - Enero</option>
-                                <option value="02">02 - Febrero</option>
-                                <option value="03">03 - Marzo</option>
-                                <option value="04">04 - Abril</option>
-                                <option value="05">05 - Mayo</option>
-                                <option value="06">06 - Junio</option>
-                                <option value="07">07 - Julio</option>
-                                <option value="08">08 - Agosto</option>
-                                <option value="09">09 - Septiembre</option>
-                                <option value="10">10 - Octubre</option>
-                                <option value="11">11 - Noviembre</option>
-                                <option value="12">12 - Diciembre</option>
-                            </select>
+                            <label for="numeroTarjeta">Número de Tarjeta (16 dígitos) *</label>
+                            <input type="text" id="numeroTarjeta" name="numeroTarjeta"
+                                   inputmode="numeric" pattern="[0-9\s]{16,19}"
+                                   maxlength="19"
+                                   placeholder="1234 5678 9012 3456"
+                                   autocomplete="cc-number">
+                            <span class="field-error" id="err-tarjeta"></span>
                         </div>
-                        <div class="form-group">
-                            <label for="anioExpiracion">Año Expiración *</label>
-                            <input type="text" id="anioExpiracion" name="anioExpiracion" placeholder="YYYY" maxlength="4" required>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="mesExpiracion">Mes Expiración *</label>
+                                <select id="mesExpiracion" name="mesExpiracion">
+                                    <option value="">Selecciona mes</option>
+                                    <option value="01">01 - Enero</option>
+                                    <option value="02">02 - Febrero</option>
+                                    <option value="03">03 - Marzo</option>
+                                    <option value="04">04 - Abril</option>
+                                    <option value="05">05 - Mayo</option>
+                                    <option value="06">06 - Junio</option>
+                                    <option value="07">07 - Julio</option>
+                                    <option value="08">08 - Agosto</option>
+                                    <option value="09">09 - Septiembre</option>
+                                    <option value="10">10 - Octubre</option>
+                                    <option value="11">11 - Noviembre</option>
+                                    <option value="12">12 - Diciembre</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="anioExpiracion">Año Expiración *</label>
+                                <input type="text" id="anioExpiracion" name="anioExpiracion"
+                                       inputmode="numeric" pattern="[0-9]{4}"
+                                       minlength="4" maxlength="4"
+                                       placeholder="2026"
+                                       autocomplete="cc-exp-year">
+                                <span class="field-error" id="err-anio"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV (3 dígitos) *</label>
+                                <input type="password" id="cvv" name="cvv"
+                                       inputmode="numeric" pattern="[0-9]{3}"
+                                       minlength="3" maxlength="3"
+                                       placeholder="•••"
+                                       autocomplete="cc-csc">
+                                <span class="field-error" id="err-cvv"></span>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="cvv">CVV (3 dígitos) *</label>
-                            <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="3" required>
-                        </div>
+                        <p class="checkout-hint">
+                            💡 Datos de prueba: 1234567890123456 / 12 / 2026 / 123
+                        </p>
                     </div>
-                    <p class="checkout-hint">
-                        💡 Datos de prueba: 1234567890123456 / 12 / 2025 / 123
-                    </p>
                 </div>
 
-                <button type="submit" class="btn-procesar">Procesar Pago</button>
+                <button type="submit" class="btn-procesar">🔒 Procesar Pago</button>
             </form>
 
             <!-- RESUMEN DEL PEDIDO -->
@@ -111,12 +187,12 @@
                     <span th:text="${'€' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></span>
                 </div>
 
-                <div class="item-resumen" style="color:var(--text-secondary);">
+                <div class="item-resumen item-resumen-secondary">
                     <span>Subtotal:</span>
                     <span th:text="${'€' + #numbers.formatDecimal(total, 1, 2)}"></span>
                 </div>
 
-                <div class="item-resumen" style="color:var(--yellow);">
+                <div class="item-resumen item-resumen-yellow">
                     <span>Impuestos (21%):</span>
                     <span th:text="${'€' + #numbers.formatDecimal(impuestos, 1, 2)}"></span>
                 </div>
@@ -131,6 +207,141 @@
 
     <div th:replace="~{fragments/layout :: footer}"></div>
     <script th:src="@{/js/main.js}"></script>
+    <script>
+    // ── Toggle entre dirección guardada y manual ──────────────────────────────
+    (function () {
+        const checkboxDireccion = document.getElementById('usarDireccionGuardada');
+        const camposDireccion = document.getElementById('camposDireccionManual');
+        const checkboxTarjeta = document.getElementById('usarTarjetaGuardada');
+        const camposTarjeta = document.getElementById('camposTarjetaManual');
+
+        function toggleDireccion() {
+            if (checkboxDireccion && camposDireccion) {
+                if (checkboxDireccion.checked) {
+                    camposDireccion.style.display = 'none';
+                    // Quitar required de los campos ocultos
+                    camposDireccion.querySelectorAll('input').forEach(i => i.removeAttribute('required'));
+                } else {
+                    camposDireccion.style.display = 'block';
+                    // Restaurar required
+                    document.getElementById('nombreCompleto').setAttribute('required', 'required');
+                    document.getElementById('email').setAttribute('required', 'required');
+                    document.getElementById('direccion').setAttribute('required', 'required');
+                    document.getElementById('ciudad').setAttribute('required', 'required');
+                    document.getElementById('codigoPostal').setAttribute('required', 'required');
+                }
+            }
+        }
+
+        function toggleTarjeta() {
+            if (checkboxTarjeta && camposTarjeta) {
+                if (checkboxTarjeta.checked) {
+                    camposTarjeta.style.display = 'none';
+                    // Quitar required de los campos ocultos
+                    camposTarjeta.querySelectorAll('input, select').forEach(i => i.removeAttribute('required'));
+                } else {
+                    camposTarjeta.style.display = 'block';
+                    // Restaurar required
+                    document.getElementById('numeroTarjeta').setAttribute('required', 'required');
+                    document.getElementById('mesExpiracion').setAttribute('required', 'required');
+                    document.getElementById('anioExpiracion').setAttribute('required', 'required');
+                    document.getElementById('cvv').setAttribute('required', 'required');
+                }
+            }
+        }
+
+        if (checkboxDireccion) {
+            checkboxDireccion.addEventListener('change', toggleDireccion);
+            toggleDireccion(); // Aplicar estado inicial
+        }
+
+        if (checkboxTarjeta) {
+            checkboxTarjeta.addEventListener('change', toggleTarjeta);
+            toggleTarjeta(); // Aplicar estado inicial
+        }
+
+        // Solo permite dígitos en campos numéricos puros
+        function soloDigitos(input) {
+            if (input) {
+                input.addEventListener('input', function () {
+                    this.value = this.value.replace(/\D/g, '');
+                });
+            }
+        }
+
+        const cp = document.getElementById('codigoPostal');
+        const cvv = document.getElementById('cvv');
+        const anio = document.getElementById('anioExpiracion');
+        const tarjeta = document.getElementById('numeroTarjeta');
+
+        soloDigitos(cp);
+        soloDigitos(cvv);
+        soloDigitos(anio);
+
+        // Tarjeta: solo dígitos, formatear grupos de 4
+        if (tarjeta) {
+            tarjeta.addEventListener('input', function () {
+                let val = this.value.replace(/\D/g, '').substring(0, 16);
+                this.value = val.replace(/(.{4})/g, '$1 ').trim();
+            });
+        }
+
+        // Validación al enviar
+        document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+            let ok = true;
+
+            function setError(id, msg) {
+                const el = document.getElementById(id);
+                if (el) { el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
+                if (msg) ok = false;
+            }
+
+            // Solo validar campos manuales si no se usa guardado
+            if (!checkboxDireccion || !checkboxDireccion.checked) {
+                const nombre = document.getElementById('nombreCompleto').value.trim();
+                setError('err-nombre', nombre.length < 2 ? 'Mínimo 2 caracteres.' : '');
+
+                const emailVal = document.getElementById('email').value.trim();
+                setError('err-email', !/^[\w._%+\-]+@[\w.\-]+\.[a-zA-Z]{2,}$/.test(emailVal) ? 'Email no válido.' : '');
+
+                const dir = document.getElementById('direccion').value.trim();
+                setError('err-direccion', dir.length < 5 ? 'Mínimo 5 caracteres.' : '');
+
+                const ciudad = document.getElementById('ciudad').value.trim();
+                setError('err-ciudad', ciudad.length < 2 ? 'Mínimo 2 caracteres.' : '');
+
+                const cpVal = document.getElementById('codigoPostal').value.trim();
+                setError('err-cp', !/^[0-9]{5}$/.test(cpVal) ? 'Debe ser exactamente 5 dígitos.' : '');
+            }
+
+            // Solo validar tarjeta manual si no se usa guardada
+            if (!checkboxTarjeta || !checkboxTarjeta.checked) {
+                const tVal = tarjeta ? tarjeta.value.replace(/\s/g, '') : '';
+                setError('err-tarjeta', !/^[0-9]{16}$/.test(tVal) ? 'Debe tener 16 dígitos.' : '');
+
+                const cvvVal = cvv ? cvv.value.trim() : '';
+                setError('err-cvv', !/^[0-9]{3}$/.test(cvvVal) ? 'Debe tener exactamente 3 dígitos.' : '');
+
+                const anioVal = anio ? anio.value.trim() : '';
+                if (!/^[0-9]{4}$/.test(anioVal)) {
+                    setError('err-anio', '4 dígitos requeridos.');
+                } else if (parseInt(anioVal) < 2026) {
+                    setError('err-anio', 'La tarjeta está caducada.');
+                } else {
+                    setError('err-anio', '');
+                }
+            }
+
+            if (!ok) e.preventDefault();
+        });
+    })();
+    </script>
+    <style>
+        .field-error { display:none; color:#ff6b6b; font-size:0.82rem; margin-top:3px; }
+        .alert-error { background:rgba(255,50,50,0.15); border:1px solid #ff4444; border-radius:8px; padding:1rem 1.2rem; color:#ff8080; }
+        .alert-warning { background:rgba(255,190,0,0.12); border:1px solid #ffbe00; border-radius:8px; padding:0.9rem 1.2rem; color:#ffe080; display:flex; align-items:center; gap:0.7rem; }
+        .form-control { width:100%; padding:0.75rem; border:1px solid var(--border); background:var(--bg-input); color:var(--text); border-radius:6px; margin-top:0.5rem; }
+    </style>
 </body>
 </html>
 

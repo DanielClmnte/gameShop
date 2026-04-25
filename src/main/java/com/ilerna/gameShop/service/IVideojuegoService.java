@@ -5,10 +5,6 @@ import com.ilerna.gameShop.model.Videojuego;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Interfaz del servicio de videojuegos.
- * Define la logica de negocio para la gestion de videojuegos.
- */
 public interface IVideojuegoService {
     List<Videojuego> obtenerTodos();
     List<Videojuego> obtenerPorPlataforma(int plataformaId);
@@ -21,14 +17,17 @@ public interface IVideojuegoService {
     void eliminarVideojuego(int id);
     void restarStock(int videojuegoId, int cantidad);
 
-    // ── Métodos paginados ──
+    // Paginados
     PaginaResultado<Videojuego> obtenerTodosPaginado(int pagina);
     PaginaResultado<Videojuego> obtenerPorPlataformaPaginado(int plataformaId, int pagina);
     PaginaResultado<Videojuego> obtenerDisponiblesPaginado(int pagina);
-    PaginaResultado<Videojuego> obtenerPorCalificacionPaginado(int pagina);
     PaginaResultado<Videojuego> buscarPorTituloPaginado(String titulo, int pagina);
     PaginaResultado<Videojuego> obtenerNovedadesPaginado(int pagina);
+    PaginaResultado<Videojuego> obtenerPopularesPaginado(int pagina);
     PaginaResultado<Videojuego> obtenerMasVendidosPaginado(int pagina);
+
+    // Métodos para Inicio (con limit)
     List<Videojuego> obtenerNovedades(int limit);
+    List<Videojuego> obtenerPopulares(int limit);
     List<Videojuego> obtenerMasVendidos(int limit);
 }

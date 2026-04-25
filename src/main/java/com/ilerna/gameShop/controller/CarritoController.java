@@ -13,24 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Controlador del carrito de compras.
- * - Usuarios logueados: carrito en BD (via CarritoRepository)
- * - Usuarios anónimos: carrito en sesión HttpSession ("carritoSesion")
- * Al hacer login, el carrito de sesión se migra a BD.
- */
 @Controller
 public class CarritoController {
 
-    private CarritoService carritoService;
-    private VideojuegoService videojuegoService;
+    private final CarritoService carritoService;
+    private final VideojuegoService videojuegoService;
 
     public CarritoController() {
         this.carritoService = new CarritoService();
         this.videojuegoService = new VideojuegoService();
     }
 
-    // ──────────────── VER CARRITO ────────────────
+    // ── VER CARRITO ──
 
     @GetMapping("/carrito")
     public String mostrarCarrito(HttpSession session, Model model) {
@@ -41,15 +35,20 @@ public class CarritoController {
         int cantidad;
 
         if (usuarioId != null) {
-            // Usuario logueado → BD
-            items = carritoService.obtenerCarrito(usuarioId);
-            total = carritoService.obtenerTotalCarrito(usuarioId);
+            items    = carritoService.obtenerCarrito(usuarioId);
+            total    = carritoService.obtenerTotalCarrito(usuarioId);
             cantidad = carritoService.obtenerCantidadTotal(usuarioId);
         } else {
-            // Anónimo → sesión
-            items = obtenerCarritoSesion(session);
-            total = items.stream().mapToDouble(CarritoItem::getSubtotal).sum();
+            items    = obtenerCarritoSesion(session);
+            total    = items.stream().mapToDouble(CarritoItem::getSubtotal).sum();
             cantidad = items.stream().mapToInt(CarritoItem::getCantidad).sum();
+        }
+
+        // Flash de stock: leer y limpiar de sesión
+        String errorStock = (String) session.getAttribute("errorStock");
+        if (errorStock != null) {
+            model.addAttribute("errorStock", errorStock);
+            session.removeAttribute("errorStock");
         }
 
         model.addAttribute("items", items);
@@ -59,7 +58,7 @@ public class CarritoController {
         return "carrito/ver-carrito";
     }
 
-    // ──────────────── AÑADIR AL CARRITO ────────────────
+    // ── AÑADIR AL CARRITO ──
 
     @PostMapping("/carrito/agregar/{videojuegoId}")
     public String agregarAlCarrito(
@@ -70,21 +69,27 @@ public class CarritoController {
         Integer usuarioId = (Integer) session.getAttribute("usuarioId");
 
         if (usuarioId != null) {
-            // Usuario logueado → BD
-            carritoService.agregarAlCarrito(usuarioId, videojuegoId, cantidad);
+            boolean agregado = carritoService.agregarAlCarrito(usuarioId, videojuegoId, cantidad);
+            if (!agregado) {
+                session.setAttribute("errorStock", "No hay suficiente stock disponible para este producto.");
+            }
         } else {
-            // Anónimo → sesión
             Optional<Videojuego> vj = videojuegoService.obtenerPorId(videojuegoId);
             if (vj.isPresent() && vj.get().isDisponible()) {
-                List<CarritoItem> carrito = obtenerCarritoSesion(session);
-                agregarItemSesion(carrito, vj.get(), cantidad);
-                session.setAttribute("carritoSesion", carrito);
+                int stock = vj.get().getStock();
+                if (stock < cantidad) {
+                    session.setAttribute("errorStock", "Solo hay " + stock + " unidades disponibles.");
+                } else {
+                    List<CarritoItem> carrito = obtenerCarritoSesion(session);
+                    agregarItemSesion(carrito, vj.get(), cantidad);
+                    session.setAttribute("carritoSesion", carrito);
+                }
             }
         }
         return "redirect:/carrito";
     }
 
-    // ──────────────── ACTUALIZAR CANTIDAD ────────────────
+    // ── ACTUALIZAR CANTIDAD ──
 
     @PostMapping("/carrito/actualizar/{videojuegoId}")
     public String actualizarCantidad(
@@ -95,46 +100,55 @@ public class CarritoController {
         Integer usuarioId = (Integer) session.getAttribute("usuarioId");
 
         if (usuarioId != null) {
-            carritoService.actualizarCantidad(usuarioId, videojuegoId, nuevaCantidad);
-        } else {
-            List<CarritoItem> carrito = obtenerCarritoSesion(session);
-            if (nuevaCantidad > 0) {
-                for (CarritoItem item : carrito) {
-                    if (item.getVideojuegoId() == videojuegoId) {
-                        item.setCantidad(nuevaCantidad);
-                        break;
-                    }
-                }
-            } else {
-                carrito.removeIf(item -> item.getVideojuegoId() == videojuegoId);
+            boolean ok = carritoService.actualizarCantidad(usuarioId, videojuegoId, nuevaCantidad);
+            if (!ok) {
+                session.setAttribute("errorStock", "No hay suficiente stock para la cantidad solicitada.");
             }
-            session.setAttribute("carritoSesion", carrito);
+        } else {
+            Optional<Videojuego> vj = videojuegoService.obtenerPorId(videojuegoId);
+            if (vj.isPresent() && nuevaCantidad > 0) {
+                int stock = vj.get().getStock();
+                if (stock < nuevaCantidad) {
+                    session.setAttribute("errorStock", "Solo hay " + stock + " unidades disponibles.");
+                } else {
+                    List<CarritoItem> carrito = obtenerCarritoSesion(session);
+                    for (CarritoItem item : carrito) {
+                        if (item.getVideojuegoId() == videojuegoId) {
+                            item.setCantidad(nuevaCantidad);
+                            break;
+                        }
+                    }
+                    session.setAttribute("carritoSesion", carrito);
+                }
+            } else if (nuevaCantidad <= 0) {
+                List<CarritoItem> carrito = obtenerCarritoSesion(session);
+                carrito.removeIf(i -> i.getVideojuegoId() == videojuegoId);
+                session.setAttribute("carritoSesion", carrito);
+            }
         }
         return "redirect:/carrito";
     }
 
-    // ──────────────── ELIMINAR ITEM ────────────────
+    // ── ELIMINAR ITEM ──
 
     @GetMapping("/carrito/eliminar/{videojuegoId}")
     public String eliminarDelCarrito(@PathVariable int videojuegoId, HttpSession session) {
         Integer usuarioId = (Integer) session.getAttribute("usuarioId");
-
         if (usuarioId != null) {
             carritoService.eliminarDelCarrito(usuarioId, videojuegoId);
         } else {
             List<CarritoItem> carrito = obtenerCarritoSesion(session);
-            carrito.removeIf(item -> item.getVideojuegoId() == videojuegoId);
+            carrito.removeIf(i -> i.getVideojuegoId() == videojuegoId);
             session.setAttribute("carritoSesion", carrito);
         }
         return "redirect:/carrito";
     }
 
-    // ──────────────── VACIAR CARRITO ────────────────
+    // ── VACIAR CARRITO ──
 
     @GetMapping("/carrito/vaciar")
     public String vaciarCarrito(HttpSession session) {
         Integer usuarioId = (Integer) session.getAttribute("usuarioId");
-
         if (usuarioId != null) {
             carritoService.vaciarCarrito(usuarioId);
         } else {
@@ -143,15 +157,12 @@ public class CarritoController {
         return "redirect:/carrito";
     }
 
-    // ──────────────── UTILIDADES SESIÓN ────────────────
+    // ── UTILIDADES ──
 
     @SuppressWarnings("unchecked")
     private List<CarritoItem> obtenerCarritoSesion(HttpSession session) {
         List<CarritoItem> carrito = (List<CarritoItem>) session.getAttribute("carritoSesion");
-        if (carrito == null) {
-            carrito = new ArrayList<>();
-        }
-        return carrito;
+        return carrito != null ? carrito : new ArrayList<>();
     }
 
     private void agregarItemSesion(List<CarritoItem> carrito, Videojuego vj, int cantidad) {
@@ -161,11 +172,6 @@ public class CarritoController {
                 return;
             }
         }
-        // No existe → crear nuevo
-        CarritoItem nuevo = new CarritoItem(
-                vj.getId(), cantidad, vj.getPrecio(),
-                vj.getTitulo(), vj.getImagen()
-        );
-        carrito.add(nuevo);
+        carrito.add(new CarritoItem(vj.getId(), cantidad, vj.getPrecio(), vj.getTitulo(), vj.getImagen()));
     }
 }

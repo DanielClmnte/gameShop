@@ -161,6 +161,24 @@ public class CarritoRepository implements ICarritoRepository {
     }
 
     /**
+     * Obtener la cantidad de un item concreto en el carrito (0 si no existe)
+     */
+    public int obtenerCantidadItem(int usuarioId, int videojuegoId) {
+        String sql = "SELECT COALESCE(cantidad, 0) FROM carrito_items WHERE usuario_id = ? AND videojuego_id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, usuarioId);
+            pstmt.setInt(2, videojuegoId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al obtener cantidad del item en carrito.");
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
      * Verificar si existe un item en el carrito
      */
     public boolean existeItem(int usuarioId, int videojuegoId) {

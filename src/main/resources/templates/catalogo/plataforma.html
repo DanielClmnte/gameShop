@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div th:if="${videojuegos.size() > 0}" class="games-grid" style="margin-top: 24px;">
+        <div th:if="${videojuegos.size() > 0}" class="games-grid games-grid-top-margin">
             <div class="game-card" th:each="videojuego : ${videojuegos}">
                 <div class="game-card-img">
                     <img th:src="${videojuego.imagen}" th:alt="${videojuego.titulo}"
@@ -66,7 +66,7 @@
                             <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
                                 <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-basket-shopping"></i></button>
                             </form>
-                            <button th:unless="${videojuego.disponible}" class="btn btn-ghost btn-sm" disabled>—</button>
+                            <button th:unless="${videojuego.disponible}" class="btn btn-outline btn-sm" title="Avísame cuando esté disponible" onclick="alert('Te notificaremos cuando esté disponible')">🔔</button>
                         </div>
                     </div>
                 </div>

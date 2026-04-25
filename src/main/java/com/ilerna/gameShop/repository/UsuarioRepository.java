@@ -123,7 +123,7 @@ public class UsuarioRepository implements IUsuarioRepository {
     }
 
     /**
-     * Actualizar un usuario existente
+     * Actualizar datos de perfil (sin contraseña ni rol)
      */
     public void actualizar(Usuario usuario) {
         String sql = "UPDATE usuarios SET nombre = ?, email = ?, telefono = ?, direccion = ?, "
@@ -140,6 +140,53 @@ public class UsuarioRepository implements IUsuarioRepository {
             System.out.println("✅ Usuario actualizado correctamente.");
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar usuario.");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Actualizar contraseña de un usuario
+     */
+    public void actualizarConContrasena(Usuario usuario) {
+        String sql = "UPDATE usuarios SET nombre = ?, email = ?, telefono = ?, direccion = ?, "
+                   + "ciudad = ?, codigo_postal = ?, contrasena = ? WHERE id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, usuario.getNombre());
+            pstmt.setString(2, usuario.getEmail());
+            pstmt.setString(3, usuario.getTelefono());
+            pstmt.setString(4, usuario.getDireccion());
+            pstmt.setString(5, usuario.getCiudad());
+            pstmt.setString(6, usuario.getCodigoPostal());
+            pstmt.setString(7, usuario.getContrasena());
+            pstmt.setInt(8, usuario.getId());
+            pstmt.executeUpdate();
+            System.out.println("✅ Contraseña actualizada correctamente.");
+        } catch (SQLException e) {
+            System.err.println("❌ Error al actualizar contraseña.");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Actualizar usuario completo (uso admin): incluye rol y activo
+     */
+    public void actualizarAdmin(Usuario usuario) {
+        String sql = "UPDATE usuarios SET nombre = ?, email = ?, telefono = ?, direccion = ?, "
+                   + "ciudad = ?, codigo_postal = ?, rol = ?, activo = ? WHERE id = ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, usuario.getNombre());
+            pstmt.setString(2, usuario.getEmail());
+            pstmt.setString(3, usuario.getTelefono());
+            pstmt.setString(4, usuario.getDireccion());
+            pstmt.setString(5, usuario.getCiudad());
+            pstmt.setString(6, usuario.getCodigoPostal());
+            pstmt.setString(7, usuario.getRol());
+            pstmt.setBoolean(8, usuario.isActivo());
+            pstmt.setInt(9, usuario.getId());
+            pstmt.executeUpdate();
+            System.out.println("✅ Usuario admin actualizado correctamente.");
+        } catch (SQLException e) {
+            System.err.println("❌ Error al actualizar usuario (admin).");
             e.printStackTrace();
         }
     }

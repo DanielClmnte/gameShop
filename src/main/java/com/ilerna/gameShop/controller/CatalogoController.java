@@ -37,21 +37,21 @@ public class CatalogoController {
     @GetMapping("/")
     public String mostrarInicio(Model model) {
         List<Plataforma> plataformas = plataformaService.obtenerTodas();
-        
+
         // Secciones con límite de items (2 filas de 6 = 12)
-        List<Videojuego> destacados = videojuegoService.obtenerPorCalificacion().stream().limit(12).toList();
+        List<Videojuego> destacados = videojuegoService.obtenerPopulares(12);
         List<Videojuego> masVendidos = videojuegoService.obtenerMasVendidos(12);
         List<Videojuego> novedades = videojuegoService.obtenerNovedades(12);
-        
+
         model.addAttribute("plataformas", plataformas);
         model.addAttribute("destacados", destacados);
         model.addAttribute("masVendidos", masVendidos);
         model.addAttribute("novedades", novedades);
         model.addAttribute("titulo", "GameShop - Tu tienda de videojuegos");
-        
+
         return "catalogo/inicio";
     }
-    
+
     /**
      * Ver todo el catálogo (paginado) con filtros de precio opcionales
      */
@@ -84,7 +84,7 @@ public class CatalogoController {
             model.addAttribute("videojuegos", pagina.getItems());
             model.addAttribute("baseUrl", "/catalogo/todos");
         }
-        
+
         model.addAttribute("plataformas", plataformas);
         model.addAttribute("pagina", pagina);
         model.addAttribute("precioMin", precioMin);
@@ -160,13 +160,13 @@ public class CatalogoController {
     }
     
     /**
-     * Mostrar videojuegos ordenados por calificación (más populares) (paginado)
+     * Mostrar videojuegos populares (media ponderada: ventas + opiniones) (paginado)
      */
     @GetMapping("/catalogo/populares")
     public String mostrarPopulares(
             @RequestParam(defaultValue = "1") int page,
             Model model) {
-        PaginaResultado<Videojuego> pagina = videojuegoService.obtenerPorCalificacionPaginado(page);
+        PaginaResultado<Videojuego> pagina = videojuegoService.obtenerPopularesPaginado(page);
         List<Plataforma> plataformas = plataformaService.obtenerTodas();
         
         model.addAttribute("videojuegos", pagina.getItems());

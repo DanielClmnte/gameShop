@@ -113,6 +113,30 @@
     </div>
 </nav>
 
+<!-- ═══════════════ SIDEBAR PERFIL ═══════════════ -->
+<aside th:fragment="perfil-sidebar(seccion)" class="perfil-sidebar">
+    <div class="sidebar-user-card">
+        <div class="sidebar-avatar-circle">
+            <span th:text="${#strings.substring(session.usuarioNombre, 0, 1).toUpperCase()}">U</span>
+        </div>
+        <div class="sidebar-user-info">
+            <span class="sidebar-user-name" th:text="${session.usuarioNombre}">Usuario</span>
+            <span class="sidebar-user-role"
+                  th:classappend="${session.usuarioRol == 'ADMIN' ? 'role-admin' : 'role-cliente'}"
+                  th:text="${session.usuarioRol == 'ADMIN' ? '⚡ Admin' : '🎮 Cliente'}">Rol</span>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/perfil"             th:classappend="${seccion == 'perfil'      ? ' active' : ''}">📋 Mi Perfil</a>
+        <a href="/pedidos"            th:classappend="${seccion == 'pedidos'     ? ' active' : ''}">📦 Mis Pedidos</a>
+        <a href="/favoritos"          th:classappend="${seccion == 'favoritos'   ? ' active' : ''}">❤️ Favoritos</a>
+        <a href="/perfil/direcciones" th:classappend="${seccion == 'direcciones' ? ' active' : ''}">🏠 Direcciones</a>
+        <a href="/perfil/pagos"       th:classappend="${seccion == 'pagos'       ? ' active' : ''}">💳 Formas de Pago</a>
+        <a href="/" class="sidebar-nav-tienda">🎮 Ir a la Tienda</a>
+        <a href="/logout" class="sidebar-logout">🚪 Cerrar Sesión</a>
+    </nav>
+</aside>
+
 </body>
 </html>
 

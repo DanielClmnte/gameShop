@@ -1,142 +1,85 @@
 package com.ilerna.gameShop.repository;
 
 import com.ilerna.gameShop.model.Videojuego;
-
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Repositorio para gestionar videojuegos.
- * Consultas SQL contra la tabla 'videojuegos' de gameshop_db.
- */
 public class VideojuegoRepository implements IVideojuegoRepository {
 
     private Connection getConnection() {
         return Conexion.getInstancia().getConnection();
     }
 
-    /**
-     * Obtener todos los videojuegos
-     */
+    // --- MÉTODOS BÁSICOS (CRUD) ---
     public List<Videojuego> obtenerTodos() {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                videojuegos.add(mapearVideojuego(rs));
-            }
-        } catch (SQLException e) {
-            System.err.println("❌ Error al listar videojuegos.");
-            e.printStackTrace();
-        }
+            while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
+        } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
 
-    /**
-     * Obtener videojuegos por plataforma
-     */
     public List<Videojuego> obtenerPorPlataforma(int plataformaId) {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos WHERE plataforma_id = ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, plataformaId);
             try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    videojuegos.add(mapearVideojuego(rs));
-                }
+                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
             }
-        } catch (SQLException e) {
-            System.err.println("❌ Error al obtener videojuegos por plataforma.");
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
 
-    /**
-     * Obtener un videojuego por ID
-     */
     public Optional<Videojuego> obtenerPorId(int id) {
         String sql = "SELECT * FROM videojuegos WHERE id = ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return Optional.of(mapearVideojuego(rs));
-                }
+                if (rs.next()) return Optional.of(mapearVideojuego(rs));
             }
-        } catch (SQLException e) {
-            System.err.println("❌ Error al obtener videojuego por ID.");
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         return Optional.empty();
     }
 
-    /**
-     * Buscar videojuegos por título (búsqueda parcial)
-     */
     public List<Videojuego> buscarPorTitulo(String titulo) {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos WHERE titulo LIKE ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
             pstmt.setString(1, "%" + titulo + "%");
             try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    videojuegos.add(mapearVideojuego(rs));
-                }
+                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
             }
-        } catch (SQLException e) {
-            System.err.println("❌ Error al buscar videojuegos por título.");
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
 
-    /**
-     * Obtener videojuegos disponibles (en stock)
-     */
     public List<Videojuego> obtenerDisponibles() {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos WHERE disponible = TRUE";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                videojuegos.add(mapearVideojuego(rs));
-            }
-        } catch (SQLException e) {
-            System.err.println("❌ Error al obtener videojuegos disponibles.");
-            e.printStackTrace();
-        }
+            while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
+        } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
 
-    /**
-     * Obtener videojuegos ordenados por calificación (de mayor a menor)
-     */
     public List<Videojuego> obtenerPorCalificacion() {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos ORDER BY calificacion DESC";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                videojuegos.add(mapearVideojuego(rs));
-            }
-        } catch (SQLException e) {
-            System.err.println("❌ Error al obtener videojuegos por calificación.");
-            e.printStackTrace();
-        }
+            while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
+        } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
 
-    /**
-     * Guardar un nuevo videojuego (ID asignado por AUTO_INCREMENT)
-     */
     public void guardar(Videojuego videojuego) {
-        String sql = "INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, fecha_lanzamiento, desarrollador, calificacion, disponible) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO videojuegos (titulo, descripcion, precio, stock, plataforma_id, imagen, fecha_lanzamiento, desarrollador, calificacion, disponible) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, videojuego.getTitulo());
             pstmt.setString(2, videojuego.getDescripcion());
@@ -144,33 +87,17 @@ public class VideojuegoRepository implements IVideojuegoRepository {
             pstmt.setInt(4, videojuego.getStock());
             pstmt.setInt(5, videojuego.getPlataformaId());
             pstmt.setString(6, videojuego.getImagen());
-            pstmt.setDate(7, videojuego.getFechaLanzamiento() != null
-                    ? Date.valueOf(videojuego.getFechaLanzamiento()) : null);
+            pstmt.setDate(7, videojuego.getFechaLanzamiento() != null ? Date.valueOf(videojuego.getFechaLanzamiento()) : null);
             pstmt.setString(8, videojuego.getDesarrollador());
             pstmt.setDouble(9, videojuego.getCalificacion());
             pstmt.setBoolean(10, videojuego.getStock() > 0);
             pstmt.executeUpdate();
-
-            // Obtener el ID generado
-            try (ResultSet keys = pstmt.getGeneratedKeys()) {
-                if (keys.next()) {
-                    videojuego.setId(keys.getInt(1));
-                }
-            }
-            System.out.println("✅ Videojuego guardado correctamente.");
-        } catch (SQLException e) {
-            System.err.println("❌ Error al guardar videojuego.");
-            e.printStackTrace();
-        }
+            try (ResultSet keys = pstmt.getGeneratedKeys()) { if (keys.next()) videojuego.setId(keys.getInt(1)); }
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    /**
-     * Actualizar un videojuego existente
-     */
     public void actualizar(Videojuego videojuego) {
-        String sql = "UPDATE videojuegos SET titulo = ?, descripcion = ?, precio = ?, stock = ?, "
-                   + "plataforma_id = ?, imagen = ?, fecha_lanzamiento = ?, desarrollador = ?, "
-                   + "calificacion = ?, disponible = ? WHERE id = ?";
+        String sql = "UPDATE videojuegos SET titulo=?, descripcion=?, precio=?, stock=?, plataforma_id=?, imagen=?, fecha_lanzamiento=?, desarrollador=?, calificacion=?, disponible=? WHERE id=?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
             pstmt.setString(1, videojuego.getTitulo());
             pstmt.setString(2, videojuego.getDescripcion());
@@ -178,48 +105,30 @@ public class VideojuegoRepository implements IVideojuegoRepository {
             pstmt.setInt(4, videojuego.getStock());
             pstmt.setInt(5, videojuego.getPlataformaId());
             pstmt.setString(6, videojuego.getImagen());
-            pstmt.setDate(7, videojuego.getFechaLanzamiento() != null
-                    ? Date.valueOf(videojuego.getFechaLanzamiento()) : null);
+            pstmt.setDate(7, videojuego.getFechaLanzamiento() != null ? Date.valueOf(videojuego.getFechaLanzamiento()) : null);
             pstmt.setString(8, videojuego.getDesarrollador());
             pstmt.setDouble(9, videojuego.getCalificacion());
             pstmt.setBoolean(10, videojuego.getStock() > 0);
             pstmt.setInt(11, videojuego.getId());
             pstmt.executeUpdate();
-            System.out.println("✅ Videojuego actualizado correctamente.");
-        } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar videojuego.");
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    /**
-     * Eliminar un videojuego por ID
-     */
     public void eliminarPorId(int id) {
         String sql = "DELETE FROM videojuegos WHERE id = ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
-            System.out.println("✅ Videojuego eliminado correctamente.");
-        } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar videojuego.");
-            e.printStackTrace();
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    // ══════════════════════════════════════════════
-    // MÉTODOS PAGINADOS (LIMIT / OFFSET) + COUNT
-    // ══════════════════════════════════════════════
-
+    // --- MÉTODOS DE PAGINACIÓN ---
     public List<Videojuego> obtenerTodosPaginado(int offset, int limit) {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos ORDER BY id DESC LIMIT ? OFFSET ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, limit);
-            pstmt.setInt(2, offset);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
-            }
+            pstmt.setInt(1, limit); pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
         } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
@@ -227,9 +136,8 @@ public class VideojuegoRepository implements IVideojuegoRepository {
     public int contarTodos() {
         String sql = "SELECT COUNT(*) FROM videojuegos";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            if (rs.next()) return rs.getInt(1);
-        } catch (SQLException e) { e.printStackTrace(); }
+             ResultSet rs = pstmt.executeQuery()) { if (rs.next()) return rs.getInt(1); }
+        catch (SQLException e) { e.printStackTrace(); }
         return 0;
     }
 
@@ -237,12 +145,8 @@ public class VideojuegoRepository implements IVideojuegoRepository {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos WHERE plataforma_id = ? ORDER BY id DESC LIMIT ? OFFSET ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, plataformaId);
-            pstmt.setInt(2, limit);
-            pstmt.setInt(3, offset);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
-            }
+            pstmt.setInt(1, plataformaId); pstmt.setInt(2, limit); pstmt.setInt(3, offset);
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
         } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
@@ -251,9 +155,7 @@ public class VideojuegoRepository implements IVideojuegoRepository {
         String sql = "SELECT COUNT(*) FROM videojuegos WHERE plataforma_id = ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, plataformaId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
-            }
+            try (ResultSet rs = pstmt.executeQuery()) { if (rs.next()) return rs.getInt(1); }
         } catch (SQLException e) { e.printStackTrace(); }
         return 0;
     }
@@ -262,11 +164,8 @@ public class VideojuegoRepository implements IVideojuegoRepository {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos WHERE disponible = TRUE ORDER BY id DESC LIMIT ? OFFSET ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, limit);
-            pstmt.setInt(2, offset);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
-            }
+            pstmt.setInt(1, limit); pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
         } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
@@ -274,35 +173,17 @@ public class VideojuegoRepository implements IVideojuegoRepository {
     public int contarDisponibles() {
         String sql = "SELECT COUNT(*) FROM videojuegos WHERE disponible = TRUE";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            if (rs.next()) return rs.getInt(1);
-        } catch (SQLException e) { e.printStackTrace(); }
+             ResultSet rs = pstmt.executeQuery()) { if (rs.next()) return rs.getInt(1); }
+        catch (SQLException e) { e.printStackTrace(); }
         return 0;
-    }
-
-    public List<Videojuego> obtenerPorCalificacionPaginado(int offset, int limit) {
-        List<Videojuego> videojuegos = new ArrayList<>();
-        String sql = "SELECT * FROM videojuegos ORDER BY calificacion DESC LIMIT ? OFFSET ?";
-        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, limit);
-            pstmt.setInt(2, offset);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
-            }
-        } catch (SQLException e) { e.printStackTrace(); }
-        return videojuegos;
     }
 
     public List<Videojuego> buscarPorTituloPaginado(String titulo, int offset, int limit) {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos WHERE titulo LIKE ? LIMIT ? OFFSET ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
-            pstmt.setString(1, "%" + titulo + "%");
-            pstmt.setInt(2, limit);
-            pstmt.setInt(3, offset);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
-            }
+            pstmt.setString(1, "%" + titulo + "%"); pstmt.setInt(2, limit); pstmt.setInt(3, offset);
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
         } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
@@ -311,23 +192,18 @@ public class VideojuegoRepository implements IVideojuegoRepository {
         String sql = "SELECT COUNT(*) FROM videojuegos WHERE titulo LIKE ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
             pstmt.setString(1, "%" + titulo + "%");
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) return rs.getInt(1);
-            }
+            try (ResultSet rs = pstmt.executeQuery()) { if (rs.next()) return rs.getInt(1); }
         } catch (SQLException e) { e.printStackTrace(); }
         return 0;
     }
 
-    // ── Novedades (por fecha_lanzamiento DESC) ──
-
+    // --- NOVEDADES ---
     public List<Videojuego> obtenerNovedades(int limit) {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos WHERE fecha_lanzamiento IS NOT NULL ORDER BY fecha_lanzamiento DESC LIMIT ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, limit);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
-            }
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
         } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
@@ -336,11 +212,8 @@ public class VideojuegoRepository implements IVideojuegoRepository {
         List<Videojuego> videojuegos = new ArrayList<>();
         String sql = "SELECT * FROM videojuegos WHERE fecha_lanzamiento IS NOT NULL ORDER BY fecha_lanzamiento DESC LIMIT ? OFFSET ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, limit);
-            pstmt.setInt(2, offset);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
-            }
+            pstmt.setInt(1, limit); pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
         } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
@@ -348,48 +221,65 @@ public class VideojuegoRepository implements IVideojuegoRepository {
     public int contarNovedades() {
         String sql = "SELECT COUNT(*) FROM videojuegos WHERE fecha_lanzamiento IS NOT NULL";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            if (rs.next()) return rs.getInt(1);
-        } catch (SQLException e) { e.printStackTrace(); }
+             ResultSet rs = pstmt.executeQuery()) { if (rs.next()) return rs.getInt(1); }
+        catch (SQLException e) { e.printStackTrace(); }
         return 0;
     }
 
-    // ── Más vendidos (por total vendido en detalle_pedidos) ──
-
-    public List<Videojuego> obtenerMasVendidos(int limit) {
+    // --- POPULARES ---
+    public List<Videojuego> obtenerPopulares(int limit) {
         List<Videojuego> videojuegos = new ArrayList<>();
-        String sql = "SELECT v.*, COALESCE(SUM(dp.cantidad), 0) AS total_vendido " +
-                     "FROM videojuegos v LEFT JOIN detalle_pedidos dp ON v.id = dp.videojuego_id " +
-                     "GROUP BY v.id ORDER BY total_vendido DESC, v.calificacion DESC LIMIT ?";
+        String sql = "SELECT v.*, " +
+                "((COALESCE((SELECT SUM(cantidad) FROM detalle_pedidos WHERE videojuego_id = v.id), 0) * 0.6) + " +
+                "(COALESCE((SELECT COUNT(*) FROM opiniones WHERE videojuego_id = v.id), 0) * 0.4)) AS score_popularidad " +
+                "FROM videojuegos v ORDER BY score_popularidad DESC, v.calificacion DESC LIMIT ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
             pstmt.setInt(1, limit);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
-            }
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return videojuegos;
+    }
+
+    public List<Videojuego> obtenerPopularesPaginado(int offset, int limit) {
+        List<Videojuego> videojuegos = new ArrayList<>();
+        String sql = "SELECT v.*, " +
+                "((COALESCE((SELECT SUM(cantidad) FROM detalle_pedidos WHERE videojuego_id = v.id), 0) * 0.6) + " +
+                "(COALESCE((SELECT COUNT(*) FROM opiniones WHERE videojuego_id = v.id), 0) * 0.4)) AS score_popularidad " +
+                "FROM videojuegos v ORDER BY score_popularidad DESC, v.calificacion DESC LIMIT ? OFFSET ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, limit); pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return videojuegos;
+    }
+
+    public int contarPopulares() { return contarTodos(); }
+
+    // --- MÁS VENDIDOS ---
+    public List<Videojuego> obtenerMasVendidos(int limit) {
+        List<Videojuego> videojuegos = new ArrayList<>();
+        String sql = "SELECT v.* FROM videojuegos v LEFT JOIN detalle_pedidos dp ON v.id = dp.videojuego_id " +
+                "GROUP BY v.id ORDER BY COALESCE(SUM(dp.cantidad), 0) DESC LIMIT ?";
+        try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
         } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
 
     public List<Videojuego> obtenerMasVendidosPaginado(int offset, int limit) {
         List<Videojuego> videojuegos = new ArrayList<>();
-        String sql = "SELECT v.*, COALESCE(SUM(dp.cantidad), 0) AS total_vendido " +
-                     "FROM videojuegos v LEFT JOIN detalle_pedidos dp ON v.id = dp.videojuego_id " +
-                     "GROUP BY v.id ORDER BY total_vendido DESC, v.calificacion DESC LIMIT ? OFFSET ?";
+        String sql = "SELECT v.* FROM videojuegos v LEFT JOIN detalle_pedidos dp ON v.id = dp.videojuego_id " +
+                "GROUP BY v.id ORDER BY COALESCE(SUM(dp.cantidad), 0) DESC LIMIT ? OFFSET ?";
         try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, limit);
-            pstmt.setInt(2, offset);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) { videojuegos.add(mapearVideojuego(rs)); }
-            }
+            pstmt.setInt(1, limit); pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) { while (rs.next()) videojuegos.add(mapearVideojuego(rs)); }
         } catch (SQLException e) { e.printStackTrace(); }
         return videojuegos;
     }
 
-    public int contarMasVendidos() {
-        return contarTodos(); // Todos los juegos se incluyen (los no vendidos con 0)
-    }
+    public int contarMasVendidos() { return contarTodos(); }
 
-    // ── Mapear ResultSet a Videojuego ──
     private Videojuego mapearVideojuego(ResultSet rs) throws SQLException {
         Videojuego vj = new Videojuego();
         vj.setId(rs.getInt("id"));
@@ -399,8 +289,8 @@ public class VideojuegoRepository implements IVideojuegoRepository {
         vj.setStock(rs.getInt("stock"));
         vj.setPlataformaId(rs.getInt("plataforma_id"));
         vj.setImagen(rs.getString("imagen"));
-        Date fechaLanz = rs.getDate("fecha_lanzamiento");
-        vj.setFechaLanzamiento(fechaLanz != null ? fechaLanz.toLocalDate() : null);
+        Date fecha = rs.getDate("fecha_lanzamiento");
+        if (fecha != null) vj.setFechaLanzamiento(fecha.toLocalDate());
         vj.setDesarrollador(rs.getString("desarrollador"));
         vj.setCalificacion(rs.getDouble("calificacion"));
         vj.setDisponible(rs.getBoolean("disponible"));

@@ -31,7 +31,7 @@
                         <span class="pedido-fecha" th:if="${pedido.fechaPedido != null}" th:text="${' · ' + #temporals.format(pedido.fechaPedido, 'dd/MM/yyyy')}"> · 08/04/2026</span>
                     </div>
                     <span class="badge-estado"
-                          th:classappend="${pedido.estado == 'PROCESANDO' ? 'estado-procesando' : (pedido.estado == 'ENVIADO' ? 'estado-enviado' : 'estado-entregado')}"
+                          th:classappend="${pedido.estado == 'PROCESANDO' ? ' estado-procesando' : (pedido.estado == 'ENVIADO' ? ' estado-enviado' : ' estado-entregado')}"
                           th:text="${pedido.estado}">PROCESANDO</span>
                 </div>
 

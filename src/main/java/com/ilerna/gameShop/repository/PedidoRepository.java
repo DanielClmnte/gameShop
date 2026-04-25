@@ -46,7 +46,7 @@ public class PedidoRepository implements IPedidoRepository {
                 pstmt.setDouble(8, pedido.getSubtotal());
                 pstmt.setDouble(9, pedido.getImpuestos());
                 pstmt.setDouble(10, pedido.getTotalConImpuestos());
-                pstmt.setString(11, pedido.getEstado() != null ? pedido.getEstado() : "PROCESANDO");
+                pstmt.setString(11, pedido.getEstado() != null ? pedido.getEstado() : "COMPLETADO");
                 pstmt.setDate(12, pedido.getFechaEntregaEstimada() != null
                         ? Date.valueOf(pedido.getFechaEntregaEstimada()) : null);
                 pstmt.executeUpdate();

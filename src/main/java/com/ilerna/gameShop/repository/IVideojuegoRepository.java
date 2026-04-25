@@ -4,10 +4,6 @@ import com.ilerna.gameShop.model.Videojuego;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Interfaz del repositorio de videojuegos.
- * Define las operaciones CRUD contra la tabla 'videojuegos'.
- */
 public interface IVideojuegoRepository {
     List<Videojuego> obtenerTodos();
     List<Videojuego> obtenerPorPlataforma(int plataformaId);
@@ -19,22 +15,24 @@ public interface IVideojuegoRepository {
     void actualizar(Videojuego videojuego);
     void eliminarPorId(int id);
 
-    // ── Categorías especiales ──
-    List<Videojuego> obtenerNovedades(int limit);
-    List<Videojuego> obtenerMasVendidos(int limit);
-
-    // ── Métodos paginados ──
+    // Métodos de Paginación y Especiales
     List<Videojuego> obtenerTodosPaginado(int offset, int limit);
     int contarTodos();
     List<Videojuego> obtenerPorPlataformaPaginado(int plataformaId, int offset, int limit);
     int contarPorPlataforma(int plataformaId);
     List<Videojuego> obtenerDisponiblesPaginado(int offset, int limit);
     int contarDisponibles();
-    List<Videojuego> obtenerPorCalificacionPaginado(int offset, int limit);
     List<Videojuego> buscarPorTituloPaginado(String titulo, int offset, int limit);
     int contarPorTitulo(String titulo);
+
+    // Novedades, Populares y Más Vendidos
+    List<Videojuego> obtenerNovedades(int limit);
     List<Videojuego> obtenerNovedadesPaginado(int offset, int limit);
     int contarNovedades();
+    List<Videojuego> obtenerPopulares(int limit);
+    List<Videojuego> obtenerPopularesPaginado(int offset, int limit);
+    int contarPopulares();
+    List<Videojuego> obtenerMasVendidos(int limit);
     List<Videojuego> obtenerMasVendidosPaginado(int offset, int limit);
     int contarMasVendidos();
 }

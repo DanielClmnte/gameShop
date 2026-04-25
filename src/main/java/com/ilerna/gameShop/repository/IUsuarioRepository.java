@@ -15,6 +15,8 @@ public interface IUsuarioRepository {
     boolean existePorEmail(String email);
     void guardar(Usuario usuario);
     void actualizar(Usuario usuario);
+    void actualizarConContrasena(Usuario usuario);
+    void actualizarAdmin(Usuario usuario);
     void eliminarPorId(int id);
     Optional<Usuario> autenticar(String identificador, String contrasena);
 }

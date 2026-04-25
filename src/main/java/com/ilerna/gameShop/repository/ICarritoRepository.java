@@ -16,5 +16,6 @@ public interface ICarritoRepository {
     int obtenerCantidadTotal(int usuarioId);
     double obtenerTotalCarrito(int usuarioId);
     boolean existeItem(int usuarioId, int videojuegoId);
+    int obtenerCantidadItem(int usuarioId, int videojuegoId);
 }
 

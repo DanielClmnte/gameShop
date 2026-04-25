@@ -64,7 +64,7 @@
         </div>
 
         <!-- ═══════ PROMO BANNER ═══════ -->
-        <div class="promo-banner" style="margin-top: 24px;">
+        <div class="promo-banner promo-banner-top-margin">
             <div class="promo-banner-text">
                 <h3>🎉 ¡Envío digital instantáneo en todos los juegos!</h3>
                 <p>Compra tu juego favorito y recíbelo al momento. Pago 100% seguro.</p>
@@ -110,7 +110,7 @@
                             <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
                                 <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-basket-shopping"></i></button>
                             </form>
-                            <button th:unless="${videojuego.disponible}" class="btn btn-ghost btn-sm" disabled>—</button>
+                            <button th:unless="${videojuego.disponible}" class="btn btn-outline btn-sm" title="Avísame cuando esté disponible" onclick="alert('Te notificaremos cuando esté disponible')">🔔</button>
                         </div>
                     </div>
                 </div>

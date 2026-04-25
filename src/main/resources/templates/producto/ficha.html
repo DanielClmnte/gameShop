@@ -42,7 +42,9 @@
                     <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
                         <button type="submit" class="btn btn-primary btn-lg btn-block">🛒 Agregar al Carrito</button>
                     </form>
-                    <button th:unless="${videojuego.disponible}" class="btn btn-ghost btn-lg btn-block" disabled>No disponible</button>
+                    <div th:unless="${videojuego.disponible}" class="badge badge-red" style="padding:0.8rem;text-align:center;">
+                        ⚠️ Producto agotado temporalmente
+                    </div>
                     <!-- Botón favoritos -->
                     <form th:if="${session.usuarioId != null}" th:action="@{/favoritos/toggle/{id}(id=${videojuego.id})}" method="post">
                         <input type="hidden" name="redirect" th:value="${'/producto/' + videojuego.id}">

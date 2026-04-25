@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Representa un pedido realizado por un usuario.
- * Se almacena en memoria (lista estática) al igual que el resto de entidades.
+ * Se persiste en las tablas 'pedidos' y 'detalle_pedidos' de gameshop_db.
  */
 public class Pedido {
 

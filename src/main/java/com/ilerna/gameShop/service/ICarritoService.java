@@ -9,8 +9,8 @@ import java.util.List;
  */
 public interface ICarritoService {
     List<CarritoItem> obtenerCarrito(int usuarioId);
-    void agregarAlCarrito(int usuarioId, int videojuegoId, int cantidad);
-    void actualizarCantidad(int usuarioId, int videojuegoId, int nuevaCantidad);
+    boolean agregarAlCarrito(int usuarioId, int videojuegoId, int cantidad);
+    boolean actualizarCantidad(int usuarioId, int videojuegoId, int nuevaCantidad);
     void eliminarDelCarrito(int usuarioId, int videojuegoId);
     void vaciarCarrito(int usuarioId);
     int obtenerCantidadTotal(int usuarioId);

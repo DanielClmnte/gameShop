@@ -12,11 +12,11 @@
 
     <div class="error-container">
         <div class="error-box">
-            <div style="font-size:60px;">❌</div>
+            <div class="error-icon-large">❌</div>
             <h1>Error en el Pago</h1>
             <p class="error-msg" th:text="${error}">Error al procesar el pago.</p>
             <p class="error-hint">Verifica que el número de tarjeta tenga 16 dígitos y el CVV 3 dígitos.</p>
-            <a href="/checkout" class="btn btn-primary" style="margin-top:20px;">🔄 Intentar de Nuevo</a>
+            <a href="/checkout" class="btn btn-primary btn-retry-top-margin">🔄 Intentar de Nuevo</a>
         </div>
     </div>
 

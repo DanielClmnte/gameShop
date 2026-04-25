@@ -33,12 +33,19 @@
                 <div class="stat-label">Sin stock</div>
             </div>
 
+            <div class="stat-card">
+                <h3>Usuarios Registrados</h3>
+                <div class="stat-number" th:text="${totalUsuarios}">0</div>
+                <div class="stat-label">Cuentas en la plataforma</div>
+            </div>
+
             <div class="stat-card stat-actions">
                 <h3>Acciones Rápidas</h3>
                 <div class="quick-actions">
                     <a href="/admin/productos/nuevo" class="btn btn-primary btn-sm btn-block">➕ Nuevo Producto</a>
                     <a href="/admin/productos" class="btn btn-ghost btn-sm btn-block">📋 Ver Productos</a>
                     <a href="/admin/stock" class="btn btn-ghost btn-sm btn-block">📦 Gestionar Stock</a>
+                    <a href="/admin/usuarios" class="btn btn-ghost btn-sm btn-block">👥 Gestionar Usuarios</a>
                 </div>
             </div>
         </div>

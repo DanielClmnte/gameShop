@@ -138,9 +138,7 @@ public class LoginController {
     @GetMapping("/perfil")
     public String mostrarPerfil(HttpSession session, Model model) {
         Integer usuarioId = (Integer) session.getAttribute("usuarioId");
-        if (usuarioId == null) {
-            return "redirect:/login";
-        }
+        if (usuarioId == null) return "redirect:/login";
         Optional<Usuario> usuario = usuarioService.obtenerPorId(usuarioId);
         if (usuario.isPresent()) {
             model.addAttribute("usuario", usuario.get());
@@ -148,6 +146,87 @@ public class LoginController {
             return "auth/perfil";
         }
         return "redirect:/login";
+    }
+
+    @PostMapping("/perfil/actualizar")
+    public String actualizarPerfil(
+            @RequestParam String nombre,
+            @RequestParam String email,
+            @RequestParam(required = false) String telefono,
+            @RequestParam(required = false) String direccion,
+            @RequestParam(required = false) String ciudad,
+            @RequestParam(required = false) String codigoPostal,
+            HttpSession session,
+            Model model) {
+
+        Integer usuarioId = (Integer) session.getAttribute("usuarioId");
+        if (usuarioId == null) return "redirect:/login";
+
+        // Validaciones backend
+        java.util.List<String> errores = new java.util.ArrayList<>();
+        if (nombre == null || nombre.trim().length() < 2 || nombre.trim().length() > 100)
+            errores.add("El nombre debe tener entre 2 y 100 caracteres.");
+        if (email == null || !email.matches("^[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}$"))
+            errores.add("El email no es válido.");
+        if (telefono != null && !telefono.isBlank() && !telefono.matches("[0-9+\\-\\s]{6,20}"))
+            errores.add("El teléfono no es válido.");
+        if (codigoPostal != null && !codigoPostal.isBlank() && !codigoPostal.matches("[0-9]{5}"))
+            errores.add("El código postal debe tener 5 dígitos numéricos.");
+
+        Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(usuarioId);
+        if (!errores.isEmpty()) {
+            usuarioOpt.ifPresent(u -> model.addAttribute("usuario", u));
+            model.addAttribute("errores", errores);
+            model.addAttribute("titulo", "Mi Perfil - GameShop");
+            return "auth/perfil";
+        }
+
+        boolean ok = usuarioService.actualizarPerfil(usuarioId, nombre, email,
+                telefono, direccion, ciudad, codigoPostal);
+        if (!ok) {
+            usuarioOpt.ifPresent(u -> model.addAttribute("usuario", u));
+            model.addAttribute("errorEmail", "Ese email ya está registrado por otro usuario.");
+            model.addAttribute("titulo", "Mi Perfil - GameShop");
+            return "auth/perfil";
+        }
+        // Actualizar nombre en sesión
+        session.setAttribute("usuarioNombre", nombre.trim());
+        model.addAttribute("exito", "Perfil actualizado correctamente.");
+        usuarioService.obtenerPorId(usuarioId).ifPresent(u -> model.addAttribute("usuario", u));
+        model.addAttribute("titulo", "Mi Perfil - GameShop");
+        return "auth/perfil";
+    }
+
+    @PostMapping("/perfil/cambiar-contrasena")
+    public String cambiarContrasena(
+            @RequestParam String contraseniaActual,
+            @RequestParam String contrasenaNueva,
+            @RequestParam String contrasenaRepetida,
+            HttpSession session,
+            Model model) {
+
+        Integer usuarioId = (Integer) session.getAttribute("usuarioId");
+        if (usuarioId == null) return "redirect:/login";
+
+        Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(usuarioId);
+        usuarioOpt.ifPresent(u -> model.addAttribute("usuario", u));
+        model.addAttribute("titulo", "Mi Perfil - GameShop");
+
+        if (contrasenaNueva == null || contrasenaNueva.length() < 4) {
+            model.addAttribute("errorPass", "La nueva contraseña debe tener al menos 4 caracteres.");
+            return "auth/perfil";
+        }
+        if (!contrasenaNueva.equals(contrasenaRepetida)) {
+            model.addAttribute("errorPass", "Las contraseñas no coinciden.");
+            return "auth/perfil";
+        }
+        boolean ok = usuarioService.cambiarContrasena(usuarioId, contraseniaActual, contrasenaNueva);
+        if (!ok) {
+            model.addAttribute("errorPass", "La contraseña actual no es correcta.");
+            return "auth/perfil";
+        }
+        model.addAttribute("exitoPass", "Contraseña cambiada correctamente.");
+        return "auth/perfil";
     }
 
     // ──────────────── UTILIDAD: migrar carrito ────────────────

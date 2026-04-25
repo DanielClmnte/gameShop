@@ -14,9 +14,12 @@ public interface IUsuarioService {
     Optional<Usuario> obtenerPorEmail(String email);
     boolean registrar(String nombre, String email, String contrasena, String telefono);
     Optional<Usuario> autenticar(String email, String contrasena);
-    void actualizarPerfil(int usuarioId, String nombre, String telefono,
-                          String direccion, String ciudad, String codigoPostal);
+    boolean actualizarPerfil(int usuarioId, String nombre, String email,
+                             String telefono, String direccion, String ciudad, String codigoPostal);
     boolean cambiarContrasena(int usuarioId, String contraseniaActual, String contrasenaNew);
-    void desactivarUsuario(int usuarioId);
+    boolean crearUsuarioAdmin(String nombre, String email, String contrasena, String telefono, String rol);
+    boolean actualizarUsuarioAdmin(int id, String nombre, String email, String telefono,
+                                   String direccion, String ciudad, String codigoPostal,
+                                   String rol, boolean activo);
+    void eliminarUsuario(int id);
 }
-

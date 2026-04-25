@@ -10,37 +10,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Controlador para gestionar el stock de productos
- * Rutas principales:
- * - GET /admin/stock : Listar productos por stock
- * - POST /admin/stock/actualizar : Actualizar stock
+ * Controlador para gestionar el stock de productos.
+ * Rutas: GET /admin/stock, POST /admin/stock/actualizar, POST /admin/stock/aumentar, POST /admin/stock/disminuir
  */
 @Controller
 @RequestMapping("/admin/stock")
 public class StockController {
-    
-    private VideojuegoService videojuegoService;
-    
-    // Constructor
+
+    private final VideojuegoService videojuegoService;
+
     public StockController() {
         this.videojuegoService = new VideojuegoService();
     }
-    
-    /**
-     * Mostrar lista de productos por stock
-     */
+
+    /** Mostrar lista de productos filtrada por stock */
     @GetMapping
     public String mostrarStock(
             @RequestParam(defaultValue = "todos") String filtro,
             Model model) {
-        
+
         List<Videojuego> videojuegos;
         String titulo;
-        
-        switch(filtro) {
+
+        switch (filtro) {
             case "agotados":
                 videojuegos = videojuegoService.obtenerTodos();
                 videojuegos.removeIf(Videojuego::isDisponible);
@@ -55,73 +49,56 @@ public class StockController {
                 videojuegos = videojuegoService.obtenerTodos();
                 titulo = "Gestión de Stock";
         }
-        
+
         model.addAttribute("videojuegos", videojuegos);
         model.addAttribute("filtro", filtro);
         model.addAttribute("titulo", titulo + " - GameShop");
-        
+
         return "admin/stock";
     }
-    
-    /**
-     * Actualizar el stock de un producto
-     */
+
+    /** Establecer un stock concreto a un producto */
     @PostMapping("/actualizar")
     public String actualizarStock(
             @RequestParam int videojuegoId,
             @RequestParam int nuevoStock,
             @RequestParam(defaultValue = "todos") String filtro) {
-        
-        Optional<Videojuego> videojuego = videojuegoService.obtenerPorId(videojuegoId);
-        
-        if (videojuego.isPresent()) {
-            Videojuego vj = videojuego.get();
+
+        videojuegoService.obtenerPorId(videojuegoId).ifPresent(vj -> {
             vj.setStock(nuevoStock);
             videojuegoService.actualizarVideojuego(vj);
-        }
-        
+        });
+
         return "redirect:/admin/stock?filtro=" + filtro;
     }
-    
-    /**
-     * Aumentar stock
-     */
+
+    /** Aumentar stock de un producto */
     @PostMapping("/aumentar")
     public String aumentarStock(
             @RequestParam int videojuegoId,
             @RequestParam(defaultValue = "1") int cantidad,
             @RequestParam(defaultValue = "todos") String filtro) {
-        
-        Optional<Videojuego> videojuego = videojuegoService.obtenerPorId(videojuegoId);
-        
-        if (videojuego.isPresent()) {
-            Videojuego vj = videojuego.get();
+
+        videojuegoService.obtenerPorId(videojuegoId).ifPresent(vj -> {
             vj.setStock(vj.getStock() + cantidad);
             videojuegoService.actualizarVideojuego(vj);
-        }
-        
+        });
+
         return "redirect:/admin/stock?filtro=" + filtro;
     }
-    
-    /**
-     * Disminuir stock
-     */
+
+    /** Disminuir stock de un producto (mínimo 0) */
     @PostMapping("/disminuir")
     public String disminuirStock(
             @RequestParam int videojuegoId,
             @RequestParam(defaultValue = "1") int cantidad,
             @RequestParam(defaultValue = "todos") String filtro) {
-        
-        Optional<Videojuego> videojuego = videojuegoService.obtenerPorId(videojuegoId);
-        
-        if (videojuego.isPresent()) {
-            Videojuego vj = videojuego.get();
-            int nuevoStock = Math.max(0, vj.getStock() - cantidad);
-            vj.setStock(nuevoStock);
+
+        videojuegoService.obtenerPorId(videojuegoId).ifPresent(vj -> {
+            vj.setStock(Math.max(0, vj.getStock() - cantidad));
             videojuegoService.actualizarVideojuego(vj);
-        }
-        
+        });
+
         return "redirect:/admin/stock?filtro=" + filtro;
     }
 }
-

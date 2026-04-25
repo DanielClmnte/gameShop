@@ -13,13 +13,16 @@ import java.util.Optional;
 public class PedidoService implements IPedidoService {
 
     private PedidoRepository pedidoRepository;
+    private VideojuegoService videojuegoService;
 
     public PedidoService() {
         this.pedidoRepository = new PedidoRepository();
+        this.videojuegoService = new VideojuegoService();
     }
 
     /**
      * Crea y guarda un nuevo pedido a partir de los datos del checkout.
+     * Actualiza el stock de los productos comprados.
      *
      * @return el Pedido guardado con su ID y número de pedido asignados
      */
@@ -41,7 +44,20 @@ public class PedidoService implements IPedidoService {
                 subtotal, impuestos, totalConImpuestos
         );
 
-        return pedidoRepository.guardar(pedido);
+        // Estado inicial del pedido (ENUM en BD: PROCESANDO | ENVIADO | ENTREGADO)
+        pedido.setEstado("PROCESANDO");
+
+        // Guardar el pedido
+        Pedido pedidoGuardado = pedidoRepository.guardar(pedido);
+
+        // Actualizar stock de los productos comprados
+        if (pedidoGuardado != null && items != null) {
+            for (CarritoItem item : items) {
+                videojuegoService.restarStock(item.getVideojuegoId(), item.getCantidad());
+            }
+        }
+
+        return pedidoGuardado;
     }
 
     /**

@@ -1,23 +1,40 @@
 package com.ilerna.gameShop.repository;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
- * Clase Singleton para gestionar la conexión a la base de datos MySQL.
- * Usa MAMP (puerto 3306) con la base de datos gameshop_db.
+ * Singleton que gestiona la conexión a MySQL.
+ * Las credenciales se leen desde application.properties (db.url, db.user, db.password).
  */
 public class Conexion {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/gameshop_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
-    private static final String USER = "root";
-    private static final String PASSWORD = "root";
+    private static String URL;
+    private static String USER;
+    private static String PASSWORD;
+
+    static {
+        try (InputStream in = Conexion.class.getClassLoader()
+                .getResourceAsStream("application.properties")) {
+            Properties props = new Properties();
+            if (in != null) {
+                props.load(in);
+                URL      = props.getProperty("db.url");
+                USER     = props.getProperty("db.user");
+                PASSWORD = props.getProperty("db.password");
+            }
+        } catch (Exception e) {
+            System.err.println("❌ No se pudo leer application.properties.");
+            e.printStackTrace();
+        }
+    }
 
     private static Conexion instancia;
     private Connection connection;
 
-    // Constructor privado para evitar la creación externa de instancias
     private Conexion() {
         try {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -28,19 +45,18 @@ public class Conexion {
         }
     }
 
-    // Método para obtener la instancia del Singleton
     public static synchronized Conexion getInstancia() {
-        if (instancia == null || instancia.connection == null) {
+        if (instancia == null) {
             instancia = new Conexion();
         }
         return instancia;
     }
 
-    // Método para obtener la conexión activa
-    public Connection getConnection() {
+    public synchronized Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                System.out.println("✅ Reconexión a la base de datos establecida.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -48,7 +64,6 @@ public class Conexion {
         return connection;
     }
 
-    // Método para cerrar la conexión manualmente
     public void cerrarConexion() {
         try {
             if (connection != null && !connection.isClosed()) {
