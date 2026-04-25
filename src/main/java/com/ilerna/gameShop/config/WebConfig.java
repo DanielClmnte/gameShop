@@ -6,6 +6,10 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * Configuración MVC: registra interceptores y recursos estáticos.
  */
@@ -34,10 +38,19 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String absolutePath = "file:" + System.getProperty("user.dir") + "/uploads/";
-        System.out.println(">>> [WebConfig] Sirviendo imágenes desde: " + absolutePath);
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations(absolutePath);
+        try {
+            // target/classes es el classpath raíz al ejecutar desde IntelliJ
+            // Subiendo 2 niveles llegamos a la raíz del proyecto (gameShop/)
+            Path classesDir = Paths.get(getClass().getResource("/").toURI());
+            Path projectRoot = classesDir.getParent().getParent(); // target/classes -> target -> gameShop/
+            String uploadsRoot = "file:" + projectRoot.resolve("uploads").toString() + "/";
+            registry.addResourceHandler("/uploads/**")
+                    .addResourceLocations(uploadsRoot);
+        } catch (URISyntaxException e) {
+            // Fallback: ruta relativa al working directory
+            registry.addResourceHandler("/uploads/**")
+                    .addResourceLocations("file:uploads/");
+        }
     }
 }
 
