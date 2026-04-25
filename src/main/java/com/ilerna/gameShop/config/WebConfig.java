@@ -34,10 +34,8 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // La BD guarda rutas como /uploads/images/archivo.png
-        // El handler coge /uploads/** y lo resuelve desde la carpeta uploads/
-        // Resultado: uploads/ + images/archivo.png → correcto
         String absolutePath = "file:" + System.getProperty("user.dir") + "/uploads/";
+        System.out.println(">>> [WebConfig] Sirviendo imágenes desde: " + absolutePath);
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(absolutePath);
     }
