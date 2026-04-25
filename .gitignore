@@ -2,9 +2,8 @@
 # Archivos especificos del proyecto - NO subir a GitHub
 # ============================================================
 
-# Imagenes subidas por el admin (solo mantener la carpeta vacia)
-uploads/images/*
-!uploads/images/.gitkeep
+# Archivo de agentes - no subir
+# (uploads/images/ se rastrea con su contenido)
 
 # Archivo de agentes y configuracion local de Claude
 AGENTS.md
