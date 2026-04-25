@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Error en el Pago - GameShop</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: header}"></div>
+
+    <div class="error-container">
+        <div class="error-box">
+            <div class="error-icon-large">❌</div>
+            <h1>Error en el Pago</h1>
+            <p class="error-msg" th:text="${error}">Error al procesar el pago.</p>
+            <p class="error-hint">Verifica que el número de tarjeta tenga 16 dígitos y el CVV 3 dígitos.</p>
+            <a href="/checkout" class="btn btn-primary btn-retry-top-margin">🔄 Intentar de Nuevo</a>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

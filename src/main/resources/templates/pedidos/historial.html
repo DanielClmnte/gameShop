@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Mis Pedidos - GameShop</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/pedidos.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: header}"></div>
+
+    <div class="historial-container">
+        <h1>📋 Mis Pedidos</h1>
+
+        <!-- SIN PEDIDOS -->
+        <div th:if="${#lists.isEmpty(pedidos)}" class="sin-pedidos">
+            <div class="icono">🛒</div>
+            <h2>Todavía no tienes pedidos</h2>
+            <p>Cuando completes una compra, aparecerá aquí tu historial.</p>
+            <a href="/" class="btn-ir-catalogo">Ir al Catálogo</a>
+        </div>
+
+        <!-- LISTA DE PEDIDOS -->
+        <div th:unless="${#lists.isEmpty(pedidos)}">
+            <div class="pedido-card" th:each="pedido : ${pedidos}">
+                <!-- Cabecera del pedido -->
+                <div class="pedido-header">
+                    <div>
+                        <span class="pedido-numero" th:text="${'Pedido #' + pedido.numeroPedido}">Pedido #123456</span>
+                        <span class="pedido-fecha" th:if="${pedido.fechaPedido != null}" th:text="${' · ' + #temporals.format(pedido.fechaPedido, 'dd/MM/yyyy')}"> · 08/04/2026</span>
+                    </div>
+                    <span class="badge-estado"
+                          th:classappend="${pedido.estado == 'PROCESANDO' ? ' estado-procesando' : (pedido.estado == 'ENVIADO' ? ' estado-enviado' : ' estado-entregado')}"
+                          th:text="${pedido.estado}">PROCESANDO</span>
+                </div>
+
+                <!-- Productos del pedido -->
+                <div class="pedido-items">
+                    <div class="pedido-item" th:each="item : ${pedido.items}">
+                        <span>
+                            <strong th:text="${item.tituloVideojuego}">Nombre juego</strong>
+                            <small style="color:var(--text-muted);" th:text="${' × ' + item.cantidad}"> × 1</small>
+                        </span>
+                        <span th:text="${'€' + #numbers.formatDecimal(item.subtotal, 1, 2)}">€49.99</span>
+                    </div>
+                </div>
+
+                <!-- Totales -->
+                <div class="pedido-totales">
+                    <div>
+                        <div class="total-label">Subtotal</div>
+                        <div style="color:var(--text); font-weight:700; font-size:16px;" th:text="${'€' + #numbers.formatDecimal(pedido.subtotal, 1, 2)}">€49.99</div>
+                    </div>
+                    <div>
+                        <div class="total-label">IVA (21%)</div>
+                        <div style="color:var(--yellow); font-weight:700; font-size:16px;" th:text="${'€' + #numbers.formatDecimal(pedido.impuestos, 1, 2)}">€10.50</div>
+                    </div>
+                    <div>
+                        <div class="total-label">Total</div>
+                        <div class="total-valor" th:text="${'€' + #numbers.formatDecimal(pedido.totalConImpuestos, 1, 2)}">€60.49</div>
+                    </div>
+                </div>
+
+                <!-- Entrega -->
+                <div class="pedido-entrega">
+                    📦 Entrega estimada:
+                    <span th:if="${pedido.fechaEntregaEstimada != null}" th:text="${#temporals.format(pedido.fechaEntregaEstimada, 'dd/MM/yyyy')}">11/04/2026</span>
+                    <span th:unless="${pedido.fechaEntregaEstimada != null}">Por confirmar</span>
+                    &nbsp;·&nbsp;
+                    <span th:text="${pedido.nombreCompleto}">Cliente</span>
+                    &nbsp;·&nbsp;
+                    <span th:text="${pedido.ciudad}">Ciudad</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
+

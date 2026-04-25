@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Formas de Pago - GameShop</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<div class="container">
+    <div class="breadcrumb">
+        <a href="/">Inicio</a> <span>›</span>
+        <a href="/perfil">Mi Perfil</a> <span>›</span>
+        <span>Formas de Pago</span>
+    </div>
+
+    <div class="perfil-layout">
+
+        <!-- SIDEBAR -->
+        <div th:replace="~{fragments/layout :: perfil-sidebar('pagos')}"></div>
+
+        <!-- MAIN -->
+        <main class="perfil-main">
+
+            <div class="perfil-page-header">
+                <h1>💳 Formas de Pago</h1>
+                <p>Gestiona tus tarjetas guardadas de forma segura.</p>
+            </div>
+
+            <div th:if="${param.ok}" class="pf-alert-success">✅ Tarjeta guardada correctamente.</div>
+            <div th:if="${error}"    class="pf-alert-error"   th:text="${error}"></div>
+
+            <!-- LISTA DE TARJETAS -->
+            <div class="perfil-section" th:if="${not #lists.isEmpty(metodos)}">
+                <div class="perfil-section-header">
+                    <h2>💳 Tarjetas guardadas</h2>
+                    <span style="font-size:.8rem;color:#64748b;" th:text="${#lists.size(metodos) + ' tarjeta(s)'}"></span>
+                </div>
+                <div class="perfil-section-body">
+                    <div class="pf-cards-grid">
+                        <div th:each="m : ${metodos}"
+                             class="pf-pay-card"
+                             th:classappend="${m.esPrincipal ? ' principal' : ''}">
+
+                            <span th:if="${m.esPrincipal}" class="pf-badge-principal">⭐ Principal</span>
+
+                            <div>
+                                <div class="pf-pay-alias" th:text="${m.alias}">Visa personal</div>
+                                <div class="pf-pay-tipo"  th:text="${m.tipo}">VISA</div>
+                            </div>
+                            <div class="pf-pay-number">•••• •••• •••• <span th:text="${m.ultimos4}"></span></div>
+                            <div class="pf-pay-footer">
+                                <span class="pf-pay-titular" th:text="${m.titular}">NOMBRE</span>
+                                <span class="pf-pay-expiry" th:text="${m.mesExpiracion + '/' + m.anioExpiracion}">01/29</span>
+                            </div>
+
+                            <div class="pf-card-actions" style="margin-top:.8rem;">
+                                <a th:href="@{/perfil/pagos/eliminar/{id}(id=${m.id})}"
+                                   class="btn-pf-danger"
+                                   onclick="return confirm('¿Eliminar esta tarjeta?')">🗑️ Eliminar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIN TARJETAS -->
+            <div th:if="${#lists.isEmpty(metodos)}" class="perfil-section">
+                <div class="perfil-section-body" style="text-align:center;padding:2rem;color:#64748b;">
+                    <div style="font-size:2.5rem;margin-bottom:.8rem;">💳</div>
+                    <p>Todavía no tienes ninguna forma de pago guardada.</p>
+                </div>
+            </div>
+
+            <!-- FORMULARIO NUEVA TARJETA -->
+            <div class="perfil-section">
+                <div class="perfil-section-header">
+                    <h2>➕ Añadir tarjeta</h2>
+                </div>
+                <div class="perfil-section-body">
+                    <div class="pf-alert-success" style="background:rgba(255,200,0,.06);border-color:rgba(255,200,0,.3);color:#ffc800;margin-bottom:1rem;">
+                        🔒 Sólo guardamos los últimos 4 dígitos. El número completo nunca se almacena.
+                    </div>
+                    <form action="/perfil/pagos/guardar" method="post" id="formPago" novalidate>
+                        <div class="pf-form-grid">
+                            <div class="pf-form-group">
+                                <label>Alias *</label>
+                                <input type="text" name="alias" placeholder="Visa personal" required maxlength="50">
+                            </div>
+                            <div class="pf-form-group">
+                                <label>Tipo</label>
+                                <select name="tipo">
+                                    <option value="VISA">VISA</option>
+                                    <option value="MASTERCARD">Mastercard</option>
+                                    <option value="AMEX">American Express</option>
+                                </select>
+                            </div>
+                            <div class="pf-form-group full">
+                                <label>Número de tarjeta * (16 dígitos)</label>
+                                <input type="text" name="numero" id="pago-numero" inputmode="numeric"
+                                       maxlength="19" placeholder="0000 0000 0000 0000" required
+                                       style="font-family:monospace;letter-spacing:2px;">
+                            </div>
+                            <div class="pf-form-group full">
+                                <label>Titular *</label>
+                                <input type="text" name="titular" placeholder="NOMBRE APELLIDO"
+                                       required maxlength="100" style="text-transform:uppercase;">
+                            </div>
+                            <div class="pf-form-group">
+                                <label>Mes de expiración * (01-12)</label>
+                                <input type="text" name="mes" id="pago-mes" inputmode="numeric" maxlength="2" placeholder="12" required>
+                            </div>
+                            <div class="pf-form-group">
+                                <label>Año de expiración * (4 dígitos)</label>
+                                <input type="text" name="anio" id="pago-anio" inputmode="numeric" maxlength="4" placeholder="2029" required>
+                            </div>
+                            <div class="pf-form-group full">
+                                <div class="pf-checkbox-row">
+                                    <input type="checkbox" name="esPrincipal" value="true" id="pago-principal">
+                                    <label for="pago-principal">Establecer como tarjeta principal</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top:1rem;">➕ Guardar Tarjeta</button>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    document.getElementById('pago-numero').addEventListener('input', function() {
+        let v = this.value.replace(/\D/g,'').substring(0,16);
+        this.value = v.replace(/(.{4})/g,'$1 ').trim();
+    });
+    ['pago-mes','pago-anio'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function(){ this.value = this.value.replace(/\D/g,''); });
+    });
+    document.getElementById('formPago').addEventListener('submit', function(e) {
+        const num = document.getElementById('pago-numero').value.replace(/\s/g,'');
+        const mes = document.getElementById('pago-mes').value;
+        const anio = document.getElementById('pago-anio').value;
+        if (num.length !== 16) { alert('El número de tarjeta debe tener 16 dígitos.'); e.preventDefault(); return; }
+        if (!/^(0[1-9]|1[0-2])$/.test(mes)) { alert('Mes inválido (01-12).'); e.preventDefault(); return; }
+        if (!/^[0-9]{4}$/.test(anio)) { alert('Año inválido (4 dígitos).'); e.preventDefault(); return; }
+    });
+</script>
+</body>
+</html>
+

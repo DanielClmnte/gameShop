@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Mis Favoritos - GameShop</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/catalogo.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: header}"></div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> <span>›</span> <span>Mis Favoritos</span>
+        </div>
+
+        <h1 class="page-title">❤️ Mis <span class="highlight">Favoritos</span></h1>
+
+        <!-- LISTA DE FAVORITOS -->
+        <div th:if="${!favoritos.isEmpty()}" class="games-grid">
+            <div class="game-card" th:each="fav : ${favoritos}">
+                <div class="game-card-img">
+                    <img th:src="${fav.imagenVideojuego}" th:alt="${fav.tituloVideojuego}"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <div class="img-fallback">🎮</div>
+                    <!-- Botón quitar de favoritos -->
+                    <form th:action="@{/favoritos/eliminar/{id}(id=${fav.videojuegoId})}" method="post" class="fav-btn-form">
+                        <button type="submit" class="fav-btn fav-btn-active" title="Quitar de favoritos">♥</button>
+                    </form>
+                </div>
+                <div class="game-card-body">
+                    <div class="game-card-title" th:text="${fav.tituloVideojuego}"></div>
+                    <div class="game-card-meta">
+                        <span class="game-card-stock-inline">
+                            <span th:if="${fav.disponibleVideojuego}" class="stock-dot stock-dot-green"></span>
+                            <span th:unless="${fav.disponibleVideojuego}" class="stock-dot stock-dot-red"></span>
+                            <span th:if="${fav.disponibleVideojuego}" class="stock-text-sm">En stock</span>
+                            <span th:unless="${fav.disponibleVideojuego}" class="stock-text-sm stock-text-out">Agotado</span>
+                        </span>
+                    </div>
+                    <div class="game-card-footer">
+                        <span class="game-card-price" th:text="${'€' + #numbers.formatDecimal(fav.precioVideojuego, 1, 2)}"></span>
+                        <div class="game-card-actions">
+                            <a th:href="@{/producto/{id}(id=${fav.videojuegoId})}" class="btn btn-ghost btn-sm">Ver</a>
+                            <form th:if="${fav.disponibleVideojuego}" th:action="@{/carrito/agregar/{id}(id=${fav.videojuegoId})}" method="post">
+                                <button type="submit" class="btn btn-primary btn-sm">🛒</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIN FAVORITOS -->
+        <div th:if="${favoritos.isEmpty()}" class="cart-empty" style="text-align:center;padding:60px 0;">
+            <div style="font-size:4em;">❤️</div>
+            <h2>Tu lista de favoritos está vacía</h2>
+            <p>¡Explora el catálogo y guarda los juegos que te gusten!</p>
+            <a href="/" class="btn btn-primary btn-lg">Ir al Catálogo</a>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
+

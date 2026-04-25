@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Opinión - GameShop</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/producto.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: header}"></div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> <span>›</span> <a th:href="@{/producto/{id}(id=${videojuegoId})}">Producto</a> <span>›</span> <span>Agregar Opinión</span>
+        </div>
+
+        <div class="opinion-form-container">
+            <h1>✍️ Escribir tu opinión</h1>
+            <p class="subtitle" th:text="${'Juego: ' + videojuegoTitulo}"></p>
+
+            <form th:action="@{/producto/{id}/guardar-opinion(id=${videojuegoId})}" method="post">
+
+                <!-- CALIFICACIÓN -->
+                <div class="form-group">
+                    <label class="form-label">Calificación *</label>
+                    <div class="rating-selector">
+                        <input type="radio" name="calificacion" value="5" id="star5" required>
+                        <label for="star5" class="star">⭐</label>
+                        <input type="radio" name="calificacion" value="4" id="star4" required>
+                        <label for="star4" class="star">⭐</label>
+                        <input type="radio" name="calificacion" value="3" id="star3" required>
+                        <label for="star3" class="star">⭐</label>
+                        <input type="radio" name="calificacion" value="2" id="star2" required>
+                        <label for="star2" class="star">⭐</label>
+                        <input type="radio" name="calificacion" value="1" id="star1" required>
+                        <label for="star1" class="star">⭐</label>
+                    </div>
+                </div>
+
+                <!-- COMENTARIO -->
+                <div class="form-group">
+                    <label for="comentario" class="form-label">Tu opinión *</label>
+                    <textarea id="comentario" name="comentario" rows="8" class="form-textarea" placeholder="Comparte tu experiencia con este juego..." required></textarea>
+                    <span class="form-hint">Mínimo 10 caracteres, máximo 500</span>
+                </div>
+
+
+                <!-- BOTONES -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">✓ Enviar Opinión</button>
+                    <a th:href="@{/producto/{id}(id=${videojuegoId})}" class="btn btn-ghost">✕ Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
+

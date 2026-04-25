@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Stock</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/admin-layout :: header-admin}"></div>
+
+    <div class="container admin-page">
+        <div class="admin-header">
+            <h1>📦 Gestión de Stock</h1>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="stock-filters">
+            <a th:href="@{/admin/stock(filtro='todos')}" class="filter-btn"
+               th:classappend="${filtro == 'todos'} ? ' active' : ''">📋 Todos</a>
+            <a th:href="@{/admin/stock(filtro='bajo-stock')}" class="filter-btn"
+               th:classappend="${filtro == 'bajo-stock'} ? ' active' : ''">⚠️ Stock Bajo</a>
+            <a th:href="@{/admin/stock(filtro='agotados')}" class="filter-btn"
+               th:classappend="${filtro == 'agotados'} ? ' active' : ''">❌ Agotados</a>
+        </div>
+
+        <!-- TABLA DE STOCK -->
+        <div class="admin-table">
+            <div class="admin-table-head stock-head">
+                <div>Producto</div>
+                <div style="text-align:center">Stock Actual</div>
+                <div style="text-align:center">Ajuste Rápido</div>
+                <div style="text-align:center">Establecer</div>
+            </div>
+
+            <div class="stock-row" th:each="producto : ${videojuegos}">
+                <div>
+                    <strong th:text="${producto.titulo}">Producto</strong>
+                    <span class="stock-badge"
+                          th:classappend="${producto.disponible} ? ' in-stock' : ' out-stock'"
+                          th:text="${producto.disponible} ? 'En Stock' : 'Agotado'">Estado</span>
+                </div>
+
+                <div style="text-align:center">
+                    <span class="stock-number" th:text="${producto.stock}">0</span>
+                    <span class="stock-unit">unidades</span>
+                </div>
+
+                <div class="stock-actions">
+                    <form th:action="@{/admin/stock/disminuir}" method="post">
+                        <input type="hidden" name="videojuegoId" th:value="${producto.id}">
+                        <input type="hidden" name="filtro" th:value="${filtro}">
+                        <button type="submit" class="btn-stock btn-minus" title="Restar 1">➖</button>
+                    </form>
+                    <form th:action="@{/admin/stock/aumentar}" method="post">
+                        <input type="hidden" name="videojuegoId" th:value="${producto.id}">
+                        <input type="hidden" name="filtro" th:value="${filtro}">
+                        <button type="submit" class="btn-stock btn-plus" title="Sumar 1">➕</button>
+                    </form>
+                </div>
+
+                <div>
+                    <form th:action="@{/admin/stock/actualizar}" method="post" class="stock-form">
+                        <input type="hidden" name="videojuegoId" th:value="${producto.id}">
+                        <input type="hidden" name="filtro" th:value="${filtro}">
+                        <input type="number" name="nuevoStock" th:value="${producto.stock}"
+                               min="0" class="stock-input">
+                        <button type="submit" class="stock-save">✓</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIN PRODUCTOS -->
+        <div th:if="${videojuegos.size() == 0}" class="empty-message">
+            <p>No hay productos que coincidan con el filtro seleccionado.</p>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Usuario - GameShop Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/admin-layout :: header-admin}"></div>
+
+    <div class="container admin-page">
+        <div class="admin-header">
+            <h1 th:text="${usuario != null ? '✏️ Editar Usuario' : '➕ Nuevo Usuario'}">Usuario</h1>
+            <a href="/admin/usuarios" class="btn btn-ghost">← Volver</a>
+        </div>
+
+        <div class="admin-form-container">
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <form th:action="${usuario != null ? '/admin/usuarios/actualizar/' + usuario.id : '/admin/usuarios/guardar'}"
+                  method="post" id="formUsuario" novalidate class="admin-form">
+
+                <!-- Datos personales -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="u-nombre">Nombre *</label>
+                        <input type="text" id="u-nombre" name="nombre"
+                               th:value="${usuario != null ? usuario.nombre : ''}"
+                               minlength="2" maxlength="100" required placeholder="Nombre completo">
+                        <small class="field-error" id="uerr-nombre"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="u-email">Email *</label>
+                        <input type="email" id="u-email" name="email"
+                               th:value="${usuario != null ? usuario.email : ''}"
+                               maxlength="150" required placeholder="correo@ejemplo.com">
+                        <small class="field-error" id="uerr-email"></small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="u-tel">Teléfono</label>
+                        <input type="text" id="u-tel" name="telefono"
+                               th:value="${usuario != null ? usuario.telefono : ''}"
+                               maxlength="20" placeholder="612345678">
+                        <small class="field-error" id="uerr-tel"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="u-cp">Código Postal</label>
+                        <input type="text" id="u-cp" name="codigoPostal"
+                               th:value="${usuario != null ? usuario.codigoPostal : ''}"
+                               inputmode="numeric" maxlength="5" placeholder="28001">
+                        <small class="field-error" id="uerr-cp"></small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="u-dir">Dirección</label>
+                    <input type="text" id="u-dir" name="direccion"
+                           th:value="${usuario != null ? usuario.direccion : ''}"
+                           maxlength="255" placeholder="Calle Mayor 123, 2ºA">
+                </div>
+
+                <div class="form-group">
+                    <label for="u-ciudad">Ciudad</label>
+                    <input type="text" id="u-ciudad" name="ciudad"
+                           th:value="${usuario != null ? usuario.ciudad : ''}"
+                           maxlength="100" placeholder="Madrid">
+                </div>
+
+                <!-- Cuenta -->
+                <div class="form-row">
+                    <div class="form-group" th:unless="${usuario != null}">
+                        <label for="u-pass">Contraseña * (mín. 4 caracteres)</label>
+                        <input type="password" id="u-pass" name="contrasena"
+                               minlength="4" maxlength="100" required>
+                        <small class="field-error" id="uerr-pass"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="u-rol">Rol *</label>
+                        <select id="u-rol" name="rol" required>
+                            <option value="CLIENTE" th:selected="${usuario == null or usuario.rol == 'CLIENTE'}">CLIENTE</option>
+                            <option value="ADMIN"   th:selected="${usuario != null and usuario.rol == 'ADMIN'}">ADMIN</option>
+                        </select>
+                    </div>
+                    <div class="form-group" th:if="${usuario != null}">
+                        <label>Estado</label>
+                        <div class="admin-checkbox">
+                            <input type="checkbox" name="activo" value="true"
+                                   th:checked="${usuario.activo}" id="u-activo">
+                            <label for="u-activo">Activo</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span th:text="${usuario != null ? '💾 Guardar Cambios' : '➕ Crear Usuario'}">Guardar</span>
+                    </button>
+                    <a href="/admin/usuarios" class="btn btn-ghost">✕ Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+    <script>
+        document.getElementById('u-cp').addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        document.getElementById('formUsuario').addEventListener('submit', function (e) {
+            let ok = true;
+            function showErr(id, msg) {
+                const el = document.getElementById(id);
+                if (el) { el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
+                if (msg) ok = false;
+            }
+            const n = document.getElementById('u-nombre').value.trim();
+            showErr('uerr-nombre', n.length < 2 ? 'Mínimo 2 caracteres.' : '');
+
+            const em = document.getElementById('u-email').value.trim();
+            showErr('uerr-email', !/^[\w._%+\-]+@[\w.\-]+\.[a-zA-Z]{2,}$/.test(em) ? 'Email no válido.' : '');
+
+            const cp = document.getElementById('u-cp').value.trim();
+            showErr('uerr-cp', cp && !/^[0-9]{5}$/.test(cp) ? 'Debe ser 5 dígitos.' : '');
+
+            const tel = document.getElementById('u-tel').value.trim();
+            showErr('uerr-tel', tel && !/^[0-9+\-\s]{6,20}$/.test(tel) ? 'Teléfono no válido.' : '');
+
+            const passEl = document.getElementById('u-pass');
+            if (passEl) { showErr('uerr-pass', passEl.value.length < 4 ? 'Mínimo 4 caracteres.' : ''); }
+
+            if (!ok) e.preventDefault();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<body>
+
+<!-- ═══════════════ HEADER PÚBLICO ═══════════════ -->
+<header th:fragment="header" class="site-header">
+    <div class="header-container">
+        <a href="/" class="logo">
+            <span class="logo-icon">🎮</span>
+            <span class="logo-text">Game<span class="logo-accent">Shop</span></span>
+        </a>
+
+        <nav class="nav-main" id="navMain">
+            <a href="/" class="nav-link">Inicio</a>
+            <a href="/catalogo/disponibles" class="nav-link">Disponibles</a>
+            <a href="/catalogo/populares" class="nav-link">Populares</a>
+            <a href="/catalogo/novedades" class="nav-link">Novedades</a>
+            <a href="/catalogo/mas-vendidos" class="nav-link">Más Vendidos</a>
+            <a th:if="${session.usuarioId != null}" href="/favoritos" class="nav-link">❤️ Favoritos</a>
+            <a th:if="${session.usuarioId != null}" href="/pedidos" class="nav-link">Mis Pedidos</a>
+            <a th:if="${session.usuarioRol == 'ADMIN'}" href="/admin" class="nav-link nav-admin">Admin</a>
+        </nav>
+
+        <div class="header-actions">
+            <form action="/catalogo/buscar" method="get" class="search-bar">
+                <input type="text" name="titulo" placeholder="Buscar juegos..." required>
+                <button type="submit" aria-label="Buscar">🔍</button>
+            </form>
+
+            <a href="/carrito" class="cart-btn">
+                🛒
+                <span class="cart-badge" th:if="${carritoCount != null and carritoCount > 0}" th:text="${carritoCount}">0</span>
+            </a>
+
+            <div class="user-area" th:if="${session.usuarioId != null}">
+                <a href="/perfil" class="user-link">
+                    <span class="user-avatar">👤</span>
+                    <span class="user-name" th:text="${session.usuarioNombre}">Usuario</span>
+                </a>
+                <a href="/logout" class="nav-link nav-logout">Salir</a>
+            </div>
+            <a th:unless="${session.usuarioId != null}" href="/login" class="btn-login">Iniciar Sesión</a>
+        </div>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Menú">☰</button>
+    </div>
+</header>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer th:fragment="footer" class="site-footer">
+    <div class="footer-container">
+        <div class="footer-brand">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span class="logo-icon">🎮</span>
+                <span class="logo-text">Game<span class="logo-accent">Shop</span></span>
+            </div>
+            <p>Tu tienda de videojuegos de confianza. Los mejores precios con entrega digital instantánea.</p>
+        </div>
+        <div class="footer-links">
+            <h4>Navegación</h4>
+            <a href="/">Catálogo</a>
+            <a href="/catalogo/disponibles">Disponibles</a>
+            <a href="/catalogo/populares">Populares</a>
+        </div>
+        <div class="footer-links">
+            <h4>Mi Cuenta</h4>
+            <a href="/login">Iniciar Sesión</a>
+            <a href="/registro">Registrarse</a>
+            <a href="/carrito">Mi Carrito</a>
+            <a href="/pedidos">Mis Pedidos</a>
+        </div>
+        <div class="footer-links">
+            <h4>Plataformas</h4>
+            <a href="/catalogo/plataforma/1">PlayStation 5</a>
+            <a href="/catalogo/plataforma/2">Xbox Series X</a>
+            <a href="/catalogo/plataforma/3">PC</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 GameShop — Desarrollado por Daniel Clemente</p>
+    </div>
+</footer>
+
+<!-- ═══════════════ PAGINACIÓN REUTILIZABLE ═══════════════ -->
+<nav th:fragment="pagination(pagina, baseUrl)" th:if="${pagina.totalPaginas > 1}" class="pagination-nav">
+    <div class="pagination">
+        <!-- Info: Página X de Y -->
+        <span class="pagination-info" th:text="${'Página ' + pagina.paginaActual + ' de ' + pagina.totalPaginas + ' (' + pagina.totalItems + ' juegos)'}"></span>
+        <div class="pagination-buttons">
+            <!-- Anterior -->
+            <a th:if="${pagina.hasAnterior}"
+               th:href="${baseUrl.contains('?') ? baseUrl + '&page=' + (pagina.paginaActual - 1) : baseUrl + '?page=' + (pagina.paginaActual - 1)}"
+               class="pagination-btn">‹ Anterior</a>
+            <span th:unless="${pagina.hasAnterior}" class="pagination-btn pagination-btn-disabled">‹ Anterior</span>
+
+            <!-- Números de página -->
+            <th:block th:each="num : ${pagina.numeros}">
+                <a th:if="${num != pagina.paginaActual}"
+                   th:href="${baseUrl.contains('?') ? baseUrl + '&page=' + num : baseUrl + '?page=' + num}"
+                   th:text="${num}"
+                   class="pagination-btn pagination-num"></a>
+                <span th:if="${num == pagina.paginaActual}"
+                      th:text="${num}"
+                      class="pagination-btn pagination-num pagination-active"></span>
+            </th:block>
+
+            <!-- Siguiente -->
+            <a th:if="${pagina.hasSiguiente}"
+               th:href="${baseUrl.contains('?') ? baseUrl + '&page=' + (pagina.paginaActual + 1) : baseUrl + '?page=' + (pagina.paginaActual + 1)}"
+               class="pagination-btn">Siguiente ›</a>
+            <span th:unless="${pagina.hasSiguiente}" class="pagination-btn pagination-btn-disabled">Siguiente ›</span>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══════════════ SIDEBAR PERFIL ═══════════════ -->
+<aside th:fragment="perfil-sidebar(seccion)" class="perfil-sidebar">
+    <div class="sidebar-user-card">
+        <div class="sidebar-avatar-circle">
+            <span th:text="${#strings.substring(session.usuarioNombre, 0, 1).toUpperCase()}">U</span>
+        </div>
+        <div class="sidebar-user-info">
+            <span class="sidebar-user-name" th:text="${session.usuarioNombre}">Usuario</span>
+            <span class="sidebar-user-role"
+                  th:classappend="${session.usuarioRol == 'ADMIN' ? 'role-admin' : 'role-cliente'}"
+                  th:text="${session.usuarioRol == 'ADMIN' ? '⚡ Admin' : '🎮 Cliente'}">Rol</span>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/perfil"             th:classappend="${seccion == 'perfil'      ? ' active' : ''}">📋 Mi Perfil</a>
+        <a href="/pedidos"            th:classappend="${seccion == 'pedidos'     ? ' active' : ''}">📦 Mis Pedidos</a>
+        <a href="/favoritos"          th:classappend="${seccion == 'favoritos'   ? ' active' : ''}">❤️ Favoritos</a>
+        <a href="/perfil/direcciones" th:classappend="${seccion == 'direcciones' ? ' active' : ''}">🏠 Direcciones</a>
+        <a href="/perfil/pagos"       th:classappend="${seccion == 'pagos'       ? ' active' : ''}">💳 Formas de Pago</a>
+        <a href="/" class="sidebar-nav-tienda">🎮 Ir a la Tienda</a>
+        <a href="/logout" class="sidebar-logout">🚪 Cerrar Sesión</a>
+    </nav>
+</aside>
+
+</body>
+</html>
+

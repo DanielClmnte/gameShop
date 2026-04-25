@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Gestionar Productos</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/admin-layout :: header-admin}"></div>
+
+    <div class="container admin-page">
+        <div class="admin-header">
+            <h1>📦 Gestionar Productos</h1>
+            <a href="/admin/productos/nuevo" class="btn btn-primary">➕ Nuevo Producto</a>
+        </div>
+
+        <!-- TABLA DE PRODUCTOS -->
+        <div class="admin-table">
+            <div class="admin-table-head">
+                <div class="col-id">ID</div>
+                <div>Título</div>
+                <div class="col-platform">Plataforma</div>
+                <div class="col-price">Precio</div>
+                <div class="col-stock">Stock</div>
+                <div class="col-actions">Acciones</div>
+            </div>
+
+            <div class="admin-table-row" th:each="producto : ${videojuegos}">
+                <div class="col-id" th:text="${producto.id}">1</div>
+                <div class="col-title" th:text="${producto.titulo}">Título</div>
+                <div class="col-platform">
+                    <span th:each="plataforma : ${plataformas}"
+                          th:if="${plataforma.id == producto.plataformaId}"
+                          th:text="${plataforma.nombre}">PS5</span>
+                </div>
+                <div class="col-price" th:text="${'€' + #numbers.formatDecimal(producto.precio, 1, 2)}">€49.99</div>
+                <div class="col-stock">
+                    <span th:if="${producto.disponible}" class="badge badge-green" th:text="${producto.stock}">15</span>
+                    <span th:unless="${producto.disponible}" class="badge badge-red">Agotado</span>
+                </div>
+                <div class="col-actions">
+                    <a th:href="@{/admin/productos/editar/{id}(id=${producto.id})}" class="btn btn-ghost btn-sm">✏️ Editar</a>
+                    <a th:href="@{/admin/productos/eliminar/{id}(id=${producto.id})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro?')">🗑️</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIN PRODUCTOS -->
+        <div th:if="${videojuegos.size() == 0}" class="empty-message">
+            <p>No hay productos aún. <a href="/admin/productos/nuevo">Crea uno ahora</a></p>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

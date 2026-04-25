@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/admin-layout :: header-admin}"></div>
+
+    <div class="container admin-page">
+        <h1>📊 Panel de <span class="highlight" style="background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Administración</span></h1>
+
+        <!-- TARJETAS DE ESTADÍSTICAS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total de Productos</h3>
+                <div class="stat-number" th:text="${totalProductos}">0</div>
+                <div class="stat-label">Productos en catálogo</div>
+            </div>
+
+            <div class="stat-card stat-available">
+                <h3>Disponibles</h3>
+                <div class="stat-number" th:text="${productosDisponibles}">0</div>
+                <div class="stat-label">En stock</div>
+            </div>
+
+            <div class="stat-card stat-out">
+                <h3>Agotados</h3>
+                <div class="stat-number" style="color:var(--red)" th:text="${productosAgotados}">0</div>
+                <div class="stat-label">Sin stock</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Usuarios Registrados</h3>
+                <div class="stat-number" th:text="${totalUsuarios}">0</div>
+                <div class="stat-label">Cuentas en la plataforma</div>
+            </div>
+
+            <div class="stat-card stat-actions">
+                <h3>Acciones Rápidas</h3>
+                <div class="quick-actions">
+                    <a href="/admin/productos/nuevo" class="btn btn-primary btn-sm btn-block">➕ Nuevo Producto</a>
+                    <a href="/admin/productos" class="btn btn-ghost btn-sm btn-block">📋 Ver Productos</a>
+                    <a href="/admin/stock" class="btn btn-ghost btn-sm btn-block">📦 Gestionar Stock</a>
+                    <a href="/admin/usuarios" class="btn btn-ghost btn-sm btn-block">👥 Gestionar Usuarios</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE INFORMACIÓN -->
+        <div class="info-panel">
+            <h2>Bienvenido al Panel de Control</h2>
+            <p>Desde aquí puedes gestionar todos los productos de tu tienda de videojuegos. Tienes acceso a:</p>
+            <ul>
+                <li>✅ Crear nuevos productos</li>
+                <li>✅ Editar productos existentes</li>
+                <li>✅ Eliminar productos</li>
+                <li>✅ Gestionar stock</li>
+                <li>✅ Ver estadísticas</li>
+            </ul>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

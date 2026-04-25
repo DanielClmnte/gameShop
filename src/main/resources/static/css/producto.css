@@ -1,0 +1,90 @@
+/* ============================================
+   GameShop — Producto / Ficha
+   ============================================ */
+
+/* ── Product detail layout ── */
+.product-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+
+.product-hero-img {
+    width: 100%;
+    height: 500px;
+    background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card));
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: border-color var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.product-hero-img:hover { border-color: var(--primary); }
+.product-hero-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform .5s ease;
+}
+.product-hero-img:hover img { transform: scale(1.05); }
+
+.product-info { display: flex; flex-direction: column; gap: 16px; }
+.product-title { font-size: 32px; font-weight: 900; color: var(--text); line-height: 1.2; letter-spacing: -.3px; }
+.product-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--text-secondary); }
+.product-meta strong { color: var(--text); margin-right: 4px; }
+
+.product-rating { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--bg-elevated); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+.product-rating .stars { color: var(--yellow); font-size: 18px; font-weight: 700; }
+.product-rating .count { color: var(--text-secondary); font-size: 14px; }
+
+.product-desc h3 { color: var(--text); font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.product-desc p { color: var(--text-secondary); line-height: 1.7; }
+
+.product-buy { padding-top: 20px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
+.product-price { font-size: 36px; font-weight: 900; color: var(--green); text-shadow: 0 0 24px rgba(0,230,118,.12); }
+.product-stock { font-size: 14px; }
+.product-buy .btn { width: 100%; padding: 16px; font-size: 16px; }
+.product-buy form { width: 100%; }
+
+/* ── Reviews ── */
+.reviews-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 32px; margin-bottom: 48px; }
+.reviews-section h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 24px; }
+.reviews-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--bg-elevated); border-radius: var(--radius-sm); margin-bottom: 24px; flex-wrap: wrap; gap: 16px; border: 1px solid var(--border); }
+.reviews-summary { display: flex; align-items: center; gap: 16px; }
+.reviews-avg { font-size: 48px; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.reviews-stars { color: var(--yellow); font-size: 20px; }
+.reviews-count { color: var(--text-secondary); font-size: 14px; }
+
+.review-card { padding: 20px; background: var(--bg-elevated); border-radius: var(--radius-sm); border-left: 3px solid var(--primary); margin-bottom: 16px; transition: border-color var(--transition); }
+.review-card:hover { border-left-color: var(--accent); }
+.review-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.review-stars { color: var(--yellow); font-weight: 700; }
+.review-verified { font-size: 12px; font-weight: 600; color: var(--green); background: var(--green-dim); padding: 2px 8px; border-radius: var(--radius-xl); }
+.review-date { color: var(--text-muted); font-size: 13px; }
+.review-text { color: var(--text-secondary); line-height: 1.6; }
+
+/* ── Related games ── */
+.related-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 32px; margin-bottom: 32px; }
+.related-section h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 24px; }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+
+/* ── Opinion form ── */
+.opinion-form-container { max-width: 600px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 32px; }
+.opinion-form-container h1 { font-size: 24px; font-weight: 700; color: var(--text); text-align: center; margin-bottom: 8px; }
+.opinion-form-container .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 24px; }
+.form-group { margin-bottom: 20px; }
+.rating-selector { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 12px; margin: 12px 0; font-size: 32px; }
+.rating-selector input { display: none; }
+.rating-selector label.star { cursor: pointer; opacity: .3; transition: opacity .2s; }
+.rating-selector input:checked ~ label.star { opacity: 1; }
+.rating-selector label.star:hover,
+.rating-selector label.star:hover ~ label.star { opacity: 1; }
+.form-actions { display: flex; gap: 12px; margin-top: 24px; }
+.form-actions .btn { flex: 1; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .product-detail { grid-template-columns: 1fr; }
+    .product-hero-img { height: 300px; }
+    .product-title { font-size: 24px; }
+    .reviews-header { flex-direction: column; align-items: flex-start; }
+    .related-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}

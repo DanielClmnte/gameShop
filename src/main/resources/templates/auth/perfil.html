@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Mi Perfil - GameShop</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<div class="container">
+    <div class="breadcrumb">
+        <a href="/">Inicio</a> <span>›</span>
+        <span>Mi Perfil</span>
+    </div>
+
+    <div class="perfil-layout">
+
+        <!-- SIDEBAR -->
+        <div th:replace="~{fragments/layout :: perfil-sidebar('perfil')}"></div>
+
+        <!-- MAIN CONTENT -->
+        <main class="perfil-main">
+
+            <div class="perfil-page-header">
+                <h1>📋 Mi Perfil</h1>
+                <p>Gestiona tu información personal y configuración de cuenta.</p>
+            </div>
+
+            <!-- Alertas globales -->
+            <div th:if="${exito}" class="pf-alert-success">✅ <span th:text="${exito}"></span></div>
+            <div th:if="${exitoPass}" class="pf-alert-success">✅ <span th:text="${exitoPass}"></span></div>
+            <div th:if="${errorEmail}" class="pf-alert-error" th:text="${errorEmail}"></div>
+            <div th:if="${errorPass}" class="pf-alert-error" th:text="${errorPass}"></div>
+            <div th:if="${errores != null and !#lists.isEmpty(errores)}" class="pf-alert-error">
+                <ul style="margin:0;padding-left:1.1rem;">
+                    <li th:each="e : ${errores}" th:text="${e}"></li>
+                </ul>
+            </div>
+
+            <!-- SECCIÓN CON TABS -->
+            <div class="perfil-section">
+                <div class="perfil-section-body">
+                    <div class="perfil-tabs">
+                        <button class="perfil-tab-btn active" onclick="showTab('info', this)">📋 Información</button>
+                        <button class="perfil-tab-btn" onclick="showTab('editar', this)">✏️ Editar Datos</button>
+                        <button class="perfil-tab-btn" onclick="showTab('password', this)">🔒 Contraseña</button>
+                    </div>
+
+                    <!-- TAB: INFORMACIÓN -->
+                    <div id="tab-info" class="perfil-tab-panel active">
+                        <div class="pf-info-grid">
+                            <div class="pf-info-item">
+                                <div class="pf-info-label">Nombre</div>
+                                <div class="pf-info-value" th:text="${usuario.nombre}">—</div>
+                            </div>
+                            <div class="pf-info-item">
+                                <div class="pf-info-label">Email</div>
+                                <div class="pf-info-value" th:text="${usuario.email}">—</div>
+                            </div>
+                            <div class="pf-info-item">
+                                <div class="pf-info-label">Teléfono</div>
+                                <div class="pf-info-value" th:text="${usuario.telefono != null ? usuario.telefono : '—'}">—</div>
+                            </div>
+                            <div class="pf-info-item">
+                                <div class="pf-info-label">Ciudad</div>
+                                <div class="pf-info-value" th:text="${usuario.ciudad != null ? usuario.ciudad : '—'}">—</div>
+                            </div>
+                            <div class="pf-info-item" style="grid-column:1/-1">
+                                <div class="pf-info-label">Dirección</div>
+                                <div class="pf-info-value" th:text="${usuario.direccion != null ? usuario.direccion : '—'}">—</div>
+                            </div>
+                            <div class="pf-info-item">
+                                <div class="pf-info-label">Código Postal</div>
+                                <div class="pf-info-value" th:text="${usuario.codigoPostal != null ? usuario.codigoPostal : '—'}">—</div>
+                            </div>
+                            <div class="pf-info-item">
+                                <div class="pf-info-label">Rol</div>
+                                <div class="pf-info-value">
+                                    <span th:class="${usuario.rol == 'ADMIN' ? 'pf-estado-badge pf-estado-notificado' : 'pf-estado-badge pf-estado-pendiente'}"
+                                          th:text="${usuario.rol}">ROL</span>
+                                </div>
+                            </div>
+                            <div class="pf-info-item">
+                                <div class="pf-info-label">Miembro desde</div>
+                                <div class="pf-info-value" th:text="${#temporals.format(usuario.fechaRegistro, 'dd/MM/yyyy')}">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: EDITAR DATOS -->
+                    <div id="tab-editar" class="perfil-tab-panel">
+                        <form method="post" action="/perfil/actualizar" id="formPerfil" novalidate>
+                            <div class="pf-form-grid">
+                                <div class="pf-form-group">
+                                    <label>Nombre *</label>
+                                    <input type="text" name="nombre" th:value="${usuario.nombre}" minlength="2" maxlength="100" required>
+                                </div>
+                                <div class="pf-form-group">
+                                    <label>Email *</label>
+                                    <input type="email" name="email" th:value="${usuario.email}" maxlength="150" required>
+                                </div>
+                                <div class="pf-form-group">
+                                    <label>Teléfono</label>
+                                    <input type="text" name="telefono" th:value="${usuario.telefono}" maxlength="20" placeholder="612345678">
+                                </div>
+                                <div class="pf-form-group">
+                                    <label>Código Postal</label>
+                                    <input type="text" name="codigoPostal" id="p-cp" th:value="${usuario.codigoPostal}" inputmode="numeric" maxlength="5" placeholder="28001">
+                                </div>
+                                <div class="pf-form-group full">
+                                    <label>Dirección</label>
+                                    <input type="text" name="direccion" th:value="${usuario.direccion}" maxlength="255" placeholder="Calle Mayor 1, 2ºA">
+                                </div>
+                                <div class="pf-form-group full">
+                                    <label>Ciudad</label>
+                                    <input type="text" name="ciudad" th:value="${usuario.ciudad}" maxlength="100" placeholder="Madrid">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-top:1.2rem;">💾 Guardar Cambios</button>
+                        </form>
+                    </div>
+
+                    <!-- TAB: CONTRASEÑA -->
+                    <div id="tab-password" class="perfil-tab-panel">
+                        <form method="post" action="/perfil/cambiar-contrasena" id="formPass">
+                            <div class="pf-form-grid">
+                                <div class="pf-form-group full">
+                                    <label>Contraseña actual *</label>
+                                    <input type="password" name="contraseniaActual" required>
+                                </div>
+                                <div class="pf-form-group">
+                                    <label>Nueva contraseña *</label>
+                                    <input type="password" name="contrasenaNueva" id="pass-nueva" minlength="4" required>
+                                </div>
+                                <div class="pf-form-group">
+                                    <label>Repetir nueva contraseña *</label>
+                                    <input type="password" name="contrasenaRepetida" id="pass-rep" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-top:1.2rem;">🔒 Cambiar Contraseña</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCESOS RÁPIDOS -->
+            <div class="perfil-section">
+                <div class="perfil-section-header">
+                    <h2>⚡ Accesos Rápidos</h2>
+                </div>
+                <div class="perfil-section-body">
+                    <div style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+                        <a href="/pedidos"            class="btn btn-ghost btn-sm">📦 Mis Pedidos</a>
+                        <a href="/favoritos"          class="btn btn-ghost btn-sm">❤️ Favoritos</a>
+                        <a href="/perfil/direcciones" class="btn btn-ghost btn-sm">🏠 Direcciones</a>
+                        <a href="/perfil/pagos"       class="btn btn-ghost btn-sm">💳 Formas de Pago</a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    function showTab(name, btn) {
+        document.querySelectorAll('.perfil-tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.perfil-tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+    const cp = document.getElementById('p-cp');
+    if (cp) cp.addEventListener('input', () => { cp.value = cp.value.replace(/\D/g,''); });
+    document.getElementById('formPass')?.addEventListener('submit', function(e) {
+        if (document.getElementById('pass-nueva').value !== document.getElementById('pass-rep').value) {
+            alert('Las contraseñas no coinciden.'); e.preventDefault();
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Carrito</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/carrito.css}">
+    <style>
+        .cart-row-wrapper { display:contents; }
+        .cart-row-stock-error {
+            grid-column: 1 / -1;
+            background: rgba(255,80,80,0.10);
+            border: 1px solid rgba(255,80,80,0.35);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            color: #ff8080;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: header}"></div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> <span>›</span> <span>Carrito de Compras</span>
+        </div>
+
+        <h1 class="page-title">🛒 Carrito de <span class="highlight">Compras</span></h1>
+
+        <!-- AVISO DE STOCK -->
+        <div th:if="${errorStock != null}" class="alert alert-error alert-bottom-margin" th:text="${errorStock}"></div>
+
+        <!-- CARRITO CON ITEMS -->
+        <div th:if="${cantidad > 0}" class="cart-layout">
+
+            <!-- TABLA DE PRODUCTOS -->
+            <div class="cart-table">
+                <div class="cart-table-head">
+                    <div>Producto</div>
+                    <div>Precio</div>
+                    <div>Cantidad</div>
+                    <div>Subtotal</div>
+                    <div>Acción</div>
+                </div>
+
+                <th:block th:each="item : ${items}">
+                    <div class="cart-row">
+                        <div class="cart-item-info">
+                            <div class="cart-item-img">
+                                <img th:src="${item.imagenVideojuego}" th:alt="${item.tituloVideojuego}"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <span class="hidden-icon">🎮</span>
+                            </div>
+                            <span class="cart-item-name" th:text="${item.tituloVideojuego}"></span>
+                        </div>
+                        <div class="cart-col-price" th:text="${'€' + #numbers.formatDecimal(item.precioUnitario, 1, 2)}"></div>
+
+                        <div class="cart-col-qty">
+                            <form th:action="@{/carrito/actualizar/{id}(id=${item.videojuegoId})}" method="post" class="qty-form">
+                                <input type="number" name="nuevaCantidad" th:value="${item.cantidad}" min="1" max="99" class="qty-input">
+                                <button type="submit" class="qty-btn">✓</button>
+                            </form>
+                        </div>
+
+                        <div class="cart-col-subtotal" th:text="${'€' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></div>
+
+                        <div class="cart-col-action">
+                            <a th:href="@{/carrito/eliminar/{id}(id=${item.videojuegoId})}" class="cart-remove">🗑️ Eliminar</a>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+
+            <!-- RESUMEN Y CHECKOUT -->
+            <div class="cart-summary">
+                <h2>Resumen del Pedido</h2>
+
+                <div class="summary-line">
+                    <span>Productos:</span>
+                    <span th:text="${cantidad}"></span>
+                </div>
+
+                <div class="summary-line">
+                    <span>Subtotal:</span>
+                    <span th:text="${'€' + #numbers.formatDecimal(total, 1, 2)}"></span>
+                </div>
+
+                <div class="summary-line">
+                    <span>Envío:</span>
+                    <span>Gratis</span>
+                </div>
+
+                <div class="summary-line tax">
+                    <span>Impuestos (21%):</span>
+                    <span th:text="${'€' + #numbers.formatDecimal(total * 0.21, 1, 2)}"></span>
+                </div>
+
+                <div class="summary-total">
+                    <span>Total:</span>
+                    <span th:text="${'€' + #numbers.formatDecimal(total * 1.21, 1, 2)}"></span>
+                </div>
+
+                <div class="summary-actions">
+                    <a href="/" class="btn btn-ghost btn-block">← Continuar Comprando</a>
+                    <a th:if="${session.usuarioId != null}" href="/checkout" class="btn btn-success btn-block">Proceder al Pago →</a>
+                    <a th:unless="${session.usuarioId != null}" href="/login?redirect=/checkout" class="btn btn-primary btn-block">🔐 Login para Pagar →</a>
+                </div>
+
+                <a href="/carrito/vaciar" class="btn-clear-cart">Vaciar Carrito</a>
+            </div>
+        </div>
+
+        <!-- CARRITO VACÍO -->
+        <div th:unless="${cantidad > 0}" class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <h2>Tu carrito está vacío</h2>
+            <p>¡No has agregado ningún videojuego aún!</p>
+            <a href="/" class="btn btn-primary btn-lg">Ir al Catálogo</a>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
+

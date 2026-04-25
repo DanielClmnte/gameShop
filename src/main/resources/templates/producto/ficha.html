@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Producto</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"><link rel="stylesheet" th:href="@{/css/producto.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: header}"></div>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> <span>›</span> <span th:text="${videojuego.titulo}"></span>
+        </div>
+
+        <div class="product-detail">
+            <div class="product-hero-img">
+                <img th:src="${videojuego.imagen}" th:alt="${videojuego.titulo}"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="img-fallback">🎮</div>
+            </div>
+
+            <div class="product-info">
+                <h1 class="product-title" th:text="${videojuego.titulo}"></h1>
+                <div class="product-meta">
+                    <span><strong>Desarrollador:</strong> <span th:text="${videojuego.desarrollador}"></span></span>
+                    <span><strong>Lanzamiento:</strong> <span th:if="${videojuego.fechaLanzamiento != null}" th:text="${#temporals.format(videojuego.fechaLanzamiento, 'dd/MM/yyyy')}"></span><span th:unless="${videojuego.fechaLanzamiento != null}">Sin fecha</span></span>
+                </div>
+                <div class="product-rating">
+                    <span class="stars" th:text="${'⭐ ' + #numbers.formatDecimal(calificacionPromedio, 1, 2)}"></span>
+                    <span class="count" th:text="${'(' + totalOpiniones + ' opiniones)'}"></span>
+                </div>
+                <div class="product-desc">
+                    <h3>Descripción</h3>
+                    <p th:text="${videojuego.descripcion}"></p>
+                </div>
+                <div class="product-buy">
+                    <span class="product-price" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></span>
+                    <div class="product-stock">
+                        <span th:if="${videojuego.disponible}" class="badge badge-green" th:text="${videojuego.stock + ' en stock'}"></span>
+                        <span th:unless="${videojuego.disponible}" class="badge badge-red">Agotado</span>
+                    </div>
+                    <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">🛒 Agregar al Carrito</button>
+                    </form>
+                    <div th:unless="${videojuego.disponible}" class="badge badge-red" style="padding:0.8rem;text-align:center;">
+                        ⚠️ Producto agotado temporalmente
+                    </div>
+                    <!-- Botón favoritos -->
+                    <form th:if="${session.usuarioId != null}" th:action="@{/favoritos/toggle/{id}(id=${videojuego.id})}" method="post">
+                        <input type="hidden" name="redirect" th:value="${'/producto/' + videojuego.id}">
+                        <button type="submit" class="btn btn-block" th:classappend="${esFavorito ? 'btn-fav-active' : 'btn-ghost'}" style="margin-top:8px;">
+                            <span th:if="${esFavorito}">♥ En tu lista de deseados</span>
+                            <span th:unless="${esFavorito}">♡ Añadir a lista de deseados</span>
+                        </button>
+                    </form>
+                    <a th:unless="${session.usuarioId != null}" href="/login" class="btn btn-ghost btn-block" style="margin-top:8px;">♡ Inicia sesión para guardar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPINIONES -->
+        <div class="reviews-section">
+            <h2>Opiniones de Usuarios</h2>
+            <div class="reviews-header">
+                <div class="reviews-summary">
+                    <span class="reviews-avg" th:text="${#numbers.formatDecimal(calificacionPromedio, 1, 1)}"></span>
+                    <div>
+                        <div class="reviews-stars">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <span th:if="${i <= calificacionPromedio}">⭐</span>
+                                <span th:if="${i > calificacionPromedio}" style="opacity:0.3">⭐</span>
+                            </span>
+                        </div>
+                        <div class="reviews-count" th:text="${'Basado en ' + totalOpiniones + ' opiniones'}"></div>
+                    </div>
+                </div>
+                <a th:href="@{/producto/{id}/nueva-opinion(id=${videojuego.id})}" class="btn btn-primary">✍️ Escribir opinión</a>
+            </div>
+
+            <div th:if="${opiniones.size() > 0}">
+                <div class="review-card" th:each="opinion : ${opiniones}">
+                    <div class="review-top">
+                        <div>
+                            <span class="review-stars" th:text="${'⭐ ' + opinion.calificacion}"></span>
+                            <span th:if="${opinion.verificado}" class="review-verified">✓ Verificado</span>
+                        </div>
+                        <span class="review-date" th:if="${opinion.fecha != null}" th:text="${#temporals.format(opinion.fecha, 'dd/MM/yyyy')}"></span>
+                    </div>
+                    <p class="review-text" th:text="${opinion.comentario}"></p>
+                </div>
+            </div>
+            <div th:unless="${opiniones.size() > 0}" class="empty-state">
+                <p>No hay opiniones aún. ¡Sé el primero!</p>
+            </div>
+        </div>
+
+        <!-- RELACIONADOS -->
+        <div th:if="${relacionados != null and !relacionados.isEmpty()}" class="related-section">
+            <h2>Juegos Relacionados</h2>
+            <div class="related-grid">
+                <div class="game-card" th:each="juego : ${relacionados}">
+                    <div class="game-card-img">
+                        <img th:src="${juego.imagen}" th:alt="${juego.titulo}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                        <div class="img-fallback">🎮</div>
+                    </div>
+                    <div class="game-card-body">
+                        <div class="game-card-title" th:text="${juego.titulo}"></div>
+                        <div class="game-card-footer">
+                            <span class="game-card-price" th:text="${'€' + #numbers.formatDecimal(juego.precio, 1, 2)}"></span>
+                            <a th:href="@{/producto/{id}(id=${juego.id})}" class="btn btn-primary btn-sm">Ver</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

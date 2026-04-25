@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">GameShop - Plataforma</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/catalogo.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: header}"></div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> <span>›</span> <span th:text="${plataforma.nombre}"></span>
+        </div>
+
+        <h1 class="page-title" th:text="${'Juegos de ' + plataforma.nombre}">Juegos</h1>
+
+        <!-- Platform pills selector -->
+        <div class="platform-selector">
+            <span class="platform-label">Plataforma:</span>
+            <div class="platform-pills">
+                <a href="/" class="platform-pill">
+                    <span>🏠</span> Todas
+                </a>
+                <a th:each="p : ${plataformas}"
+                   th:href="@{/catalogo/plataforma/{id}(id=${p.id})}"
+                   th:classappend="${p.id == plataforma.id} ? ' active' : ''"
+                   class="platform-pill">
+                    <span th:text="${p.id == 1 ? '🎮' : (p.id == 2 ? '🕹️' : '🖥️')}">🎮</span>
+                    <span th:text="${p.nombre}">Plataforma</span>
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${videojuegos.size() > 0}" class="games-grid games-grid-top-margin">
+            <div class="game-card" th:each="videojuego : ${videojuegos}">
+                <div class="game-card-img">
+                    <img th:src="${videojuego.imagen}" th:alt="${videojuego.titulo}"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                    <div class="img-fallback">🎮</div>
+                    <div class="game-card-badge" th:if="${videojuego.calificacion >= 4.5}">⭐ TOP</div>
+                    <div class="game-card-platform-tag"
+                         th:text="${videojuego.plataformaId == 1 ? 'PS5' : (videojuego.plataformaId == 2 ? 'XBOX' : 'PC')}">PC</div>
+                    <div class="game-card-overlay">
+                        <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-primary btn-sm">Ver detalles</a>
+                    </div>
+                </div>
+                <div class="game-card-body">
+                    <div class="game-card-title" th:text="${videojuego.titulo}"></div>
+                    <div class="game-card-meta">
+                        <span class="game-card-rating" th:text="${'⭐ ' + #numbers.formatDecimal(videojuego.calificacion, 1, 1)}"></span>
+                        <span class="game-card-stock-inline">
+                            <span th:if="${videojuego.disponible}" class="stock-dot stock-dot-green"></span>
+                            <span th:unless="${videojuego.disponible}" class="stock-dot stock-dot-red"></span>
+                            <span th:if="${videojuego.disponible}" class="stock-text-sm">En stock</span>
+                            <span th:unless="${videojuego.disponible}" class="stock-text-sm stock-text-out">Agotado</span>
+                        </span>
+                    </div>
+                    <div class="game-card-footer">
+                        <span class="game-card-price" th:text="${'€' + #numbers.formatDecimal(videojuego.precio, 1, 2)}"></span>
+                        <div class="game-card-actions">
+                            <a th:href="@{/producto/{id}(id=${videojuego.id})}" class="btn btn-ghost btn-sm">Ver</a>
+                            <form th:if="${videojuego.disponible}" th:action="@{/carrito/agregar/{id}(id=${videojuego.id})}" method="post">
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-basket-shopping"></i></button>
+                            </form>
+                            <button th:unless="${videojuego.disponible}" class="btn btn-outline btn-sm" title="Avísame cuando esté disponible" onclick="alert('Te notificaremos cuando esté disponible')">🔔</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════ PAGINACIÓN ═══════ -->
+        <div th:replace="~{fragments/layout :: pagination(${pagina}, ${baseUrl})}"></div>
+
+        <div th:unless="${videojuegos.size() > 0}" class="empty-state">
+            <div class="empty-state-icon">🎮</div>
+            <h2>Sin juegos para esta plataforma</h2>
+            <p>Prueba con otra plataforma o vuelve al catálogo.</p>
+            <a href="/" class="btn btn-primary">Volver al Catálogo</a>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

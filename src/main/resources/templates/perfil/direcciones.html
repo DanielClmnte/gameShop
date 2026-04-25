@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Mis Direcciones - GameShop</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<div class="container">
+    <div class="breadcrumb">
+        <a href="/">Inicio</a> <span>›</span>
+        <a href="/perfil">Mi Perfil</a> <span>›</span>
+        <span>Mis Direcciones</span>
+    </div>
+
+    <div class="perfil-layout">
+
+        <!-- SIDEBAR -->
+        <div th:replace="~{fragments/layout :: perfil-sidebar('direcciones')}"></div>
+
+        <!-- MAIN -->
+        <main class="perfil-main">
+
+            <div class="perfil-page-header">
+                <h1>🏠 Mis Direcciones</h1>
+                <p>Guarda tus direcciones de envío para agilizar el proceso de compra.</p>
+            </div>
+
+            <div th:if="${param.ok}"  class="pf-alert-success">✅ Dirección guardada correctamente.</div>
+            <div th:if="${error}"     class="pf-alert-error"   th:text="${error}"></div>
+
+            <!-- LISTA DE DIRECCIONES -->
+            <div class="perfil-section" th:if="${not #lists.isEmpty(direcciones)}">
+                <div class="perfil-section-header">
+                    <h2>📦 Direcciones guardadas</h2>
+                    <span style="font-size:.8rem;color:#64748b;" th:text="${#lists.size(direcciones) + ' dirección(es)'}"></span>
+                </div>
+                <div class="perfil-section-body">
+                    <div class="pf-cards-grid">
+                        <div th:each="d : ${direcciones}"
+                             class="pf-addr-card"
+                             th:classappend="${d.esPrincipal ? ' principal' : ''}">
+
+                            <span th:if="${d.esPrincipal}" class="pf-badge-principal">⭐ Principal</span>
+
+                            <div class="pf-card-alias" th:text="${d.alias}">Casa</div>
+                            <div class="pf-card-details">
+                                <div th:text="${d.nombre}"></div>
+                                <div th:text="${d.direccion}"></div>
+                                <div th:text="${d.codigoPostal + ' — ' + d.ciudad}"></div>
+                                <div th:if="${d.telefono}" th:text="'📞 ' + ${d.telefono}"></div>
+                            </div>
+
+                            <div class="pf-card-actions">
+                                <button class="btn-pf-ghost"
+                                        th:onclick="'toggleEdit(\'edit-' + ${d.id} + '\')'">✏️ Editar</button>
+                                <a th:href="@{/perfil/direcciones/eliminar/{id}(id=${d.id})}"
+                                   class="btn-pf-danger"
+                                   onclick="return confirm('¿Eliminar esta dirección?')">🗑️ Eliminar</a>
+                            </div>
+
+                            <!-- Formulario de edición inline -->
+                            <div th:id="'edit-' + ${d.id}" class="pf-edit-form">
+                                <form th:action="@{/perfil/direcciones/actualizar/{id}(id=${d.id})}" method="post">
+                                    <div class="pf-form-grid" style="margin-bottom:.8rem;">
+                                        <div class="pf-form-group">
+                                            <label>Alias</label>
+                                            <input type="text" name="alias" th:value="${d.alias}" required maxlength="50">
+                                        </div>
+                                        <div class="pf-form-group">
+                                            <label>Nombre del destinatario</label>
+                                            <input type="text" name="nombre" th:value="${d.nombre}" required maxlength="100">
+                                        </div>
+                                        <div class="pf-form-group full">
+                                            <label>Dirección</label>
+                                            <input type="text" name="direccion" th:value="${d.direccion}" required maxlength="255">
+                                        </div>
+                                        <div class="pf-form-group">
+                                            <label>Ciudad</label>
+                                            <input type="text" name="ciudad" th:value="${d.ciudad}" required maxlength="100">
+                                        </div>
+                                        <div class="pf-form-group">
+                                            <label>Código Postal</label>
+                                            <input type="text" name="codigoPostal" th:value="${d.codigoPostal}"
+                                                   inputmode="numeric" pattern="[0-9]{5}" maxlength="5" required>
+                                        </div>
+                                        <div class="pf-form-group">
+                                            <label>Teléfono</label>
+                                            <input type="text" name="telefono" th:value="${d.telefono}" maxlength="20">
+                                        </div>
+                                        <div class="pf-form-group full">
+                                            <div class="pf-checkbox-row">
+                                                <input type="checkbox" name="esPrincipal" value="true"
+                                                       th:checked="${d.esPrincipal}"
+                                                       th:id="'ep-' + ${d.id}">
+                                                <label th:for="'ep-' + ${d.id}">Establecer como dirección principal</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="display:flex;gap:.5rem;">
+                                        <button type="submit" class="btn btn-primary btn-sm">💾 Guardar</button>
+                                        <button type="button" class="btn-pf-ghost"
+                                                th:onclick="'toggleEdit(\'edit-' + ${d.id} + '\')'">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIN DIRECCIONES -->
+            <div th:if="${#lists.isEmpty(direcciones)}" class="perfil-section">
+                <div class="perfil-section-body" style="text-align:center;padding:2rem;color:#64748b;">
+                    <div style="font-size:2.5rem;margin-bottom:.8rem;">🏠</div>
+                    <p>Todavía no tienes ninguna dirección guardada.</p>
+                </div>
+            </div>
+
+            <!-- FORMULARIO NUEVA DIRECCIÓN -->
+            <div class="perfil-section">
+                <div class="perfil-section-header">
+                    <h2>➕ Añadir nueva dirección</h2>
+                </div>
+                <div class="perfil-section-body">
+                    <form action="/perfil/direcciones/guardar" method="post" id="formDir" novalidate>
+                        <div class="pf-form-grid">
+                            <div class="pf-form-group">
+                                <label>Alias *</label>
+                                <input type="text" name="alias" placeholder="Casa, Trabajo…" required maxlength="50">
+                            </div>
+                            <div class="pf-form-group">
+                                <label>Nombre del destinatario *</label>
+                                <input type="text" name="nombre" placeholder="Nombre Apellido" required maxlength="100">
+                            </div>
+                            <div class="pf-form-group full">
+                                <label>Dirección *</label>
+                                <input type="text" name="direccion" placeholder="Calle Mayor 10, 3ºB" required maxlength="255">
+                            </div>
+                            <div class="pf-form-group">
+                                <label>Ciudad *</label>
+                                <input type="text" name="ciudad" placeholder="Madrid" required maxlength="100">
+                            </div>
+                            <div class="pf-form-group">
+                                <label>Código Postal *</label>
+                                <input type="text" name="codigoPostal" id="dir-cp" inputmode="numeric"
+                                       pattern="[0-9]{5}" maxlength="5" placeholder="28001" required>
+                            </div>
+                            <div class="pf-form-group">
+                                <label>Teléfono</label>
+                                <input type="text" name="telefono" placeholder="612345678" maxlength="20">
+                            </div>
+                            <div class="pf-form-group full">
+                                <div class="pf-checkbox-row">
+                                    <input type="checkbox" name="esPrincipal" value="true" id="dir-principal">
+                                    <label for="dir-principal">Establecer como dirección principal</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top:1rem;">➕ Guardar Dirección</button>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    document.getElementById('dir-cp').addEventListener('input', function(){ this.value = this.value.replace(/\D/g,''); });
+    function toggleEdit(id) {
+        const el = document.getElementById(id);
+        el.classList.toggle('open');
+    }
+</script>
+</body>
+</html>
+
